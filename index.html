@@ -1,0 +1,1968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<title>ScanAI Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --bg:#0a0c0f;--surface:#111318;--surface2:#181c23;--surface3:#1e232d;
+  --border:#252b36;--border2:#2e3545;
+  --accent:#f97316;--accent2:#fb923c;--accent-dim:rgba(249,115,22,.13);--accent-glow:rgba(249,115,22,.32);
+  --green:#22c55e;--green-dim:rgba(34,197,94,.13);
+  --blue:#3b82f6;--blue-dim:rgba(59,130,246,.13);
+  --purple:#a855f7;--purple-dim:rgba(168,85,247,.13);
+  --red:#ef4444;--red-dim:rgba(239,68,68,.13);
+  --yellow:#eab308;
+  --text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;
+  --fd:'Syne',sans-serif;--fm:'DM Mono',monospace;--fb:'Plus Jakarta Sans',sans-serif;
+  --r:12px;--r2:8px;--shadow:0 4px 28px rgba(0,0,0,.5);
+  --topbar-h:56px;--sidebar-w:224px;--bn-h:64px;
+}
+body.light{
+  --bg:#f0f4f8;--surface:#fff;--surface2:#f8fafc;--surface3:#eef2f7;
+  --border:#dde3ec;--border2:#c9d3e0;--text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --shadow:0 4px 20px rgba(0,0,0,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);touch-action:manipulation}
+input,select,button{font-family:var(--fb);outline:none}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+/* ── SHELL ── */
+.shell{display:grid;grid-template-columns:var(--sidebar-w) 1fr;grid-template-rows:var(--topbar-h) 1fr;height:100dvh;height:100vh}
+
+/* ── TOPBAR ── */
+.topbar{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:0 16px;background:var(--surface);border-bottom:1px solid var(--border);z-index:200;position:relative}
+.hamburger{display:none;width:38px;height:38px;border:1px solid var(--border);border-radius:var(--r2);background:var(--surface2);cursor:pointer;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;color:var(--text2)}
+.logo{font-family:var(--fd);font-weight:800;font-size:18px;letter-spacing:-.5px;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0}
+.logo-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent-glow)}
+.logo span{color:var(--accent)}
+.tb-search{flex:1;display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:7px 12px;min-width:0;max-width:400px}
+.tb-search input{flex:1;background:none;border:none;color:var(--text);font-size:13px;min-width:0}
+.tb-search input::placeholder{color:var(--text3)}
+.tb-actions{display:flex;gap:6px;margin-left:auto;flex-shrink:0}
+.icon-btn{width:36px;height:36px;border-radius:var(--r2);border:1px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:.2s}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.new-btn{display:flex;align-items:center;gap:5px;padding:0 14px;height:36px;background:var(--accent);color:#fff;border:none;border-radius:var(--r2);cursor:pointer;font-family:var(--fd);font-weight:700;font-size:13px;white-space:nowrap;transition:.2s}
+.new-btn:hover{background:var(--accent2);box-shadow:0 0 16px var(--accent-glow)}
+
+/* ── SIDEBAR desktop ── */
+.sidebar{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;z-index:150}
+.sb-label{padding:14px 14px 6px;font-size:10px;font-weight:600;color:var(--text3);letter-spacing:1.5px;font-family:var(--fm)}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;margin:2px 8px;border-radius:var(--r2);cursor:pointer;color:var(--text2);font-size:13px;font-weight:500;transition:.15s;border:1px solid transparent;user-select:none}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--accent-dim);color:var(--accent);border-color:var(--border)}
+.ni-ico{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.ni-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;font-family:var(--fm)}
+.nav-sep{height:1px;background:var(--border);margin:6px 14px}
+.sb-footer{margin-top:auto;padding:12px}
+.storage-bar{background:var(--surface3);border-radius:4px;height:4px;overflow:hidden;margin:4px 0 8px}
+.storage-fill{width:34%;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:4px}
+.sb-chips{display:flex;gap:5px;flex-wrap:wrap}
+.chip{padding:5px 11px;border-radius:20px;font-size:10px;font-weight:700;border:1px solid var(--border2);color:var(--text3);font-family:var(--fm);display:inline-flex;align-items:center;gap:4px;background:linear-gradient(145deg,var(--surface3),var(--surface));box-shadow:0 2px 0 rgba(0,0,0,.25),0 4px 8px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.08),inset 0 -1px 2px rgba(0,0,0,.15);transform:translateY(0);transition:transform .12s ease,box-shadow .12s ease}
+.chip:active{transform:translateY(2px);box-shadow:0 0 0 rgba(0,0,0,.25),0 1px 3px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.06)}
+.chip.on{background:linear-gradient(145deg,#34e07f,#189a4d);border-color:#1a9e4f;color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.25);box-shadow:0 2px 0 rgba(9,70,32,.5),0 4px 10px rgba(34,197,94,.4),inset 0 1px 0 rgba(255,255,255,.35),inset 0 -1px 2px rgba(0,0,0,.2)}
+.chip.on:active{box-shadow:0 0 0 rgba(9,70,32,.5),0 1px 4px rgba(34,197,94,.4),inset 0 1px 0 rgba(255,255,255,.2)}
+
+/* ── BOTTOM NAV mobile ── */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:var(--bn-h);background:var(--surface);border-top:1px solid var(--border);z-index:300;padding-bottom:env(safe-area-inset-bottom,0px)}
+.bn-inner{display:flex;height:100%;align-items:center}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:var(--text3);padding:4px 2px;transition:.15s;border-radius:var(--r2)}
+.bn-item.active{color:var(--accent)}
+.bn-ico{font-size:20px;line-height:1}
+.bn-lbl{font-size:10px;font-weight:600;font-family:var(--fm);letter-spacing:.2px}
+
+/* ── SIDEBAR OVERLAY mobile ── */
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:249;backdrop-filter:blur(2px)}
+.sb-overlay.show{display:block}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .shell{grid-template-columns:1fr;grid-template-rows:var(--topbar-h) 1fr}
+  .hamburger{display:flex}
+  .sidebar{position:fixed;top:var(--topbar-h);left:0;bottom:0;width:260px;transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);z-index:250;overflow-y:auto}
+  .sidebar.open{transform:translateX(0)}
+  .tb-search{max-width:none}
+  .new-btn .btn-txt{display:none}
+  .bottom-nav{display:block}
+  .main{padding-bottom:var(--bn-h)}
+}
+
+/* ── MAIN / VIEWS ── */
+.main{display:flex;flex-direction:column;overflow:hidden}
+.view{display:none;flex:1;flex-direction:column;overflow:hidden}
+.view.active{display:flex}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+
+/* ── COMPONENTS ── */
+.action-btn{width:100%;padding:10px;border-radius:var(--r2);border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font-family:var(--fb);font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px;transition:.2s;margin-bottom:6px}
+.action-btn:last-child{margin-bottom:0}
+.action-btn:hover,.action-btn:active{border-color:var(--accent);background:var(--accent-dim);color:var(--accent)}
+.action-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.action-btn.primary:hover,.action-btn.primary:active{background:var(--accent2);box-shadow:0 0 14px var(--accent-glow)}
+.action-btn.green{background:var(--green-dim);border-color:var(--green);color:var(--green)}
+.action-btn.blue{background:var(--blue-dim);border-color:var(--blue);color:var(--blue)}
+.action-btn.red{border-color:var(--red);color:var(--red)}
+.form-group{margin-bottom:14px}
+.form-label{font-size:11px;font-weight:600;color:var(--text2);margin-bottom:5px;display:block}
+.form-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:9px 12px;color:var(--text);font-size:13px;transition:.15s;font-family:var(--fb)}
+.form-input:focus{border-color:var(--accent)}
+select.form-input option{background:var(--bg)}
+.two-col{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:560px){.two-col{grid-template-columns:1fr 1fr}}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 0;flex-wrap:wrap;gap:8px}
+.sec-title{font-family:var(--fd);font-size:clamp(18px,5vw,24px);font-weight:800;letter-spacing:-.5px}
+.pill-tabs{display:flex;gap:4px;padding:4px;background:var(--surface2);border-radius:10px;border:1px solid var(--border);margin-bottom:14px}
+.pill-tab{flex:1;padding:7px 4px;text-align:center;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;color:var(--text3);transition:.15s}
+.pill-tab.active{background:var(--accent);color:#fff}
+.filter-btn{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:8px 6px;text-align:center;cursor:pointer;font-size:11px;color:var(--text2);transition:.15s}
+.filter-btn:hover,.filter-btn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.filter-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.progress-bar{height:4px;border-radius:2px;background:var(--surface3);overflow:hidden;margin:8px 0}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width .3s}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text3);gap:8px;padding:40px 20px;text-align:center;flex:1}
+.es-icon{font-size:40px;opacity:.3}
+.es-text{font-size:13px}
+.color-swatch{border-radius:50%;border:2px solid transparent;cursor:pointer;transition:.15s;flex-shrink:0}
+.color-swatch.sel{border-color:var(--text)}
+.tag-receipt{background:var(--green-dim);color:var(--green)}
+.tag-invoice{background:var(--purple-dim);color:var(--purple)}
+.tag-contract{background:var(--blue-dim);color:var(--blue)}
+.tag-medical{background:var(--red-dim);color:var(--red)}
+.tag-other{background:var(--surface3);color:var(--text3)}
+
+/* ── DASHBOARD ── */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px 20px}
+@media(min-width:600px){.stat-grid{grid-template-columns:repeat(4,1fr)}}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.stat-card.o::before{background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.stat-card.g::before{background:linear-gradient(90deg,var(--green),#4ade80)}
+.stat-card.b::before{background:linear-gradient(90deg,var(--blue),#60a5fa)}
+.stat-card.p::before{background:linear-gradient(90deg,var(--purple),#c084fc)}
+.stat-icon{font-size:20px;margin-bottom:8px}
+.stat-val{font-family:var(--fd);font-size:clamp(22px,6vw,32px);font-weight:800;letter-spacing:-1px}
+.stat-lbl{color:var(--text3);font-size:10px;margin-top:2px;font-family:var(--fm);letter-spacing:.5px}
+.dash-row{display:grid;grid-template-columns:1fr;gap:12px;padding:0 20px 20px}
+@media(min-width:768px){.dash-row{grid-template-columns:3fr 2fr}}
+.dash-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px}
+.ds-title{font-family:var(--fd);font-weight:700;font-size:14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.ds-link{font-size:12px;color:var(--accent);cursor:pointer}
+.recent-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);cursor:pointer}
+.recent-item:last-child{border-bottom:none}
+.doc-thumb{width:32px;height:40px;border-radius:4px;background:var(--surface3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;overflow:hidden}
+.doc-thumb img{width:100%;height:100%;object-fit:cover}
+.doc-info{flex:1;min-width:0}
+.doc-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.doc-meta{font-size:10px;color:var(--text3);font-family:var(--fm);margin-top:2px}
+.doc-tag{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:600;margin-left:auto;flex-shrink:0}
+.qa-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+@media(max-width:380px){.qa-grid{grid-template-columns:1fr 1fr}}
+.qa-btn{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 6px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);cursor:pointer;transition:.15s;text-align:center}
+.qa-btn:hover,.qa-btn:active{border-color:var(--accent);background:var(--accent-dim)}
+.qa-ico{font-size:22px}
+.qa-title{font-size:10px;font-weight:600;line-height:1.3}
+.feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 20px 24px}
+@media(min-width:560px){.feat-grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:900px){.feat-grid{grid-template-columns:repeat(4,1fr)}}
+.fs-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px;display:flex;align-items:flex-start;gap:8px}
+.fs-ico{font-size:20px;flex-shrink:0;margin-top:1px}
+.fs-title{font-size:11px;font-weight:600;margin-bottom:2px}
+.fs-sub{font-size:10px;color:var(--text3);line-height:1.4}
+.new-badge{background:var(--accent);color:#fff;font-size:9px;font-weight:700;padding:1px 4px;border-radius:3px;margin-left:3px;font-family:var(--fm)}
+
+/* ── SCANNER ── */
+.scanner-wrap{display:flex;flex-direction:column;flex:1;overflow:hidden}
+@media(min-width:768px){.scanner-wrap{flex-direction:row}}
+.scan-main{flex:1;display:flex;flex-direction:column;overflow:hidden;padding:12px;min-height:0}
+.drop-zone{flex:1;border:2px dashed var(--border2);border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;transition:.3s;position:relative;overflow:hidden;background:var(--surface2);min-height:160px}
+.drop-zone.drag-over{border-color:var(--accent);background:var(--accent-dim)}
+.drop-icon{font-size:40px;opacity:.4}
+.drop-title{font-family:var(--fd);font-weight:700;font-size:clamp(14px,4vw,18px)}
+.drop-sub{color:var(--text3);font-size:12px;text-align:center;max-width:240px;line-height:1.5}
+.drop-formats{display:flex;gap:5px;flex-wrap:wrap;justify-content:center}
+.fmt-pill{background:var(--surface3);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:10px;font-family:var(--fm);color:var(--text3)}
+.canvas-wrap{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:0}
+canvas#previewCanvas{max-width:100%;max-height:100%;border-radius:6px;box-shadow:var(--shadow);display:block}
+.scan-mobile-bar{display:flex;gap:6px;padding:8px 12px;background:var(--surface);border-top:1px solid var(--border);flex-wrap:wrap;justify-content:center;flex-shrink:0}
+@media(min-width:768px){.scan-mobile-bar{display:none}}
+.scan-panel{background:var(--surface);overflow-y:auto;-webkit-overflow-scrolling:touch;flex-shrink:0}
+@media(min-width:768px){.scan-panel{width:290px;border-left:1px solid var(--border)}}
+@media(max-width:767px){.scan-panel{border-top:1px solid var(--border);max-height:38vh}}
+.panel-sec{padding:14px;border-bottom:1px solid var(--border)}
+.panel-title{font-family:var(--fd);font-weight:700;font-size:13px;margin-bottom:12px;display:flex;align-items:center;gap:6px;color:var(--text)}
+.pt-ico{color:var(--accent)}
+.sl-group{margin-bottom:10px}
+.sl-label{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:3px}
+.sl-val{font-family:var(--fm);color:var(--accent)}
+input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
+.export-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.exp-btn{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:10px 4px;text-align:center;cursor:pointer;transition:.15s}
+.exp-btn:hover,.exp-btn:active{border-color:var(--accent);background:var(--accent-dim)}
+.exp-btn .ef{font-size:18px;margin-bottom:3px}
+.exp-btn .et{font-size:10px;font-weight:600;color:var(--text2)}
+.scan-corners{position:absolute;inset:0;pointer-events:none}
+.sc{position:absolute;width:24px;height:24px;border-color:var(--accent);border-style:solid;opacity:.85}
+.sc.tl{top:14px;left:14px;border-width:3px 0 0 3px}
+.sc.tr{top:14px;right:14px;border-width:3px 3px 0 0}
+.sc.bl{bottom:14px;left:14px;border-width:0 0 3px 3px}
+.sc.br{bottom:14px;right:14px;border-width:0 3px 3px 0}
+.scan-line{position:absolute;left:14px;right:14px;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);animation:sl 2.2s ease-in-out infinite}
+@keyframes sl{0%{top:18px;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:calc(100% - 18px);opacity:0}}
+
+/* ── LIBRARY ── */
+.lib-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.lib-search{flex:1;min-width:120px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:7px 12px;display:flex;align-items:center;gap:6px}
+.lib-search input{flex:1;background:none;border:none;color:var(--text);font-size:13px;min-width:0}
+.filter-tabs{display:flex;gap:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-shrink:0}
+.filter-tabs::-webkit-scrollbar{display:none}
+.ft{padding:6px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid transparent;color:var(--text3);white-space:nowrap;flex-shrink:0;transition:.15s}
+.ft.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+.doc-grid{padding:14px;display:grid;gap:12px;align-content:start;grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+@media(min-width:480px){.doc-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}}
+.doc-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:.2s}
+.doc-card:active{transform:scale(.97)}
+.doc-card-thumb{height:100px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:30px;border-bottom:1px solid var(--border);overflow:hidden}
+.doc-card-thumb img{width:100%;height:100%;object-fit:cover}
+.doc-card-body{padding:8px}
+.dc-name{font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dc-meta{font-size:10px;color:var(--text3);font-family:var(--fm);margin-top:2px}
+.dc-tag{margin-top:5px}
+
+/* ── AI TOOLS ── */
+.ai-wrap{display:flex;flex-direction:column;flex:1;overflow:hidden}
+@media(min-width:768px){.ai-wrap{flex-direction:row}}
+.ai-sb{background:var(--surface);overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;display:flex;gap:5px;padding:10px 12px;border-bottom:1px solid var(--border);scrollbar-width:none;flex-shrink:0}
+.ai-sb::-webkit-scrollbar{display:none}
+@media(min-width:768px){.ai-sb{flex-direction:column;overflow-y:auto;overflow-x:hidden;width:220px;border-bottom:none;border-right:1px solid var(--border);padding:12px}}
+.ai-tool{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--r2);cursor:pointer;border:1px solid transparent;white-space:nowrap;flex-shrink:0;transition:.15s}
+@media(min-width:768px){.ai-tool{white-space:normal;flex-shrink:1}}
+.ai-tool:hover{background:var(--surface2)}
+.ai-tool.active{background:var(--accent-dim);border-color:var(--border);color:var(--accent)}
+.at-ico{width:30px;height:30px;border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.at-title{font-size:12px;font-weight:600}
+.at-sub{font-size:10px;color:var(--text3);margin-top:1px;display:none}
+@media(min-width:768px){.at-sub{display:block}}
+.ai-main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px}
+.ai-hdr-title{font-family:var(--fd);font-size:clamp(16px,5vw,20px);font-weight:800;letter-spacing:-.5px}
+.ai-hdr-desc{color:var(--text2);font-size:12px;margin-top:4px;line-height:1.5;margin-bottom:14px}
+.ai-upload{border:2px dashed var(--border2);border-radius:var(--r);padding:22px 16px;text-align:center;cursor:pointer;transition:.3s;margin-bottom:12px;background:var(--surface2)}
+.ai-upload:hover,.ai-upload:active{border-color:var(--accent);background:var(--accent-dim)}
+.ai-result{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;min-height:100px}
+.result-label{font-size:10px;font-family:var(--fm);color:var(--accent);letter-spacing:1px;margin-bottom:6px}
+.result-text{font-size:12px;line-height:1.7;color:var(--text2);white-space:pre-wrap;word-break:break-word}
+.spinner{width:16px;height:16px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── ANNOTATE ── */
+.ann-bar{display:flex;align-items:center;gap:5px;padding:8px 12px;border-bottom:1px solid var(--border);background:var(--surface);flex-wrap:wrap;flex-shrink:0}
+.ann-btn{display:flex;align-items:center;gap:4px;padding:6px 9px;border-radius:var(--r2);border:1px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer;font-size:11px;font-weight:500;transition:.15s;white-space:nowrap}
+.ann-btn:hover,.ann-btn:active,.ann-btn.active{border-color:var(--accent);background:var(--accent-dim);color:var(--accent)}
+.ann-canvas-area{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;display:flex;align-items:flex-start;justify-content:center;padding:16px;background:var(--surface2)}
+.ann-wrap{position:relative;display:inline-block}
+canvas#baseCanvas,canvas#annotCanvas{display:block;max-width:100%}
+canvas#annotCanvas{position:absolute;top:0;left:0}
+
+/* ── MERGE/SPLIT ── */
+.ms-layout{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 20px 24px}
+.ms-grid{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:600px){.ms-grid{grid-template-columns:1fr 1fr}}
+.ms-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px}
+.ms-title{font-family:var(--fd);font-weight:700;font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.ms-desc{color:var(--text2);font-size:12px;margin-bottom:14px;line-height:1.5}
+.file-list{display:flex;flex-direction:column;gap:5px;margin-bottom:10px;max-height:140px;overflow-y:auto}
+.fl-item{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--surface2);border-radius:var(--r2);border:1px solid var(--border);font-size:11px}
+.fl-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fl-rm{cursor:pointer;color:var(--text3);font-size:14px;padding:2px;flex-shrink:0}
+.fl-rm:hover{color:var(--red)}
+
+/* ── SIGNATURE ── */
+.sig-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 20px 24px}
+.sig-pad-area{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px}
+.sig-pad-hdr{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-weight:600;font-size:12px}
+canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;background:#fff}
+
+/* ── WM ── */
+.wm-layout{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 20px 24px}
+
+/* ── HISTORY ── */
+.hist-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px;display:flex;flex-direction:column;gap:8px}
+.hist-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;display:flex;align-items:center;gap:12px}
+.hist-ico{width:36px;height:36px;border-radius:var(--r2);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.hist-info{flex:1;min-width:0}
+.hist-name{font-size:12px;font-weight:600}
+.hist-meta{font-size:10px;color:var(--text3);font-family:var(--fm);margin-top:2px}
+
+/* ── NOTIF ── */
+.notif{position:fixed;bottom:calc(var(--bn-h) + 12px);right:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow);z-index:999;transform:translateY(80px);opacity:0;transition:.35s cubic-bezier(.34,1.56,.64,1);max-width:min(340px,calc(100vw - 28px))}
+.notif.show{transform:translateY(0);opacity:1}
+.nd{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.nd.s{background:var(--green)} .nd.e{background:var(--red)} .nd.i{background:var(--blue)}
+.nt{font-size:12px;font-weight:500}
+@media(min-width:769px){.notif{bottom:14px}}
+
+/* ── MODAL ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:400;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.overlay.show{display:flex}
+@media(min-width:540px){.overlay{align-items:center}}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--r) var(--r) 0 0;padding:20px;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));width:100%;max-height:85dvh;max-height:85vh;overflow-y:auto}
+@media(min-width:540px){.modal{border-radius:var(--r);max-width:480px;max-height:80vh;padding:24px}}
+.modal-title{font-family:var(--fd);font-size:18px;font-weight:800;margin-bottom:6px}
+.modal-sub{color:var(--text2);font-size:12px;margin-bottom:16px;line-height:1.5}
+.modal-close{float:right;cursor:pointer;color:var(--text3);font-size:20px;line-height:1;padding:2px}
+</style>
+</head>
+<body>
+
+<div class="sb-overlay" id="sbOv" onclick="closeSB()"></div>
+
+<div class="shell">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="hamburger" onclick="toggleSB()">☰</button>
+    <div class="logo"><div class="logo-dot"></div>Scan<span>AI</span> Pro</div>
+    <div class="tb-search">
+      <span style="color:var(--text3);font-size:14px">🔍</span>
+      <input placeholder="Search documents, text…" oninput="handleGSearch(this.value)"/>
+    </div>
+    <div class="tb-actions">
+      <button class="icon-btn" onclick="toggleTheme()" title="Theme">🌙</button>
+      <button class="new-btn" onclick="nav('scanner')">＋<span class="btn-txt"> Scan</span></button>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sb-label">WORKSPACE</div>
+    <div class="nav-item active" onclick="nav('dashboard')"><span class="ni-ico">🏠</span>Dashboard</div>
+    <div class="nav-item" onclick="nav('scanner')"><span class="ni-ico">📷</span>Scanner</div>
+    <div class="nav-item" onclick="nav('library')"><span class="ni-ico">📁</span>Library<span class="ni-badge" id="libCount">0</span></div>
+    <div class="nav-item" onclick="nav('ai')"><span class="ni-ico">🤖</span>AI Tools</div>
+    <div class="nav-item" onclick="nav('annotate')"><span class="ni-ico">✏️</span>Annotate</div>
+    <div class="nav-item" onclick="nav('merge')"><span class="ni-ico">🔀</span>Merge &amp; Split</div>
+    <div class="nav-item" onclick="nav('signature')"><span class="ni-ico">✍️</span>Signature</div>
+    <div class="nav-item" onclick="nav('watermark')"><span class="ni-ico">💧</span>Watermark</div>
+    <div class="nav-item" onclick="nav('history')"><span class="ni-ico">🕐</span>History</div>
+    <div class="nav-item" onclick="nav('settings')"><span class="ni-ico">⚙️</span>Settings</div>
+    <div class="nav-sep"></div>
+    <div class="sb-footer">
+      <div style="font-size:11px;color:var(--text3);font-family:var(--fm)">Storage: 1.7 GB / 5 GB</div>
+      <div class="storage-bar"><div class="storage-fill"></div></div>
+      <div class="sb-chips"><div class="chip on">🔒 Encrypted</div><div class="chip on">☁️ Synced</div></div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <div class="view active" id="view-dashboard">
+      <div class="scroll">
+        <div style="padding:18px 20px 0">
+          <div style="font-family:var(--fd);font-size:clamp(18px,5vw,26px);font-weight:800;letter-spacing:-.5px">Good day! 👋</div>
+          <div style="color:var(--text2);font-size:13px;margin-top:3px">Your intelligent document workspace</div>
+        </div>
+        <div style="padding:14px 20px 0">
+          <div class="ds-title" style="margin-bottom:10px">⚡ Quick Actions</div>
+          <div class="qa-grid">
+            <div class="qa-btn" onclick="nav('scanner')"><div class="qa-ico">📷</div><div class="qa-title">Scan</div></div>
+            <div class="qa-btn" onclick="nav('ai');setAiTool('ocr')"><div class="qa-ico">🔤</div><div class="qa-title">OCR</div></div>
+            <div class="qa-btn" onclick="nav('ai');setAiTool('summarize')"><div class="qa-ico">📝</div><div class="qa-title">Summarize</div></div>
+            <div class="qa-btn" onclick="nav('signature')"><div class="qa-ico">✍️</div><div class="qa-title">Sign</div></div>
+            <div class="qa-btn" onclick="nav('merge')"><div class="qa-ico">🔀</div><div class="qa-title">Merge</div></div>
+            <div class="qa-btn" onclick="nav('watermark')"><div class="qa-ico">💧</div><div class="qa-title">Watermark</div></div>
+          </div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card o"><div class="stat-icon">📄</div><div class="stat-val" id="statDocs">0</div><div class="stat-lbl">DOCUMENTS</div></div>
+          <div class="stat-card g"><div class="stat-icon">🔤</div><div class="stat-val" id="statOcr">0</div><div class="stat-lbl">OCR RUNS</div></div>
+          <div class="stat-card b"><div class="stat-icon">🤖</div><div class="stat-val" id="statAi">0</div><div class="stat-lbl">AI ANALYSES</div></div>
+          <div class="stat-card p"><div class="stat-icon">💾</div><div class="stat-val">0 MB</div><div class="stat-lbl">STORAGE</div></div>
+        </div>
+        <div class="dash-row">
+          <div class="dash-section" style="flex:1">
+            <div class="ds-title">Recent <span class="ds-link" onclick="nav('library')">All →</span></div>
+            <div id="recentList"><div class="empty-state" style="padding:14px 0"><div class="es-icon" style="font-size:30px">📭</div><div class="es-text">No docs yet</div></div></div>
+          </div>
+        </div>
+        <div style="padding:0 20px 8px;font-size:11px;font-weight:600;color:var(--text3);font-family:var(--fm);letter-spacing:.5px">30 FEATURES — 2× THE COMPETITION</div>
+        <div class="feat-grid">
+          <div class="fs-card"><div class="fs-ico">🔤</div><div><div class="fs-title">AI OCR 40+ Lang</div><div class="fs-sub">Claude-powered extraction</div></div></div>
+          <div class="fs-card"><div class="fs-ico">📝</div><div><div class="fs-title">Summarization</div><div class="fs-sub">Key points instantly</div></div></div>
+          <div class="fs-card"><div class="fs-ico">🏷️</div><div><div class="fs-title">Auto-Classify<span class="new-badge">NEW</span></div><div class="fs-sub">Invoice, Receipt…</div></div></div>
+          <div class="fs-card"><div class="fs-ico">🌍</div><div><div class="fs-title">Translation<span class="new-badge">NEW</span></div><div class="fs-sub">50+ languages</div></div></div>
+          <div class="fs-card"><div class="fs-ico">🧾</div><div><div class="fs-title">Data Extraction<span class="new-badge">NEW</span></div><div class="fs-sub">Vendors, totals…</div></div></div>
+          <div class="fs-card"><div class="fs-ico">📊</div><div><div class="fs-title">Table Extract<span class="new-badge">NEW</span></div><div class="fs-sub">Scanned → CSV</div></div></div>
+          <div class="fs-card"><div class="fs-ico">✏️</div><div><div class="fs-title">Annotation<span class="new-badge">NEW</span></div><div class="fs-sub">Draw, highlight, stamp</div></div></div>
+          <div class="fs-card"><div class="fs-ico">✍️</div><div><div class="fs-title">Signature Pad</div><div class="fs-sub">Draw, type, upload</div></div></div>
+          <div class="fs-card"><div class="fs-ico">🔀</div><div><div class="fs-title">Merge &amp; Split</div><div class="fs-sub">Combine or extract</div></div></div>
+          <div class="fs-card"><div class="fs-ico">💧</div><div><div class="fs-title">Watermarks</div><div class="fs-sub">Custom text &amp; tiled</div></div></div>
+          <div class="fs-card"><div class="fs-ico">🔐</div><div><div class="fs-title">Password Lock<span class="new-badge">NEW</span></div><div class="fs-sub">Password-protect PDFs</div></div></div>
+          <div class="fs-card"><div class="fs-ico">💬</div><div><div class="fs-title">Chat with Doc<span class="new-badge">NEW</span></div><div class="fs-sub">Ask questions via AI</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCANNER -->
+    <div class="view" id="view-scanner">
+      <div class="sec-hdr">
+        <div class="sec-title">Scanner</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="action-btn" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="rotateImage(-90)">↺ L</button>
+          <button class="action-btn" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="rotateImage(90)">↻ R</button>
+          <button class="action-btn primary" style="width:auto;padding:7px 14px;margin:0;font-size:12px" onclick="saveDoc()">💾 Save</button>
+        </div>
+      </div>
+      <div class="scanner-wrap">
+        <div class="scan-main">
+          <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()" ondragover="dOver(event)" ondragleave="dLeave()" ondrop="dDrop(event)">
+            <div class="scan-corners"><div class="sc tl"></div><div class="sc tr"></div><div class="sc bl"></div><div class="sc br"></div><div class="scan-line"></div></div>
+            <div class="drop-icon">📄</div>
+            <div class="drop-title">Tap to scan</div>
+            <div class="drop-sub">Upload image or PDF — camera or files</div>
+            <div class="drop-formats"><span class="fmt-pill">JPG</span><span class="fmt-pill">PNG</span><span class="fmt-pill">PDF</span><span class="fmt-pill">HEIC</span><span class="fmt-pill">TIFF</span></div>
+          </div>
+          <input type="file" id="fileInput" accept="image/*,.pdf" style="display:none" onchange="loadFile(event)"/>
+          <div class="canvas-wrap" id="canvasWrap" style="display:none"><canvas id="previewCanvas"></canvas></div>
+          <div class="scan-mobile-bar" id="mobileBar" style="display:none">
+            <button class="action-btn primary" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="exportAs('pdf')">📕 PDF</button>
+            <button class="action-btn" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="exportAs('png')">🖼️ PNG</button>
+            <button class="action-btn blue" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="qOcr()">🔤 OCR</button>
+            <button class="action-btn green" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="qClassify()">🏷️ Classify</button>
+          </div>
+        </div>
+        <div class="scan-panel">
+          <div class="panel-sec">
+            <div class="panel-title"><span class="pt-ico">🎨</span> Enhancement</div>
+            <div class="sl-group"><div class="sl-label"><span>Brightness</span><span class="sl-val" id="vBright">100%</span></div><input type="range" id="slBright" min="0" max="200" value="100" oninput="applyFilters()"/></div>
+            <div class="sl-group"><div class="sl-label"><span>Contrast</span><span class="sl-val" id="vContrast">100%</span></div><input type="range" id="slContrast" min="0" max="200" value="100" oninput="applyFilters()"/></div>
+            <div class="sl-group"><div class="sl-label"><span>Saturation</span><span class="sl-val" id="vSat">100%</span></div><input type="range" id="slSat" min="0" max="200" value="100" oninput="applyFilters()"/></div>
+            <div class="sl-group"><div class="sl-label"><span>Rotation</span><span class="sl-val" id="vRot">0°</span></div><input type="range" id="slRot" min="-180" max="180" value="0" oninput="applyFilters()"/></div>
+          </div>
+          <div class="panel-sec">
+            <div class="panel-title"><span class="pt-ico">🖼️</span> Filters</div>
+            <div class="filter-grid">
+              <div class="filter-btn active" onclick="setFilter('none',this)">Original</div>
+              <div class="filter-btn" onclick="setFilter('grayscale',this)">Grayscale</div>
+              <div class="filter-btn" onclick="setFilter('bw',this)">B&amp;W</div>
+              <div class="filter-btn" onclick="setFilter('enhance',this)">Enhanced</div>
+              <div class="filter-btn" onclick="setFilter('vivid',this)">Vivid</div>
+              <div class="filter-btn" onclick="setFilter('sepia',this)">Sepia</div>
+            </div>
+          </div>
+          <div class="panel-sec">
+            <div class="panel-title"><span class="pt-ico">🏷️</span> Details</div>
+            <div style="margin-bottom:8px"><input class="form-input" id="docName" placeholder="Document name…"/></div>
+            <select class="form-input" id="docCat">
+              <option value="other">📄 Other</option><option value="receipt">🧾 Receipt</option>
+              <option value="invoice">💼 Invoice</option><option value="contract">📑 Contract</option>
+              <option value="medical">🏥 Medical</option><option value="id">🪪 ID</option>
+              <option value="bill">💰 Bill</option><option value="photo">📸 Photo</option>
+            </select>
+          </div>
+          <div class="panel-sec">
+            <div class="panel-title"><span class="pt-ico">📤</span> Export</div>
+            <div class="export-grid">
+              <div class="exp-btn" onclick="exportAs('pdf')"><div class="ef">📕</div><div class="et">PDF</div></div>
+              <div class="exp-btn" onclick="exportAs('png')"><div class="ef">🖼️</div><div class="et">PNG</div></div>
+              <div class="exp-btn" onclick="exportAs('jpg')"><div class="ef">📷</div><div class="et">JPG</div></div>
+              <div class="exp-btn" onclick="exportAs('txt')"><div class="ef">📝</div><div class="et">TXT</div></div>
+            </div>
+          </div>
+          <div class="panel-sec" style="border-bottom:none">
+            <div class="panel-title"><span class="pt-ico">🤖</span> AI Quick</div>
+            <button class="action-btn blue" onclick="qOcr()">🔤 Extract Text (OCR)</button>
+            <button class="action-btn green" onclick="qClassify()">🏷️ Auto-Classify</button>
+            <button class="action-btn" onclick="nav('ai')">More AI Tools →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIBRARY -->
+    <div class="view" id="view-library">
+      <div class="lib-bar">
+        <div class="lib-search"><span style="color:var(--text3)">🔍</span><input id="libSearch" placeholder="Search…" oninput="filterDocs(this.value)"/></div>
+        <div class="filter-tabs" id="libFilters">
+          <div class="ft active" onclick="filterTag('all',this)">All</div>
+          <div class="ft" onclick="filterTag('receipt',this)">Receipt</div>
+          <div class="ft" onclick="filterTag('invoice',this)">Invoice</div>
+          <div class="ft" onclick="filterTag('contract',this)">Contract</div>
+          <div class="ft" onclick="filterTag('medical',this)">Medical</div>
+          <div class="ft" onclick="filterTag('other',this)">Other</div>
+        </div>
+        <button class="action-btn primary" style="width:auto;padding:7px 12px;margin:0;font-size:12px;flex-shrink:0" onclick="nav('scanner')">＋ New</button>
+      </div>
+      <div class="scroll"><div class="doc-grid" id="docGrid"><div class="empty-state" style="grid-column:1/-1"><div class="es-icon">📂</div><div class="es-text">Library empty — start scanning!</div></div></div></div>
+    </div>
+
+    <!-- AI TOOLS -->
+    <div class="view" id="view-ai">
+      <div class="ai-wrap">
+        <div class="ai-sb" id="aiSB">
+          <div class="ai-tool active" id="ait-ocr" onclick="setAiTool('ocr')"><div class="at-ico" style="background:var(--blue-dim)">🔤</div><div><div class="at-title">OCR</div><div class="at-sub">Extract text</div></div></div>
+          <div class="ai-tool" id="ait-summarize" onclick="setAiTool('summarize')"><div class="at-ico" style="background:var(--green-dim)">📝</div><div><div class="at-title">Summarize</div><div class="at-sub">Key points</div></div></div>
+          <div class="ai-tool" id="ait-classify" onclick="setAiTool('classify')"><div class="at-ico" style="background:var(--purple-dim)">🏷️</div><div><div class="at-title">Classify</div><div class="at-sub">Doc type</div></div></div>
+          <div class="ai-tool" id="ait-translate" onclick="setAiTool('translate')"><div class="at-ico" style="background:var(--accent-dim)">🌍</div><div><div class="at-title">Translate</div><div class="at-sub">50+ langs</div></div></div>
+          <div class="ai-tool" id="ait-extract" onclick="setAiTool('extract')"><div class="at-ico" style="background:var(--green-dim)">🧾</div><div><div class="at-title">Data</div><div class="at-sub">Extract</div></div></div>
+          <div class="ai-tool" id="ait-table" onclick="setAiTool('table')"><div class="at-ico" style="background:var(--red-dim)">📊</div><div><div class="at-title">Tables</div><div class="at-sub">→ Excel</div></div></div>
+          <div class="ai-tool" id="ait-bizcard" onclick="setAiTool('bizcard')"><div class="at-ico" style="background:var(--blue-dim)">🏢</div><div><div class="at-title">Biz Card</div><div class="at-sub">Contacts</div></div></div>
+          <div class="ai-tool" id="ait-handwriting" onclick="setAiTool('handwriting')"><div class="at-ico" style="background:var(--green-dim)">✍️</div><div><div class="at-title">Handwrite</div><div class="at-sub">Cursive</div></div></div>
+          <div class="ai-tool" id="ait-texthand" onclick="setAiTool('texthand')"><div class="at-ico" style="background:var(--yellow-dim,rgba(234,179,8,.13))">🖋️</div><div><div class="at-title">To Handwrite</div><div class="at-sub">Text→ink</div></div></div>
+          <div class="ai-tool" id="ait-chat" onclick="setAiTool('chat')"><div class="at-ico" style="background:var(--accent-dim)">💬</div><div><div class="at-title">Chat Doc</div><div class="at-sub">Q&amp;A</div></div></div>
+        </div>
+        <div class="ai-main" id="aiMain"></div>
+      </div>
+    </div>
+
+    <!-- ANNOTATE -->
+    <div class="view" id="view-annotate">
+      <div class="ann-bar">
+        <button class="ann-btn active" id="ann-select" onclick="setAnnTool('select')">☝️ Select</button>
+        <button class="ann-btn" id="ann-pen" onclick="setAnnTool('pen')">✏️ Draw</button>
+        <button class="ann-btn" id="ann-highlight" onclick="setAnnTool('highlight')">🟡 Hi</button>
+        <button class="ann-btn" id="ann-rect" onclick="setAnnTool('rect')">⬜ Rect</button>
+        <button class="ann-btn" onclick="addStamp('APPROVED')">✅</button>
+        <button class="ann-btn" onclick="addStamp('CONFIDENTIAL')">🔴</button>
+        <button class="ann-btn" onclick="addStamp('DRAFT')">📋</button>
+        <div style="display:flex;align-items:center;gap:5px;margin-left:auto;flex-wrap:wrap">
+          <div class="color-swatch sel" style="width:20px;height:20px;background:#ef4444" onclick="setDColor('#ef4444',this)"></div>
+          <div class="color-swatch" style="width:20px;height:20px;background:#3b82f6" onclick="setDColor('#3b82f6',this)"></div>
+          <div class="color-swatch" style="width:20px;height:20px;background:#22c55e" onclick="setDColor('#22c55e',this)"></div>
+          <div class="color-swatch" style="width:20px;height:20px;background:#f97316" onclick="setDColor('#f97316',this)"></div>
+          <div class="color-swatch" style="width:20px;height:20px;background:#000" onclick="setDColor('#000',this)"></div>
+          <input type="range" id="brushSize" min="1" max="20" value="3" style="width:60px;accent-color:var(--accent)"/>
+          <button class="ann-btn" onclick="clearAnn()">🗑️</button>
+          <button class="ann-btn" style="border-color:var(--accent);color:var(--accent)" onclick="saveAnn()">💾</button>
+        </div>
+      </div>
+      <div class="ann-canvas-area" id="annWrap" style="display:none">
+        <div class="ann-wrap"><canvas id="baseCanvas"></canvas><canvas id="annotCanvas"></canvas></div>
+      </div>
+      <div class="empty-state" id="annEmpty">
+        <div class="es-icon">✏️</div><div class="es-text">Scan a document first</div>
+        <button class="action-btn primary" style="width:180px;margin-top:8px" onclick="nav('scanner')">Go to Scanner</button>
+      </div>
+    </div>
+
+    <!-- MERGE & SPLIT -->
+    <div class="view" id="view-merge">
+      <div class="ms-layout">
+        <div class="sec-title" style="margin-bottom:16px">Merge &amp; Split</div>
+        <div class="ms-grid">
+          <div class="ms-card">
+            <div class="ms-title">🔀 Merge Files</div>
+            <div class="ms-desc">Combine multiple images into one PDF.</div>
+            <div class="file-list" id="mergeList"><div style="color:var(--text3);font-size:11px;padding:6px;text-align:center">No files</div></div>
+            <input type="file" id="mergeInput" accept="image/*" multiple style="display:none" onchange="addMergeFiles(event)"/>
+            <button class="action-btn" onclick="document.getElementById('mergeInput').click()">➕ Add Files</button>
+            <button class="action-btn primary" onclick="mergePDF()">🔀 Merge to PDF</button>
+          </div>
+          <div class="ms-card">
+            <div class="ms-title">✂️ Split / Compress</div>
+            <div class="ms-desc">Extract current doc or compress PDF.</div>
+            <button class="action-btn blue" onclick="splitDoc()">✂️ Extract as PDF</button>
+            <div style="margin-top:12px">
+              <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px">🗜️ Compress Quality</div>
+              <div class="filter-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:8px">
+                <div class="filter-btn" id="cq-low" onclick="setCompQ('low',this)">Low</div>
+                <div class="filter-btn active" id="cq-med" onclick="setCompQ('med',this)">Medium</div>
+                <div class="filter-btn" id="cq-high" onclick="setCompQ('high',this)">High</div>
+              </div>
+              <button class="action-btn green" onclick="compressPDF()">🗜️ Compress &amp; Download</button>
+            </div>
+          </div>
+        </div>
+        <div class="ms-card" style="margin-top:14px">
+          <div class="ms-title">💧 Quick Watermark</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
+            <input class="form-input" id="wmQuick" value="CONFIDENTIAL" style="flex:1;min-width:130px"/>
+            <button class="action-btn primary" style="width:auto;padding:9px 14px;margin:0;flex-shrink:0" onclick="applyWM()">Apply</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIGNATURE -->
+    <div class="view" id="view-signature">
+      <div class="sig-wrap">
+        <div class="sec-title" style="margin-bottom:14px">Signature Pad</div>
+        <div class="two-col">
+          <div>
+            <div class="pill-tabs">
+              <div class="pill-tab active" onclick="setSigMode('draw',this)">✏️ Draw</div>
+              <div class="pill-tab" onclick="setSigMode('type',this)">⌨️ Type</div>
+              <div class="pill-tab" onclick="setSigMode('upload',this)">📁 Upload</div>
+            </div>
+            <div id="sigDrawMode">
+              <div class="sig-pad-area">
+                <div class="sig-pad-hdr">Sign here <button class="ann-btn" onclick="clearSig()">Clear</button></div>
+                <div style="padding:4px;background:#fff"><canvas id="sigCanvas" width="400" height="130"></canvas></div>
+              </div>
+            </div>
+            <div id="sigTypeMode" style="display:none">
+              <input class="form-input" id="sigText" placeholder="Type your name…" oninput="renderTypedSig(this.value)" style="margin-bottom:8px"/>
+              <div style="display:flex;gap:5px;flex-wrap:wrap">
+                <div class="filter-btn active" style="font-family:cursive" onclick="setSigFont('cursive',this)">Cursive</div>
+                <div class="filter-btn" style="font-family:serif" onclick="setSigFont('serif',this)">Serif</div>
+                <div class="filter-btn" onclick="setSigFont('sans-serif',this)">Sans</div>
+              </div>
+            </div>
+            <div id="sigUploadMode" style="display:none">
+              <input type="file" id="sigUpload" accept="image/*" style="display:none" onchange="loadSigImg(event)"/>
+              <div class="ai-upload" onclick="document.getElementById('sigUpload').click()"><div style="font-size:28px">🖼️</div><div style="font-size:12px;margin-top:6px">Upload signature image</div></div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+              <button class="action-btn green" onclick="applySig()" style="flex:1">✅ Apply to Doc</button>
+              <button class="action-btn" onclick="downloadSig()" style="flex:1">💾 Save Sig</button>
+            </div>
+          </div>
+          <div>
+            <div class="form-group">
+              <label class="form-label">Ink Color</label>
+              <div style="display:flex;gap:8px">
+                <div class="color-swatch sel" style="width:26px;height:26px;background:#1a1a2e" onclick="setSigColor('#1a1a2e',this)"></div>
+                <div class="color-swatch" style="width:26px;height:26px;background:#00008b" onclick="setSigColor('#00008b',this)"></div>
+                <div class="color-swatch" style="width:26px;height:26px;background:#8b0000" onclick="setSigColor('#8b0000',this)"></div>
+                <div class="color-swatch" style="width:26px;height:26px;background:#006400" onclick="setSigColor('#006400',this)"></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Stroke Weight</label>
+              <input type="range" id="sigWeight" min="1" max="8" value="2" style="width:100%;accent-color:var(--accent)"/>
+            </div>
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:12px;margin-top:4px">
+              <div style="font-size:10px;color:var(--text3);margin-bottom:6px;font-family:var(--fm)">PREVIEW</div>
+              <canvas id="sigPreview" width="240" height="70" style="background:#fff;border-radius:4px;width:100%;height:auto;display:block"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WATERMARK -->
+    <div class="view" id="view-watermark">
+      <div class="wm-layout">
+        <div class="sec-title" style="margin-bottom:14px">Watermark &amp; Protect</div>
+        <div class="two-col">
+          <div class="ms-card">
+            <div class="ms-title">💧 Add Watermark</div>
+            <div class="form-group"><label class="form-label">Text</label><input class="form-input" id="wmText" value="CONFIDENTIAL"/></div>
+            <div class="form-group"><label class="form-label">Position</label>
+              <select class="form-input" id="wmPos"><option value="center">Center Diagonal</option><option value="top">Top</option><option value="bottom">Bottom</option><option value="repeat">Tiled</option></select>
+            </div>
+            <div class="form-group"><label class="form-label">Opacity</label><input type="range" id="wmOpacity" min="5" max="80" value="25" style="width:100%;accent-color:var(--accent)"/></div>
+            <div class="form-group"><label class="form-label">Color</label>
+              <div style="display:flex;gap:8px">
+                <div class="color-swatch sel" style="width:26px;height:26px;background:#ef4444" onclick="setWMColor('#ef4444',this)"></div>
+                <div class="color-swatch" style="width:26px;height:26px;background:#3b82f6" onclick="setWMColor('#3b82f6',this)"></div>
+                <div class="color-swatch" style="width:26px;height:26px;background:#888" onclick="setWMColor('#888',this)"></div>
+                <div class="color-swatch" style="width:26px;height:26px;background:#000" onclick="setWMColor('#000',this)"></div>
+              </div>
+            </div>
+            <button class="action-btn primary" onclick="applyWM()">💧 Apply Watermark</button>
+          </div>
+          <div class="ms-card">
+            <div class="ms-title">🔐 Password Protect</div>
+            <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="docPW" type="password" placeholder="Strong password…"/></div>
+            <div class="form-group"><label class="form-label">Confirm</label><input class="form-input" id="docPW2" type="password" placeholder="Confirm…"/></div>
+            <div class="form-group"><label class="form-label">Permissions</label>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer"><input type="checkbox" id="permPrint" style="accent-color:var(--accent)"/> Allow printing</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer"><input type="checkbox" id="permCopy" style="accent-color:var(--accent)"/> Allow copying</label>
+              </div>
+            </div>
+            <button class="action-btn green" onclick="protectDoc()">🔐 Protect &amp; Download</button>
+            <div class="progress-bar"><div class="progress-fill" id="protectProg" style="width:0%"></div></div>
+            <div style="font-size:11px;color:var(--text3);margin-top:6px">Password-protects the PDF using RC4 encryption (PDF standard security handler) — opens only with the correct password in any PDF reader.</div>
+          </div>
+        </div>
+        <div class="ms-card" style="margin-top:14px">
+          <div class="ms-title">📱 QR &amp; Barcode <span class="new-badge">NEW</span></div>
+          <button class="action-btn blue" onclick="detectQR()">📱 Detect in Current Doc</button>
+          <div id="qrResult" style="display:none;margin-top:8px;background:var(--surface2);border-radius:var(--r2);padding:10px;border:1px solid var(--border);font-size:12px;color:var(--text2)"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="view" id="view-history">
+      <div class="sec-hdr">
+        <div class="sec-title">History</div>
+        <button class="action-btn red" style="width:auto;padding:6px 12px;margin:0;font-size:12px" onclick="clearHist()">🗑️ Clear</button>
+      </div>
+      <div class="hist-list" id="histList"><div class="empty-state"><div class="es-icon">🕐</div><div class="es-text">No history yet</div></div></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="view" id="view-settings">
+      <div class="wm-layout">
+        <div class="sec-title" style="margin-bottom:14px">Settings</div>
+        <div class="ms-card" style="margin-bottom:12px">
+          <div class="ms-title">🎨 Appearance</div>
+          <div class="form-group"><label class="form-label">Theme</label>
+            <div class="filter-grid"><div class="filter-btn active" onclick="setTheme('dark',this)">🌙 Dark</div><div class="filter-btn" onclick="setTheme('light',this)">☀️ Light</div></div>
+          </div>
+          <div class="form-group"><label class="form-label">Default Export</label>
+            <select class="form-input"><option>PDF</option><option>PNG</option><option>JPG</option></select>
+          </div>
+        </div>
+        <div class="ms-card" style="margin-bottom:12px">
+          <div class="ms-title">🤖 AI Settings</div>
+          <div class="form-group"><label class="form-label">Default OCR Language</label>
+            <select class="form-input"><option>Auto-detect</option><option>English</option><option>Hindi</option><option>Spanish</option><option>French</option><option>Arabic</option><option>Chinese</option><option>Japanese</option></select>
+          </div>
+          <button class="action-btn green" onclick="notify('Settings saved!','s')">💾 Save Settings</button>
+        </div>
+        <div class="ms-card" style="margin-bottom:12px">
+          <div class="ms-title">🔌 AI Backend (Cloudflare Worker)</div>
+          <div class="form-group"><label class="form-label">Worker URL</label>
+            <input class="form-input" id="workerUrlInput" placeholder="https://your-worker.your-subdomain.workers.dev/"/>
+          </div>
+          <button class="action-btn primary" onclick="saveWorkerUrl()">💾 Save Backend URL</button>
+          <div id="workerUrlStatus" style="font-size:11px;color:var(--text3);margin-top:8px"></div>
+          <div style="font-size:11px;color:var(--text3);margin-top:6px">All AI tools (OCR, Chat, Tables, etc.) send their requests here instead of directly to Anthropic. Deploy the included Cloudflare Worker, put your API key in it as a secret, then paste its URL above.</div>
+        </div>
+        <div class="ms-card">
+          <div class="ms-title">🔒 Privacy</div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+            <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer"><input type="checkbox" checked style="accent-color:var(--accent)"/> On-device processing</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer"><input type="checkbox" checked style="accent-color:var(--accent)"/> Password-protect exported PDFs</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer"><input type="checkbox" style="accent-color:var(--accent)"/> Auto-delete after 30 days</label>
+          </div>
+          <button class="action-btn" onclick="exportAll()">📤 Export All Data</button>
+          <button class="action-btn red" onclick="confirmClear()">🗑️ Clear All Data</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <div class="bn-inner">
+    <div class="bn-item active" id="bn-dashboard" onclick="nav('dashboard')"><div class="bn-ico">🏠</div><div class="bn-lbl">Home</div></div>
+    <div class="bn-item" id="bn-scanner" onclick="nav('scanner')"><div class="bn-ico">📷</div><div class="bn-lbl">Scan</div></div>
+    <div class="bn-item" id="bn-library" onclick="nav('library')"><div class="bn-ico">📁</div><div class="bn-lbl">Library</div></div>
+    <div class="bn-item" id="bn-ai" onclick="nav('ai')"><div class="bn-ico">🤖</div><div class="bn-lbl">AI</div></div>
+    <div class="bn-item" id="bn-more" onclick="toggleSB()"><div class="bn-ico">☰</div><div class="bn-lbl">More</div></div>
+  </div>
+</nav>
+
+<!-- Notification -->
+<div class="notif" id="notif"><div class="nd s" id="nd"></div><div class="nt" id="nt"></div></div>
+<!-- Overlay -->
+<div class="overlay" id="overlay" onclick="closeModal()"><div class="modal" onclick="event.stopPropagation()" id="modalContent"></div></div>
+
+<script>
+// ══ PDF ENCRYPTION (RC4-40, PDF Standard Security Handler — real password protection, not a placeholder) ══
+// ===== MD5 =====
+function md5(bytes){
+  function rotl(x,c){return (x<<c)|(x>>>(32-c));}
+  function toBytesLE(n){return [n&255,(n>>>8)&255,(n>>>16)&255,(n>>>24)&255];}
+  const s=[7,12,17,22,7,12,17,22,7,12,17,22,7,12,17,22,
+           5,9,14,20,5,9,14,20,5,9,14,20,5,9,14,20,
+           4,11,16,23,4,11,16,23,4,11,16,23,4,11,16,23,
+           6,10,15,21,6,10,15,21,6,10,15,21,6,10,15,21];
+  const K=[];for(let i=0;i<64;i++)K[i]=(Math.floor(Math.abs(Math.sin(i+1))*4294967296))|0;
+  let a0=0x67452301,b0=0xefcdab89,c0=0x98badcfe,d0=0x10325476;
+  const origLen=bytes.length;
+  let msg=Array.from(bytes);
+  msg.push(0x80);
+  while(msg.length%64!==56)msg.push(0);
+  const bitLen=origLen*8;
+  const lenLo=bitLen>>>0, lenHi=Math.floor(bitLen/4294967296)>>>0;
+  msg=msg.concat(toBytesLE(lenLo),toBytesLE(lenHi));
+  for(let off=0;off<msg.length;off+=64){
+    const M=[];for(let i=0;i<16;i++)M[i]=msg[off+i*4]|(msg[off+i*4+1]<<8)|(msg[off+i*4+2]<<16)|(msg[off+i*4+3]<<24);
+    let A=a0,B=b0,C=c0,D=d0;
+    for(let i=0;i<64;i++){
+      let F,g;
+      if(i<16){F=(B&C)|(~B&D);g=i;}
+      else if(i<32){F=(D&B)|(~D&C);g=(5*i+1)%16;}
+      else if(i<48){F=B^C^D;g=(3*i+5)%16;}
+      else{F=C^(B|~D);g=(7*i)%16;}
+      F=(F+A+K[i]+M[g])|0;
+      A=D;D=C;C=B;
+      B=(B+rotl(F,s[i]))|0;
+    }
+    a0=(a0+A)|0;b0=(b0+B)|0;c0=(c0+C)|0;d0=(d0+D)|0;
+  }
+  const out=new Uint8Array(16);
+  [a0,b0,c0,d0].forEach((v,i)=>{out[i*4]=v&255;out[i*4+1]=(v>>>8)&255;out[i*4+2]=(v>>>16)&255;out[i*4+3]=(v>>>24)&255;});
+  return out;
+}
+// ===== RC4 =====
+function rc4(keyBytes, dataBytes){
+  const S=new Uint8Array(256);
+  for(let i=0;i<256;i++)S[i]=i;
+  let j=0;
+  for(let i=0;i<256;i++){j=(j+S[i]+keyBytes[i%keyBytes.length])&255;const t=S[i];S[i]=S[j];S[j]=t;}
+  const out=new Uint8Array(dataBytes.length);
+  let i=0;j=0;
+  for(let k=0;k<dataBytes.length;k++){
+    i=(i+1)&255;j=(j+S[i])&255;const t=S[i];S[i]=S[j];S[j]=t;
+    out[k]=dataBytes[k]^S[(S[i]+S[j])&255];
+  }
+  return out;
+}
+const PAD=new Uint8Array([0x28,0xBF,0x4E,0x5E,0x4E,0x75,0x8A,0x41,0x64,0x00,0x4E,0x56,0xFF,0xFA,0x01,0x08,
+  0x2E,0x2E,0x00,0xB6,0xD0,0x68,0x3E,0x80,0x2F,0x0C,0xA9,0xFE,0x64,0x53,0x69,0x7A]);
+function padPw(pw){
+  const b=new Uint8Array(32);
+  const src=strToBytes(pw||'').slice(0,32);
+  b.set(src,0);
+  b.set(PAD.slice(0,32-src.length), src.length);
+  return b;
+}
+function strToBytes(s){const a=new Uint8Array(s.length);for(let i=0;i<s.length;i++)a[i]=s.charCodeAt(i)&255;return a;}
+function bytesToHex(u8){return Array.from(u8).map(b=>b.toString(16).padStart(2,'0')).join('');}
+function concatBytes(...arrs){let len=0;arrs.forEach(a=>len+=a.length);const out=new Uint8Array(len);let o=0;arrs.forEach(a=>{out.set(a,o);o+=a.length;});return out;}
+function int32LE(n){const b=new Uint8Array(4);b[0]=n&255;b[1]=(n>>>8)&255;b[2]=(n>>>16)&255;b[3]=(n>>>24)&255;return b;}
+
+function computeO(ownerPw, userPw){
+  const opad=padPw(ownerPw||userPw);
+  const key5=md5(opad).slice(0,5);
+  const upad=padPw(userPw);
+  return rc4(key5, upad);
+}
+function computeFileKey(userPw, O, P, idBytes){
+  const upad=padPw(userPw);
+  const input=concatBytes(upad, O, int32LE(P), idBytes);
+  return md5(input).slice(0,5); // 40-bit
+}
+function computeU(fileKey){
+  return rc4(fileKey, PAD);
+}
+function objectKey(fileKey, objNum, genNum){
+  const extra=new Uint8Array([objNum&255,(objNum>>>8)&255,(objNum>>>16)&255, genNum&255,(genNum>>>8)&255]);
+  const h=md5(concatBytes(fileKey, extra));
+  const n=Math.min(fileKey.length+5,16);
+  return h.slice(0,n);
+}
+// ---- literal string scan (balanced parens, escape aware) ----
+function findLiteralStrings(str){
+  const ranges=[];let i=0;
+  while(i<str.length){
+    if(str[i]==='('){
+      let depth=1,j=i+1;
+      while(j<str.length&&depth>0){
+        if(str[j]==='\\'){j+=2;continue;}
+        if(str[j]==='(')depth++;else if(str[j]===')')depth--;
+        j++;
+      }
+      ranges.push([i,j]);i=j;
+    } else i++;
+  }
+  return ranges;
+}
+function unescapePdfString(inner){
+  const out=[];
+  for(let i=0;i<inner.length;i++){
+    const c=inner[i];
+    if(c==='\\'){
+      const n=inner[i+1];
+      if(n==='n'){out.push(10);i++;}
+      else if(n==='r'){out.push(13);i++;}
+      else if(n==='t'){out.push(9);i++;}
+      else if(n==='b'){out.push(8);i++;}
+      else if(n==='f'){out.push(12);i++;}
+      else if(n==='('){out.push(40);i++;}
+      else if(n===')'){out.push(41);i++;}
+      else if(n==='\\'){out.push(92);i++;}
+      else if(n==='\n'){i++;}
+      else if(n==='\r'){i++;if(inner[i+1]==='\n')i++;}
+      else if(n>='0'&&n<='7'){
+        let oct=n,k=i+2;
+        for(let c2=0;c2<2 && inner[k]>='0'&&inner[k]<='7';c2++){oct+=inner[k];k++;}
+        out.push(parseInt(oct,8)&255);
+        i=k-1;
+      } else {out.push(n.charCodeAt(0));i++;}
+    } else out.push(c.charCodeAt(0)&255);
+  }
+  return new Uint8Array(out);
+}
+function escapePdfBytes(bytes){
+  let s='';
+  for(let i=0;i<bytes.length;i++){
+    const b=bytes[i];
+    if(b===40)s+='\\(';
+    else if(b===41)s+='\\)';
+    else if(b===92)s+='\\\\';
+    else if(b<32||b>126)s+='\\'+b.toString(8).padStart(3,'0'); // octal escape - avoids CR/LF normalization corrupting binary data
+    else s+=String.fromCharCode(b);
+  }
+  return s;
+}
+function encryptObjectStrings(dictStr, key){
+  const ranges=findLiteralStrings(dictStr);
+  let out='',last=0;
+  for(const [s,e] of ranges){
+    out+=dictStr.slice(last,s);
+    const inner=dictStr.slice(s+1,e-1);
+    const raw=unescapePdfString(inner);
+    const enc=rc4(key, raw);
+    out+='('+escapePdfBytes(enc)+')';
+    last=e;
+  }
+  out+=dictStr.slice(last);
+  return out;
+}
+
+function encryptPdf(pdfBytesU8, userPw, ownerPw, permissions){
+  let bin='';
+  const CH=0x2000;
+  for(let i=0;i<pdfBytesU8.length;i+=CH){
+    bin+=String.fromCharCode.apply(null, pdfBytesU8.subarray(i,i+CH));
+  }
+  // find all top-level objects "N G obj ... endobj"
+  const objRe=/(\d+)\s+(\d+)\s+obj([\s\S]*?)endobj/g;
+  let m; const objs=[];
+  while((m=objRe.exec(bin))){
+    objs.push({num:+m[1], gen:+m[2], body:m[3]});
+  }
+  // trailer info
+  const trailerM=/trailer\s*<<([\s\S]*?)>>/.exec(bin);
+  const trailerDict=trailerM?trailerM[1]:'';
+  const rootM=/\/Root\s+(\d+)\s+(\d+)\s+R/.exec(trailerDict);
+  const infoM=/\/Info\s+(\d+)\s+(\d+)\s+R/.exec(trailerDict);
+  const rootRef=rootM?`${rootM[1]} ${rootM[2]} R`:null;
+  const infoRef=infoM?`${infoM[1]} ${infoM[2]} R`:null;
+
+  // ID
+  const idBytes=md5(strToBytes(String(Date.now())+Math.random()));
+  const idHex=bytesToHex(idBytes);
+
+  // permissions -> P value
+  let P = 0xFFFFFFC0 | 0x20; // reserved bits set, base deny
+  P = P & ~0; // no-op placeholder
+  let Pval = -1 >>> 0; // start all 1s
+  Pval = Pval & ~(1<<2) & ~(1<<3) & ~(1<<4) & ~(1<<5); // clear bits3-6 (print,modify,copy,annot)
+  if(permissions.print) Pval |= (1<<2);
+  if(permissions.modify) Pval |= (1<<3);
+  if(permissions.copy) Pval |= (1<<4);
+  if(permissions.annotate) Pval |= (1<<5);
+  const Psigned = Pval|0; // convert to signed 32-bit
+
+  const O=computeO(ownerPw, userPw);
+  const fileKey=computeFileKey(userPw, O, Psigned, idBytes);
+  const U=computeU(fileKey);
+
+  // encrypt each object
+  const maxNum = objs.reduce((a,o)=>Math.max(a,o.num),0);
+  const outObjs=[];
+  for(const o of objs){
+    const key=objectKey(fileKey, o.num, o.gen);
+    let body=o.body;
+    const streamIdx=body.indexOf('stream');
+    if(streamIdx>=0){
+      let dictPart=body.slice(0,streamIdx);
+      const lenM=/\/Length\s+(\d+)/.exec(dictPart);
+      dictPart=encryptObjectStrings(dictPart, key);
+      let dataStart=streamIdx+'stream'.length;
+      if(body[dataStart]==='\r')dataStart++;
+      if(body[dataStart]==='\n')dataStart++;
+      let length = lenM?parseInt(lenM[1],10):null;
+      if(length==null){
+        const endIdx=body.indexOf('endstream',dataStart);
+        length=endIdx-dataStart;
+      }
+      const rawStr=body.slice(dataStart,dataStart+length);
+      const rawBytes=new Uint8Array(rawStr.length);
+      for(let i=0;i<rawStr.length;i++)rawBytes[i]=rawStr.charCodeAt(i)&255;
+      const encBytes=rc4(key, rawBytes);
+      let encStr='';for(let i=0;i<encBytes.length;i++)encStr+=String.fromCharCode(encBytes[i]);
+      body=dictPart+'stream\n'+encStr+'\nendstream\n';
+    } else {
+      body=encryptObjectStrings(body, key);
+    }
+    outObjs.push({num:o.num, gen:o.gen, body});
+  }
+  outObjs.sort((a,b)=>a.num-b.num);
+
+  // Encrypt dict object
+  const encNum=maxNum+1;
+  const encDict=`<< /Filter /Standard /V 1 /R 2 /O (${escapePdfBytes(O)}) /U (${escapePdfBytes(U)}) /P ${Psigned} >>`;
+
+  // build final file
+  let out='%PDF-1.3\n%\xE2\xE3\xCF\xD3\n';
+  const offsets={};
+  function emit(numKey, text){ offsets[numKey]=out.length; out+=text; }
+  for(const o of outObjs){
+    emit(o.num, `${o.num} ${o.gen} obj${o.body}endobj\n`);
+  }
+  emit(encNum, `${encNum} 0 obj\n${encDict}\nendobj\n`);
+
+  const size=encNum+1;
+  const xrefStart=out.length;
+  let xref=`xref\n0 ${size}\n0000000000 65535 f \n`;
+  for(let n=1;n<size;n++){
+    const off=offsets[n];
+    if(off===undefined){ xref+=`0000000000 00000 f \n`; }
+    else xref += String(off).padStart(10,'0')+' 00000 n \n';
+  }
+  out+=xref;
+  out+=`trailer\n<< /Size ${size} /Root ${rootRef} /Info ${infoRef} /ID [<${idHex}> <${idHex}>] /Encrypt ${encNum} 0 R >>\nstartxref\n${xrefStart}\n%%EOF`;
+
+  const outBytes=new Uint8Array(out.length);
+  for(let i=0;i<out.length;i++)outBytes[i]=out.charCodeAt(i)&255;
+  return outBytes;
+}
+
+// ══ STATE ══
+const S={
+  docs:tryP('scanai_docs',[]),
+  hist:tryP('scanai_hist',[]),
+  img:null,rot:0,filter:'none',
+  aiDataUrl:null,aiFileName:'',lastOcr:'',lastTables:null,chatSession:null,lastHandwriteText:'',handwriteView:'hand',handwriteCanvas:null,lastResultText:'',lastResultTool:'',
+  aiStats:+localStorage.getItem('scanai_ai')||0,
+  ocrStats:+localStorage.getItem('scanai_ocr')||0,
+  aiTool:'ocr',
+  drawColor:'#ef4444',drawMode:'select',drawing:false,lx:0,ly:0,
+  sigColor:'#1a1a2e',sigFont:'sans-serif',sigMode:'draw',sigDrawing:false,
+  wmColor:'#ef4444',compQ:'med',
+  mergeFiles:[],libFilter:'all',light:false,
+};
+function tryP(k,d){try{return JSON.parse(localStorage.getItem(k)||'null')||d}catch{return d}}
+
+// ══ SIDEBAR ══
+function toggleSB(){const s=document.getElementById('sidebar'),o=document.getElementById('sbOv');s.classList.toggle('open');o.classList.toggle('show');}
+function closeSB(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sbOv').classList.remove('show');}
+
+// ══ NAV ══
+function nav(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('view-'+id);if(el)el.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{if(n.textContent.trim().toLowerCase().startsWith(id==='ai'?'ai':id.slice(0,5)))n.classList.add('active');});
+  const bn=document.getElementById('bn-'+id);if(bn)bn.classList.add('active');
+  if(id==='dashboard')refreshDash();
+  if(id==='library')renderLib();
+  if(id==='annotate')initAnn();
+  if(id==='ai')renderAiTool(S.aiTool);
+  if(id==='history')renderHist();
+  if(id==='signature')setTimeout(initSig,60);
+  if(id==='settings')renderWorkerUrlStatus();
+  closeSB();
+}
+
+// ══ THEME ══
+function toggleTheme(){S.light=!S.light;document.body.classList.toggle('light',S.light);}
+function setTheme(t,el){document.querySelectorAll('#view-settings .filter-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');S.light=t==='light';document.body.classList.toggle('light',S.light);}
+
+// ══ NOTIFY ══
+let notifT;
+function notify(msg,type='s'){
+  clearTimeout(notifT);
+  document.getElementById('nt').textContent=msg;
+  document.getElementById('nd').className='nd '+type;
+  const n=document.getElementById('notif');n.classList.add('show');
+  notifT=setTimeout(()=>n.classList.remove('show'),3000);
+}
+
+// ══ MODAL ══
+function showModal(html){document.getElementById('modalContent').innerHTML=html;document.getElementById('overlay').classList.add('show');}
+function closeModal(){document.getElementById('overlay').classList.remove('show');}
+
+// ══ FILE ══
+function dOver(e){e.preventDefault();document.getElementById('dropZone').classList.add('drag-over');}
+function dLeave(){document.getElementById('dropZone').classList.remove('drag-over');}
+function dDrop(e){e.preventDefault();dLeave();const f=e.dataTransfer.files[0];if(f)loadFileObj(f);}
+function loadFile(e){const f=e.target.files[0];if(f)loadFileObj(f);e.target.value='';}
+function loadFileObj(file){
+  const r=new FileReader();
+  r.onload=ev=>{
+    const img=new Image();
+    img.onload=()=>{
+      S.img=img;
+      document.getElementById('dropZone').style.display='none';
+      document.getElementById('canvasWrap').style.display='flex';
+      document.getElementById('mobileBar').style.display='flex';
+      if(!document.getElementById('docName').value)document.getElementById('docName').value=file.name.replace(/\.[^.]+$/,'');
+      renderPreview();addHist('Scanned',file.name,'📄');notify('Document loaded!','s');initAnn();
+    };img.src=ev.target.result;
+  };r.readAsDataURL(file);
+}
+
+// ══ IMAGE PROCESSING ══
+const FP={none:{},grayscale:{saturate:0},bw:{saturate:0,contrast:180,brightness:110},enhance:{contrast:130,brightness:108,saturate:110},vivid:{saturate:180,contrast:120,brightness:105},sepia:{}};
+function setFilter(name,el){
+  document.querySelectorAll('.scan-panel .filter-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');S.filter=name;
+  const p=FP[name]||{};
+  if(p.brightness!==undefined){document.getElementById('slBright').value=p.brightness;document.getElementById('vBright').textContent=p.brightness+'%';}
+  if(p.contrast!==undefined){document.getElementById('slContrast').value=p.contrast;document.getElementById('vContrast').textContent=p.contrast+'%';}
+  if(p.saturate!==undefined){document.getElementById('slSat').value=p.saturate;document.getElementById('vSat').textContent=p.saturate+'%';}
+  applyFilters();
+}
+function applyFilters(){
+  if(!S.img)return;
+  const b=document.getElementById('slBright').value,c=document.getElementById('slContrast').value,sat=document.getElementById('slSat').value,rot=document.getElementById('slRot').value;
+  document.getElementById('vBright').textContent=b+'%';document.getElementById('vContrast').textContent=c+'%';document.getElementById('vSat').textContent=sat+'%';document.getElementById('vRot').textContent=rot+'°';
+  S.rot=+rot;renderPreview();
+}
+function renderPreview(){
+  if(!S.img)return;
+  const canvas=document.getElementById('previewCanvas'),img=S.img;
+  const wrap=document.getElementById('canvasWrap');
+  const maxW=wrap.clientWidth||300,maxH=wrap.clientHeight||400;
+  let w=img.naturalWidth,h=img.naturalHeight;
+  const scale=Math.min(maxW/w,maxH/h,1);
+  w=w*scale;h=h*scale;canvas.width=w;canvas.height=h;
+  const ctx=canvas.getContext('2d');
+  const b=document.getElementById('slBright').value,c=document.getElementById('slContrast').value,sat=document.getElementById('slSat').value;
+  ctx.save();
+  ctx.filter=`brightness(${b}%) contrast(${c}%) saturate(${sat}%)${S.filter==='sepia'?' sepia(0.8)':''}`;
+  ctx.translate(w/2,h/2);ctx.rotate(S.rot*Math.PI/180);ctx.drawImage(img,-w/2,-h/2,w,h);
+  ctx.restore();
+}
+function rotateImage(deg){const curr=+document.getElementById('slRot').value;let nv=((curr+deg)+360)%360;if(nv>180)nv-=360;document.getElementById('slRot').value=nv;applyFilters();}
+function getPDU(){return document.getElementById('previewCanvas').toDataURL('image/png');}
+
+// ══ SAVE ══
+function saveDoc(){
+  if(!S.img){notify('Load a document first.','e');return;}
+  const name=document.getElementById('docName').value||'Document '+(S.docs.length+1);
+  const cat=document.getElementById('docCat').value;
+  const dataUrl=getPDU();
+  S.docs.unshift({id:Date.now(),name,cat,dataUrl,created:new Date().toLocaleString(),size:Math.round(dataUrl.length*.75/1024)+' KB',ocr:'',summary:''});
+  saveDocs();updateStats();addHist('Saved',name,'💾');notify(`"${name}" saved!`,'s');
+}
+function saveDocs(){try{localStorage.setItem('scanai_docs',JSON.stringify(S.docs));}catch(e){}}
+function updateStats(){
+  document.getElementById('statDocs').textContent=S.docs.length;
+  document.getElementById('statOcr').textContent=S.ocrStats;
+  document.getElementById('statAi').textContent=S.aiStats;
+  document.getElementById('libCount').textContent=S.docs.length;
+}
+
+// ══ EXPORT ══
+function exportAs(fmt){
+  if(!S.img&&fmt!=='txt'){notify('Load a document first.','e');return;}
+  const name=document.getElementById('docName').value||'scan';
+  if(fmt==='pdf'){const{jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});doc.addImage(getPDU(),'PNG',0,0,210,297);doc.save(name+'.pdf');notify('PDF exported!','s');}
+  else if(fmt==='png'){const a=document.createElement('a');a.href=getPDU();a.download=name+'.png';a.click();notify('PNG exported!','s');}
+  else if(fmt==='jpg'){const c=document.getElementById('previewCanvas');const a=document.createElement('a');a.href=c.toDataURL('image/jpeg',.92);a.download=name+'.jpg';a.click();notify('JPG exported!','s');}
+  else if(fmt==='txt'){if(!S.lastOcr){notify('Run OCR first.','i');return;}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([S.lastOcr],{type:'text/plain'}));a.download=name+'.txt';a.click();notify('TXT exported!','s');}
+  addHist('Exported '+fmt.toUpperCase(),name,'📤');
+}
+
+// ══ DASHBOARD ══
+function refreshDash(){
+  updateStats();
+  const list=document.getElementById('recentList');
+  if(!S.docs.length){list.innerHTML='<div class="empty-state" style="padding:10px 0"><div class="es-icon" style="font-size:28px">📭</div><div class="es-text">No docs yet</div></div>';return;}
+  const tags={receipt:'tag-receipt',invoice:'tag-invoice',contract:'tag-contract',medical:'tag-medical',other:'tag-other',id:'tag-other',bill:'tag-invoice',photo:'tag-other'};
+  list.innerHTML=S.docs.slice(0,5).map(d=>`<div class="recent-item" onclick="openDoc(${d.id})"><div class="doc-thumb"><img src="${d.dataUrl}" onerror="this.parentElement.innerHTML='📄'"/></div><div class="doc-info"><div class="doc-name">${esc(d.name)}</div><div class="doc-meta">${d.created}</div></div><div class="doc-tag ${tags[d.cat]||'tag-other'}">${d.cat}</div></div>`).join('');
+}
+
+// ══ LIBRARY ══
+function renderLib(filter=S.libFilter,search=''){
+  const grid=document.getElementById('docGrid');
+  let docs=S.docs;
+  if(filter!=='all')docs=docs.filter(d=>d.cat===filter);
+  if(search)docs=docs.filter(d=>d.name.toLowerCase().includes(search.toLowerCase())||(d.ocr||'').toLowerCase().includes(search.toLowerCase()));
+  const tags={receipt:'tag-receipt',invoice:'tag-invoice',contract:'tag-contract',medical:'tag-medical',other:'tag-other',id:'tag-other',bill:'tag-invoice',photo:'tag-other'};
+  if(!docs.length){grid.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="es-icon">📂</div><div class="es-text">No documents found</div></div>';return;}
+  grid.innerHTML=docs.map(d=>`<div class="doc-card" onclick="openDoc(${d.id})"><div class="doc-card-thumb">${d.dataUrl?`<img src="${d.dataUrl}" onerror="this.parentElement.innerHTML='📄'"/>`:'📄'}</div><div class="doc-card-body"><div class="dc-name">${esc(d.name)}</div><div class="dc-meta">${d.created}</div><div class="dc-tag"><span class="doc-tag ${tags[d.cat]||'tag-other'}">${d.cat}</span></div></div></div>`).join('');
+}
+function filterTag(tag,el){document.querySelectorAll('#libFilters .ft').forEach(b=>b.classList.remove('active'));el.classList.add('active');S.libFilter=tag;renderLib(tag,document.getElementById('libSearch').value);}
+function filterDocs(val){renderLib(S.libFilter,val);}
+function handleGSearch(val){if(document.getElementById('view-library').classList.contains('active'))filterDocs(val);}
+function openDoc(id){
+  const d=S.docs.find(x=>x.id===id);if(!d)return;
+  showModal(`<span class="modal-close" onclick="closeModal()">✕</span><div class="modal-title">${esc(d.name)}</div><div class="modal-sub">${d.cat} · ${d.created} · ${d.size}</div><img src="${d.dataUrl}" style="width:100%;border-radius:8px;margin-bottom:14px;border:1px solid var(--border)"/>${d.ocr?`<div class="result-label">EXTRACTED TEXT</div><div style="background:var(--surface2);padding:10px;border-radius:6px;font-size:12px;max-height:80px;overflow-y:auto;margin-bottom:10px;color:var(--text2)">${esc(d.ocr).substring(0,300)}</div>`:''}<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px"><button class="action-btn primary" onclick="loadDocScan(${id})">✏️ Edit</button><button class="action-btn green" onclick="aiFromDoc(${id},'ocr')">🔤 OCR</button><button class="action-btn blue" onclick="aiFromDoc(${id},'summarize')">📝 Sum</button><button class="action-btn red" onclick="deleteDoc(${id})">🗑️ Delete</button></div>`);
+}
+function loadDocScan(id){const d=S.docs.find(x=>x.id===id);if(!d)return;closeModal();nav('scanner');const img=new Image();img.onload=()=>{S.img=img;document.getElementById('dropZone').style.display='none';document.getElementById('canvasWrap').style.display='flex';document.getElementById('mobileBar').style.display='flex';document.getElementById('docName').value=d.name;document.getElementById('docCat').value=d.cat;renderPreview();};img.src=d.dataUrl;}
+function deleteDoc(id){S.docs=S.docs.filter(d=>d.id!==id);saveDocs();closeModal();renderLib();updateStats();notify('Deleted.','i');}
+function aiFromDoc(id,tool){const d=S.docs.find(x=>x.id===id);if(!d)return;closeModal();S.aiDataUrl=d.dataUrl;nav('ai');setAiTool(tool);setTimeout(()=>runAI(tool,d.dataUrl),300);}
+
+// ══ AI TOOLS ══
+// ══ AI BACKEND (Cloudflare Worker proxy — holds the real API key server-side) ══
+const DEFAULT_AI_API_URL='https://YOUR-WORKER-SUBDOMAIN.workers.dev/';
+function getAiApiUrl(){
+  const saved=localStorage.getItem('scanai_worker_url');
+  return (saved&&saved.trim())?saved.trim():DEFAULT_AI_API_URL;
+}
+function saveWorkerUrl(){
+  const el=document.getElementById('workerUrlInput');
+  const val=el?el.value.trim():'';
+  if(!val){notify('Enter a Worker URL first.','e');return;}
+  if(!/^https?:\/\//.test(val)){notify('URL must start with https://','e');return;}
+  localStorage.setItem('scanai_worker_url',val);
+  renderWorkerUrlStatus();
+  notify('Backend URL saved!','s');
+}
+function renderWorkerUrlStatus(){
+  const input=document.getElementById('workerUrlInput');
+  const status=document.getElementById('workerUrlStatus');
+  const saved=localStorage.getItem('scanai_worker_url');
+  if(input)input.value=saved||'';
+  if(status){
+    status.innerHTML=saved
+      ?`✅ Using your Worker: <code style="word-break:break-all">${esc(saved)}</code>`
+      :`⚠️ Not configured yet — AI calls will fail until you deploy the Worker and save its URL here.`;
+  }
+}
+async function callClaudeAPI(body){
+  const url=getAiApiUrl();
+  if(url===DEFAULT_AI_API_URL){
+    throw new Error('AI backend not configured. Go to Settings → AI Backend and paste your Cloudflare Worker URL.');
+  }
+  const resp=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  let data;
+  try{data=await resp.json();}catch(e){throw new Error('Backend returned an invalid response (check the Worker URL and that it is deployed).');}
+  if(!resp.ok||data.error){throw new Error((data.error&&(data.error.message||data.error))||('Backend error ('+resp.status+')'));}
+  return data;
+}
+const CHAT_SYSTEM_PROMPT='You are answering questions about an uploaded document in a mobile chat UI. Keep every reply SHORT and scannable: a few bullet points (use "•"), each one line, no long paragraphs. Give the direct answer first, skip preamble like "Based on the document". If the answer is a number, name, or value, lead with it in bold. Only add brief detail if the question truly needs it. Max ~5 bullets unless the user explicitly asks for a full list or detailed explanation.';
+const aiDefs={
+  ocr:{icon:'🔤',title:'OCR Text Extraction',desc:'Extract all text — 40+ languages, handwriting, mixed scripts.',prompt:()=>'You are an expert OCR system. Extract ALL visible text from this scanned document image, preserving structure and line breaks. Return only the extracted text.'},
+  summarize:{icon:'📝',title:'Summarize Document',desc:'Concise summary with key points and entities.',prompt:()=>'Summarize this document in short bullet points only — no long paragraphs. Give: • 1-line summary • Key points (max 5 bullets) • Important entities (names/dates/numbers) • Document type. Keep every bullet to one line.'},
+  classify:{icon:'🏷️',title:'Auto-Classify',desc:'AI identifies document type and confidence.',prompt:()=>'Classify this document. Respond with: 1) Category (Invoice/Receipt/Contract/Medical/ID/Legal/Financial/Academic/Personal/Other), 2) Confidence (High/Medium/Low), 3) Tags up to 5, 4) Reason in 1-2 sentences.'},
+  translate:{icon:'🌍',title:'Translate',desc:'Extract and translate to 50+ languages.',prompt:(lang)=>`Identify the source language, extract all text, translate to ${lang||'English'}. Format:\n[SOURCE: X]\n[ORIGINAL]\n...\n[TRANSLATION]\n...`},
+  extract:{icon:'🧾',title:'Data Extraction',desc:'Pull structured data from invoices/receipts as JSON.',prompt:()=>'Extract structured data from this invoice or receipt. Return JSON: {"document_type":"","vendor_name":"","date":"","total_amount":"","currency":"","tax":"","line_items":[{"description":"","qty":"","unit_price":"","total":""}],"invoice_number":""}'},
+  table:{icon:'📊',title:'Table Extraction',desc:'Detect tables and export them straight to an Excel spreadsheet.',prompt:()=>'Find every table in this document (including multi-page PDFs). Respond with ONLY valid JSON, no markdown fences, no commentary, in this exact shape: {"tables":[{"title":"short label","headers":["Column A","Column B"],"rows":[["val","val"],["val","val"]]}]}. If a table has no header row, invent short column labels like "Col 1". If there are no tables at all, return {"tables":[]}.'},
+  bizcard:{icon:'🏢',title:'Business Card Reader',desc:'Extract contact info as JSON.',prompt:()=>'Extract all contact info from this business card. Return JSON: {"name":"","title":"","company":"","email":"","phone":[],"address":"","website":"","social":{}}'},
+  handwriting:{icon:'✍️',title:'Handwriting Recognition',desc:'Transcribe cursive and printed handwriting.',prompt:()=>'Transcribe ALL handwritten text in this document, preserving line breaks. Note uncertain words with [?]. Return transcription only.'},
+  texthand:{icon:'🖋️',title:'Text → Handwriting',desc:'Extract the text from a PDF/doc and turn it into natural-looking handwriting.',prompt:()=>'You are an expert OCR system. Extract ALL visible text from this document, preserving paragraph and line breaks. Return only the extracted text, no commentary.'},
+  chat:{icon:'💬',title:'Chat with Document',desc:'Upload a document, then ask questions about it one at a time.'},
+};
+function setAiTool(tool){
+  S.aiTool=tool;
+  document.querySelectorAll('.ai-tool').forEach(el=>el.classList.remove('active'));
+  const el=document.getElementById('ait-'+tool);if(el)el.classList.add('active');
+  renderAiTool(tool);
+}
+function buildMediaBlock(dataUrl){
+  const m=/^data:([^;]+);base64,/.exec(dataUrl);
+  const mime=m?m[1]:'image/png';
+  const base64=dataUrl.split(',')[1];
+  if(mime==='application/pdf')return{type:'document',source:{type:'base64',media_type:'application/pdf',data:base64}};
+  return{type:'image',source:{type:'base64',media_type:mime,data:base64}};
+}
+function isPdfDataUrl(u){return /^data:application\/pdf/.test(u||'');}
+function renderAiTool(tool){
+  if(tool==='chat'){renderChatTool();return;}
+  const t=aiDefs[tool];if(!t)return;
+  let extra='';
+  if(tool==='translate')extra=`<select class="form-input" id="trLang" style="margin-bottom:10px"><option>English</option><option>Hindi</option><option>Spanish</option><option>French</option><option>German</option><option>Arabic</option><option>Chinese (Simplified)</option><option>Japanese</option><option>Portuguese</option><option>Russian</option></select>`;
+  const hasImg=S.aiDataUrl||S.img;
+  const isPdf=isPdfDataUrl(S.aiDataUrl);
+  document.getElementById('aiMain').innerHTML=`
+    <div class="ai-hdr-title">${t.icon} ${t.title}</div>
+    <div class="ai-hdr-desc">${t.desc}</div>
+    ${extra}
+    <div class="ai-upload" onclick="document.getElementById('aiFile').click()" ondragover="event.preventDefault()" ondrop="aiDrop(event)">
+      <input type="file" id="aiFile" accept="image/*,application/pdf,.pdf" style="display:none" onchange="aiFileLoad(event)"/>
+      <div style="font-size:28px">${hasImg?'✅':'📄'}</div>
+      <div style="font-size:12px;margin-top:6px;color:var(--text2)">${hasImg?'Document ready — or drop new one':'Drop an image or PDF, or tap to upload'}</div>
+      ${S.aiDataUrl&&!isPdf?`<img src="${S.aiDataUrl}" style="width:60px;height:60px;object-fit:cover;border-radius:6px;margin-top:8px;border:1px solid var(--border)"/>`:''}
+      ${S.aiDataUrl&&isPdf?`<div style="margin-top:8px;font-size:11px;color:var(--text2)">📕 ${esc(S.aiFileName||'document.pdf')}</div>`:''}
+    </div>
+    <button class="action-btn primary" style="margin-bottom:14px" onclick="runAI('${tool}')">🤖 Run ${t.title}</button>
+    <div class="ai-result" id="aiResult"><div class="result-label">RESULT</div><div class="result-text" style="color:var(--text3)">Results appear here…</div></div>`;
+}
+function aiDrop(e){e.preventDefault();const f=e.dataTransfer.files[0];if(f)loadAiFile(f);}
+function aiFileLoad(e){const f=e.target.files[0];if(f)loadAiFile(f);e.target.value='';}
+function loadAiFile(f){
+  const r=new FileReader();
+  r.onload=ev=>{
+    S.aiDataUrl=ev.target.result;
+    S.aiFileName=f.name;
+    renderAiTool(S.aiTool);
+  };
+  r.readAsDataURL(f);
+}
+async function runAI(tool,dataUrl){
+  let src=dataUrl||S.aiDataUrl;if(!src&&S.img)src=getPDU();
+  if(!src||src==='data:,'){notify('Upload a document first.','e');return;}
+  const resEl=document.getElementById('aiResult');
+  if(resEl)resEl.innerHTML=`<div class="result-label">PROCESSING</div><div style="display:flex;align-items:center;gap:10px;color:var(--text3);font-size:12px"><div class="spinner"></div> Claude AI is analyzing…</div>`;
+  const t=aiDefs[tool];let extra=null;
+  if(tool==='translate'){const el=document.getElementById('trLang');extra=el?el.value:'English';}
+  try{
+    const mediaBlock=buildMediaBlock(src);
+    const data=await callClaudeAPI({model:'claude-sonnet-4-6',max_tokens:2000,messages:[{role:'user',content:[mediaBlock,{type:'text',text:t.prompt(extra)}]}]});
+    const text=data.content?.map(c=>c.text||'').join('')||'No response.';
+    if(tool==='table'){renderTableResult(text);}
+    else if(tool==='texthand'){renderHandwriteResult(text);}
+    else if(resEl){
+      S.lastResultText=text;S.lastResultTool=tool;
+      resEl.innerHTML=`<div class="result-label">✅ COMPLETE</div><div class="result-text">${esc(text).replace(/\n/g,'<br/>')}</div>
+        <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap"><button class="action-btn" style="flex:1;padding:7px;min-width:100px;margin:0" onclick="copyRes()">📋 Copy</button><button class="action-btn green" style="flex:1;padding:7px;min-width:100px;margin:0" onclick="saveRes('${tool}')">💾 Save</button></div>
+        <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+          <button class="action-btn red" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="exportGenericResultAsPDF()">📄 PDF</button>
+          <button class="action-btn blue" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="exportGenericResultAsWord()">📝 Word</button>
+          <button class="action-btn green" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="exportGenericResultToExcel()">📊 Excel</button>
+        </div>`;
+    }
+    if(tool==='ocr'||tool==='handwriting'){S.lastOcr=text;S.ocrStats++;localStorage.setItem('scanai_ocr',S.ocrStats);}
+    S.aiStats++;localStorage.setItem('scanai_ai',S.aiStats);
+    addHist('AI: '+t.title,'Processed',t.icon);notify(t.title+' complete!','s');
+  }catch(e){
+    if(resEl)resEl.innerHTML=`<div class="result-label" style="color:var(--red)">ERROR</div><div class="result-text" style="color:var(--red)">${esc(e.message)}</div>`;
+    notify('AI error — check connection.','e');
+  }
+}
+// ══ TABLE EXTRACTION → EXCEL ══
+function parseTablesJson(raw){
+  let s=raw.trim();
+  const fence=/```(?:json)?\s*([\s\S]*?)```/.exec(s);
+  if(fence)s=fence[1].trim();
+  const start=s.indexOf('{'),end=s.lastIndexOf('}');
+  if(start>=0&&end>start)s=s.slice(start,end+1);
+  return JSON.parse(s);
+}
+function renderTableResult(raw){
+  const resEl=document.getElementById('aiResult');
+  let parsed;
+  try{parsed=parseTablesJson(raw);}catch(e){
+    if(resEl)resEl.innerHTML=`<div class="result-label">✅ COMPLETE</div><div class="result-text">${esc(raw).replace(/\n/g,'<br/>')}</div><div style="font-size:11px;color:var(--text3);margin-top:8px">Couldn't parse a structured table from this response — showing raw text instead.</div>`;
+    return;
+  }
+  const tables=parsed.tables||[];
+  S.lastTables=tables;
+  if(!tables.length){
+    if(resEl)resEl.innerHTML=`<div class="result-label">✅ COMPLETE</div><div class="result-text" style="color:var(--text3)">No tables were detected in this document.</div>`;
+    return;
+  }
+  const html=tables.map((tb,i)=>`
+    <div style="margin-bottom:14px">
+      <div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--text2)">${esc(tb.title||('Table '+(i+1)))}</div>
+      <div style="overflow-x:auto;border:1px solid var(--border);border-radius:var(--r2)">
+        <table style="border-collapse:collapse;width:100%;font-size:11px">
+          <thead><tr>${(tb.headers||[]).map(h=>`<th style="text-align:left;padding:6px 8px;background:var(--surface3);border-bottom:1px solid var(--border);white-space:nowrap">${esc(h)}</th>`).join('')}</tr></thead>
+          <tbody>${(tb.rows||[]).map(row=>`<tr>${row.map(c=>`<td style="padding:6px 8px;border-bottom:1px solid var(--border);white-space:nowrap">${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody>
+        </table>
+      </div>
+    </div>`).join('');
+  if(resEl)resEl.innerHTML=`<div class="result-label">✅ ${tables.length} TABLE${tables.length>1?'S':''} FOUND</div>${html}<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+    <button class="action-btn red" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="exportTablesToPDF()">📄 PDF</button>
+    <button class="action-btn blue" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="exportTablesToWord()">📝 Word</button>
+    <button class="action-btn green" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="exportTablesToExcel()">📊 Excel</button>
+  </div>`;
+}
+function exportTablesToPDF(){
+  if(!S.lastTables||!S.lastTables.length){notify('No table data to export.','e');return;}
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:'mm',format:'a4'});
+  const marginX=15;let y=20;
+  S.lastTables.forEach((tb,ti)=>{
+    if(ti>0){doc.addPage();y=20;}
+    doc.setFontSize(13);doc.text(tb.title||('Table '+(ti+1)),marginX,y);y+=8;
+    doc.setFontSize(9);
+    const headerLine=(tb.headers||[]).join('  |  ');
+    doc.splitTextToSize(headerLine,180).forEach(w=>{doc.text(w,marginX,y);y+=5;});
+    y+=1;
+    (tb.rows||[]).forEach(row=>{
+      const rowLine=row.map(String).join('  |  ');
+      doc.splitTextToSize(rowLine,180).forEach(w=>{
+        if(y>280){doc.addPage();y=20;}
+        doc.text(w,marginX,y);y+=5;
+      });
+    });
+  });
+  const name=(document.getElementById('docName')?.value||'extracted-tables')+'.pdf';
+  doc.save(name);
+  addHist('Exported Tables PDF',name,'📄');
+  notify('PDF downloaded!','s');
+}
+function exportTablesToWord(){
+  if(!S.lastTables||!S.lastTables.length){notify('No table data to export.','e');return;}
+  const bodyHtml=S.lastTables.map(tb=>{
+    const headerRow='<tr>'+(tb.headers||[]).map(h=>`<th style="border:1px solid #999;padding:4px;background:#eee;font-family:Calibri">${esc(h)}</th>`).join('')+'</tr>';
+    const rows=(tb.rows||[]).map(r=>'<tr>'+r.map(c=>`<td style="border:1px solid #999;padding:4px;font-family:Calibri">${esc(c)}</td>`).join('')+'</tr>').join('');
+    return `<h3 style="font-family:Calibri">${esc(tb.title||'Table')}</h3><table style="border-collapse:collapse;width:100%">${headerRow}${rows}</table><br/>`;
+  }).join('');
+  downloadWordDoc((document.getElementById('docName')?.value||'extracted-tables'),bodyHtml);
+}
+function exportTablesToExcel(){
+  if(!S.lastTables||!S.lastTables.length){notify('No table data to export.','e');return;}
+  if(typeof XLSX==='undefined'){notify('Excel export failed to load.','e');return;}
+  const wb=XLSX.utils.book_new();
+  S.lastTables.forEach((tb,i)=>{
+    const aoa=[tb.headers||[],...(tb.rows||[])];
+    const ws=XLSX.utils.aoa_to_sheet(aoa);
+    let sheetName=(tb.title||('Table'+(i+1))).replace(/[\\/?*[\]:]/g,'').slice(0,31)||('Table'+(i+1));
+    XLSX.utils.book_append_sheet(wb,ws,sheetName);
+  });
+  const name=(document.getElementById('docName')?.value||'extracted-tables')+'.xlsx';
+  XLSX.writeFile(wb,name);
+  addHist('Exported Tables',name,'📊');
+  notify('Excel file downloaded!','s');
+}
+function copyRes(){const el=document.querySelector('#aiResult .result-text');if(el){navigator.clipboard?.writeText(el.innerText);notify('Copied!','s');}}
+function saveRes(tool){if(!S.docs.length){notify('Save a doc first.','i');return;}const el=document.querySelector('#aiResult .result-text');if(!el)return;const text=el.innerText;if(tool==='ocr'||tool==='handwriting')S.docs[0].ocr=text;if(tool==='summarize')S.docs[0].summary=text;saveDocs();notify('Saved to doc!','s');}
+function flattenForSheet(val){
+  if(val==null)return'';
+  if(Array.isArray(val))return val.map(v=>typeof v==='object'?flattenForSheet(v):String(v)).join(', ');
+  if(typeof val==='object')return Object.entries(val).map(([k,v])=>k+': '+flattenForSheet(v)).join(' | ');
+  return String(val);
+}
+function structuredToLines(text,tool){
+  if(tool==='extract'||tool==='bizcard'){
+    try{
+      const obj=parseTablesJson(text);
+      const lines=[];let lineItems=null;
+      Object.entries(obj).forEach(([k,v])=>{
+        if(k==='line_items'&&Array.isArray(v)){lineItems=v;return;}
+        lines.push(k+': '+flattenForSheet(v));
+      });
+      if(lineItems&&lineItems.length){
+        lines.push('');lines.push('Line Items:');
+        const headers=Object.keys(lineItems[0]);
+        lines.push(headers.join(' | '));
+        lineItems.forEach(li=>lines.push(headers.map(h=>flattenForSheet(li[h])).join(' | ')));
+      }
+      return lines;
+    }catch(e){}
+  }
+  return (text||'').split('\n');
+}
+function downloadWordDoc(name,bodyHtml){
+  const html=`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>${esc(name)}</title></head><body>${bodyHtml}</body></html>`;
+  const blob=new Blob(['\ufeff',html],{type:'application/msword'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=name+'.doc';
+  a.click();
+  addHist('Exported Word',name+'.doc','📝');
+  notify('Word file downloaded!','s');
+}
+function textLinesToPdf(name,lines){
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:'mm',format:'a4'});
+  const marginX=15,marginTop=20,maxW=180,lineH=6;
+  doc.setFontSize(11);let y=marginTop;
+  lines.forEach(raw=>{
+    const wrapped=doc.splitTextToSize(raw===''?' ':raw,maxW);
+    wrapped.forEach(w=>{
+      if(y>280){doc.addPage();y=marginTop;}
+      doc.text(w,marginX,y);y+=lineH;
+    });
+  });
+  doc.save(name+'.pdf');
+  addHist('Exported PDF',name+'.pdf','📄');
+  notify('PDF downloaded!','s');
+}
+function exportGenericResultAsPDF(){
+  const text=S.lastResultText,tool=S.lastResultTool;
+  if(!text){notify('Nothing to export.','e');return;}
+  const lines=structuredToLines(text,tool);
+  const name=(document.getElementById('docName')?.value||'result')+'-'+tool;
+  textLinesToPdf(name,lines);
+}
+function exportGenericResultAsWord(){
+  const text=S.lastResultText,tool=S.lastResultTool;
+  if(!text){notify('Nothing to export.','e');return;}
+  const lines=structuredToLines(text,tool);
+  const bodyHtml=lines.map(l=>`<p style="margin:0 0 8px 0;font-family:Calibri,Arial,sans-serif;font-size:12pt">${l?esc(l):'&nbsp;'}</p>`).join('');
+  downloadWordDoc((document.getElementById('docName')?.value||'result')+'-'+tool,bodyHtml);
+}
+function exportGenericResultToExcel(){
+  const text=S.lastResultText,tool=S.lastResultTool;
+  if(!text){notify('Nothing to export.','e');return;}
+  if(typeof XLSX==='undefined'){notify('Excel export failed to load.','e');return;}
+  const name=(document.getElementById('docName')?.value||'result')+'-'+tool+'.xlsx';
+  const wb=XLSX.utils.book_new();
+  let structured=null;
+  if(tool==='extract'||tool==='bizcard'){
+    try{structured=parseTablesJson(text);}catch(e){structured=null;}
+  }
+  if(structured&&typeof structured==='object'){
+    const rows=[['Field','Value']];
+    let lineItems=null;
+    Object.entries(structured).forEach(([k,v])=>{
+      if(k==='line_items'&&Array.isArray(v)){lineItems=v;return;}
+      rows.push([k,flattenForSheet(v)]);
+    });
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),'Summary');
+    if(lineItems&&lineItems.length){
+      const headers=Object.keys(lineItems[0]);
+      const liRows=[headers,...lineItems.map(li=>headers.map(h=>flattenForSheet(li[h])))];
+      XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(liRows),'Line Items');
+    }
+  }else{
+    const rows=[['Extracted Text']];
+    text.split('\n').forEach(line=>rows.push([line]));
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),'Result');
+  }
+  XLSX.writeFile(wb,name);
+  addHist('Exported to Excel',name,'📊');
+  notify('Excel file downloaded!','s');
+}
+
+// ══ TEXT → HANDWRITING (extracted text rendered as natural handwriting, toggle switches view instantly) ══
+function renderHandwriteResult(text){
+  S.lastHandwriteText=text;
+  S.handwriteView='hand';
+  const resEl=document.getElementById('aiResult');
+  if(resEl)resEl.innerHTML=handwriteResultHTML();
+  drawHandwritten(text);
+}
+function handwriteResultHTML(){
+  const view=S.handwriteView||'hand';
+  return `<div class="result-label">✅ COMPLETE</div>
+    <div style="display:flex;gap:6px;margin-bottom:10px">
+      <button class="action-btn ${view==='hand'?'primary':''}" style="flex:1;padding:8px;margin:0;font-size:12px" onclick="toggleHandwriteView('hand')">🖋️ Handwritten</button>
+      <button class="action-btn ${view==='typed'?'primary':''}" style="flex:1;padding:8px;margin:0;font-size:12px" onclick="toggleHandwriteView('typed')">🔤 Typed</button>
+    </div>
+    <div id="handwriteBody"></div>
+    <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+      <button class="action-btn" style="flex:1;padding:7px;min-width:100px;margin:0" onclick="copyHandwriteText()">📋 Copy Text</button>
+      <button class="action-btn green" style="flex:1;padding:7px;min-width:100px;margin:0" onclick="downloadHandwriteImage()">🖼️ Save Image</button>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+      <button class="action-btn red" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="downloadHandwritePdf()">📄 PDF</button>
+      <button class="action-btn blue" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="exportHandwriteToWord()">📝 Word</button>
+      <button class="action-btn green" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="exportHandwriteToExcel()">📊 Excel</button>
+    </div>`;
+}
+function toggleHandwriteView(v){
+  S.handwriteView=v;
+  const resEl=document.getElementById('aiResult');
+  if(!resEl)return;
+  resEl.innerHTML=handwriteResultHTML();
+  if(v==='hand')drawHandwritten(S.lastHandwriteText);
+  else renderHandwriteTyped();
+}
+function renderHandwriteTyped(){
+  const body=document.getElementById('handwriteBody');
+  if(body)body.innerHTML=`<div class="result-text">${esc(S.lastHandwriteText||'').replace(/\n/g,'<br/>')}</div>`;
+}
+async function drawHandwritten(text){
+  const body=document.getElementById('handwriteBody');
+  if(!body)return;
+  body.innerHTML=`<div style="display:flex;align-items:center;gap:8px;color:var(--text3);font-size:12px;padding:10px 0"><div class="spinner"></div> Writing it out…</div>`;
+  try{if(document.fonts&&document.fonts.load){await document.fonts.load('26px Caveat');await document.fonts.ready;}}catch(e){}
+  if(!S.handwriteCanvas)S.handwriteCanvas=document.createElement('canvas');
+  const canvas=S.handwriteCanvas;
+  const ctx=canvas.getContext('2d');
+  const width=760,fontSize=26,lineHeight=40,marginLeft=60,marginTop=50,marginRight=30;
+  const maxWidth=width-marginLeft-marginRight;
+  ctx.font=fontSize+'px Caveat, cursive';
+  const rawLines=(text||'').split('\n');
+  const lines=[];
+  rawLines.forEach(rl=>{
+    if(rl.trim()===''){lines.push('');return;}
+    const words=rl.split(' ');let cur='';
+    words.forEach(w=>{
+      const test=cur?cur+' '+w:w;
+      if(ctx.measureText(test).width>maxWidth&&cur){lines.push(cur);cur=w;}
+      else cur=test;
+    });
+    if(cur)lines.push(cur);
+  });
+  const height=marginTop*2+lines.length*lineHeight+40;
+  canvas.width=width;canvas.height=Math.max(height,300);
+  ctx.fillStyle='#fdf6e3';ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.strokeStyle='#e8b4b8';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(marginLeft-14,0);ctx.lineTo(marginLeft-14,canvas.height);ctx.stroke();
+  ctx.strokeStyle='#cfd8e3';ctx.lineWidth=1;
+  for(let y=marginTop+lineHeight;y<canvas.height;y+=lineHeight){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke();}
+  ctx.fillStyle='#1e3a5f';ctx.font=fontSize+'px Caveat, cursive';ctx.textBaseline='alphabetic';
+  lines.forEach((ln,i)=>{
+    const jx=(Math.sin(i*12.9898)*0.5+0.5)*3-1.5;
+    const jy=(Math.sin(i*78.233)*0.5+0.5)*2-1;
+    ctx.fillText(ln,marginLeft+jx,marginTop+i*lineHeight+jy);
+  });
+  canvas.style.width='100%';canvas.style.display='block';canvas.style.borderRadius='var(--r2)';canvas.style.border='1px solid var(--border)';
+  body.innerHTML='';body.appendChild(canvas);
+}
+function copyHandwriteText(){if(!S.lastHandwriteText){notify('Nothing to copy.','e');return;}navigator.clipboard?.writeText(S.lastHandwriteText);notify('Copied!','s');}
+function downloadHandwriteImage(){
+  if(!S.handwriteCanvas){notify('Switch to Handwritten view first.','e');return;}
+  const a=document.createElement('a');a.href=S.handwriteCanvas.toDataURL('image/png');
+  a.download=(document.getElementById('docName')?.value||'handwritten')+'.png';a.click();
+  addHist('Handwritten Export','PNG','🖋️');notify('Image downloaded!','s');
+}
+function downloadHandwritePdf(){
+  if(!S.handwriteCanvas){notify('Switch to Handwritten view first.','e');return;}
+  const{jsPDF}=window.jspdf;const c=S.handwriteCanvas;
+  const pxToMm=210/c.width;const pageH=c.height*pxToMm;
+  const doc=new jsPDF({unit:'mm',format:[210,Math.max(pageH,297)]});
+  doc.addImage(c.toDataURL('image/png'),'PNG',0,0,210,pageH);
+  const name=(document.getElementById('docName')?.value||'handwritten')+'.pdf';
+  doc.save(name);addHist('Handwritten Export',name,'📄');notify('PDF downloaded!','s');
+}
+function exportHandwriteToExcel(){
+  if(!S.lastHandwriteText){notify('Nothing to export.','e');return;}
+  if(typeof XLSX==='undefined'){notify('Excel export failed to load.','e');return;}
+  const wb=XLSX.utils.book_new();
+  const rows=[['Extracted Text']];
+  S.lastHandwriteText.split('\n').forEach(line=>rows.push([line]));
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),'Result');
+  const name=(document.getElementById('docName')?.value||'handwritten')+'.xlsx';
+  XLSX.writeFile(wb,name);
+  addHist('Exported to Excel',name,'📊');
+  notify('Excel file downloaded!','s');
+}
+function exportHandwriteToWord(){
+  if(!S.lastHandwriteText){notify('Nothing to export.','e');return;}
+  const bodyHtml=S.lastHandwriteText.split('\n').map(l=>`<p style="margin:0 0 8px 0;font-family:Calibri,Arial,sans-serif;font-size:12pt">${l?esc(l):'&nbsp;'}</p>`).join('');
+  downloadWordDoc((document.getElementById('docName')?.value||'handwritten'),bodyHtml);
+}
+
+// ══ CHAT WITH DOCUMENT (WhatsApp-style, session-persisted) ══
+function loadChatSession(){
+  try{const raw=sessionStorage.getItem('scanai_chat_session');return raw?JSON.parse(raw):null;}catch(e){return null;}
+}
+function saveChatSession(sess){
+  try{sessionStorage.setItem('scanai_chat_session',JSON.stringify(sess));}catch(e){}
+}
+function renderChatTool(){
+  const t=aiDefs.chat;
+  let sess=S.chatSession||loadChatSession();
+  S.chatSession=sess;
+  const main=document.getElementById('aiMain');
+  if(!sess||!sess.dataUrl){
+    main.innerHTML=`
+      <div class="ai-hdr-title">${t.icon} ${t.title}</div>
+      <div class="ai-hdr-desc">${t.desc}</div>
+      <div class="ai-upload" onclick="document.getElementById('chatFile').click()" ondragover="event.preventDefault()" ondrop="chatDrop(event)">
+        <input type="file" id="chatFile" accept="image/*,application/pdf,.pdf" style="display:none" onchange="chatFileLoad(event)"/>
+        <div style="font-size:28px">📄</div>
+        <div style="font-size:12px;margin-top:6px;color:var(--text2)">Drop an image or PDF, or tap to upload — then start chatting</div>
+      </div>
+      ${S.img?`<button class="action-btn" style="margin-top:10px" onclick="chatUseScanned()">📷 Use currently scanned document</button>`:''}
+    `;
+    return;
+  }
+  const isPdf=isPdfDataUrl(sess.dataUrl);
+  main.innerHTML=`
+    <div class="chat-doc-bar" style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);margin-bottom:8px">
+      ${isPdf?`<div style="font-size:20px">📕</div>`:`<img src="${sess.dataUrl}" style="width:32px;height:32px;object-fit:cover;border-radius:6px"/>`}
+      <div style="flex:1;min-width:0;font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(sess.fileName||'Document')}</div>
+      <button class="action-btn" style="width:auto;padding:6px 10px;margin:0;font-size:11px" onclick="chatNewDoc()">🔄 New doc</button>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+      <button class="action-btn red" style="flex:1;padding:6px;min-width:80px;margin:0;font-size:11px" onclick="exportChatToPDF()">📄 PDF</button>
+      <button class="action-btn blue" style="flex:1;padding:6px;min-width:80px;margin:0;font-size:11px" onclick="exportChatToWord()">📝 Word</button>
+      <button class="action-btn green" style="flex:1;padding:6px;min-width:80px;margin:0;font-size:11px" onclick="exportChatToExcel()">📊 Excel</button>
+    </div>
+    <div id="chatThread" style="display:flex;flex-direction:column;gap:8px;max-height:min(50vh,420px);overflow-y:auto;padding:6px 2px;margin-bottom:10px"></div>
+    <div style="display:flex;gap:8px">
+      <input class="form-input" id="chatInput" placeholder="Ask about this document…" style="margin-bottom:0" onkeydown="if(event.key==='Enter')sendChatMsg()"/>
+      <button class="action-btn primary" style="width:auto;padding:0 16px;margin:0" id="chatSendBtn" onclick="sendChatMsg()">➤</button>
+    </div>
+  `;
+  renderChatThread();
+}
+function renderChatThread(){
+  const sess=S.chatSession;if(!sess)return;
+  const wrap=document.getElementById('chatThread');if(!wrap)return;
+  if(!sess.messages.length){
+    wrap.innerHTML=`<div style="text-align:center;color:var(--text3);font-size:12px;padding:20px 0">Ask your first question about this document.</div>`;
+    return;
+  }
+  wrap.innerHTML=sess.messages.map(m=>{
+    const mine=m.role==='user';
+    return `<div style="align-self:${mine?'flex-end':'flex-start'};max-width:85%;background:${mine?'var(--accent)':'var(--surface2)'};color:${mine?'#fff':'var(--text)'};border:1px solid ${mine?'var(--accent)':'var(--border)'};border-radius:${mine?'14px 14px 3px 14px':'14px 14px 14px 3px'};padding:8px 12px;font-size:13px;line-height:1.5;white-space:pre-wrap;word-break:break-word">${formatChatText(m.text)}</div>`;
+  }).join('');
+  wrap.scrollTop=wrap.scrollHeight;
+}
+function formatChatText(t){
+  return esc(t).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/^[•\-]\s?/gm,'• ');
+}
+function chatDrop(e){e.preventDefault();const f=e.dataTransfer.files[0];if(f)startChatSession(f);}
+function chatFileLoad(e){const f=e.target.files[0];if(f)startChatSession(f);e.target.value='';}
+function chatUseScanned(){
+  const dataUrl=getPDU();
+  S.chatSession={dataUrl,fileName:document.getElementById('docName')?.value||'scanned-doc.png',messages:[]};
+  saveChatSession(S.chatSession);
+  renderChatTool();
+}
+function startChatSession(f){
+  const r=new FileReader();
+  r.onload=ev=>{
+    S.chatSession={dataUrl:ev.target.result,fileName:f.name,messages:[]};
+    saveChatSession(S.chatSession);
+    renderChatTool();
+  };
+  r.readAsDataURL(f);
+}
+function chatNewDoc(){
+  S.chatSession=null;
+  try{sessionStorage.removeItem('scanai_chat_session');}catch(e){}
+  renderChatTool();
+}
+function exportChatToExcel(){
+  const sess=S.chatSession;
+  if(!sess||!sess.messages.length){notify('No chat messages yet.','e');return;}
+  if(typeof XLSX==='undefined'){notify('Excel export failed to load.','e');return;}
+  const rows=[['#','Question','Answer']];
+  let qNum=0,pendingQ='';
+  sess.messages.forEach(m=>{
+    if(m.role==='user'){qNum++;pendingQ=m.text;rows.push([qNum,m.text,'']);}
+    else{rows[rows.length-1][2]=m.text;}
+  });
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),'Chat');
+  const name=(sess.fileName||'chat').replace(/\.[^.]+$/,'')+'-chat.xlsx';
+  XLSX.writeFile(wb,name);
+  addHist('Exported Chat',name,'📊');
+  notify('Excel file downloaded!','s');
+}
+function chatQAPairs(){
+  const sess=S.chatSession;
+  const pairs=[];
+  if(!sess)return pairs;
+  sess.messages.forEach(m=>{
+    if(m.role==='user')pairs.push({q:m.text,a:''});
+    else if(pairs.length)pairs[pairs.length-1].a=m.text;
+  });
+  return pairs;
+}
+function exportChatToPDF(){
+  const pairs=chatQAPairs();
+  if(!pairs.length){notify('No chat messages yet.','e');return;}
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:'mm',format:'a4'});
+  const marginX=15;let y=20;
+  pairs.forEach((p,i)=>{
+    doc.setFontSize(11);doc.setFont(undefined,'bold');
+    doc.splitTextToSize('Q'+(i+1)+': '+p.q,180).forEach(w=>{if(y>280){doc.addPage();y=20;}doc.text(w,marginX,y);y+=6;});
+    doc.setFont(undefined,'normal');
+    doc.splitTextToSize(p.a||'—',180).forEach(w=>{if(y>280){doc.addPage();y=20;}doc.text(w,marginX,y);y+=6;});
+    y+=4;
+  });
+  const name=((S.chatSession?.fileName||'chat').replace(/\.[^.]+$/,''))+'-chat.pdf';
+  doc.save(name);
+  addHist('Exported Chat PDF',name,'📄');
+  notify('PDF downloaded!','s');
+}
+function exportChatToWord(){
+  const pairs=chatQAPairs();
+  if(!pairs.length){notify('No chat messages yet.','e');return;}
+  const bodyHtml=pairs.map((p,i)=>`<p style="font-family:Calibri;font-size:12pt"><b>Q${i+1}: ${esc(p.q)}</b></p><p style="font-family:Calibri;font-size:12pt;margin-bottom:14px">${esc(p.a||'—')}</p>`).join('');
+  const name=(S.chatSession?.fileName||'chat').replace(/\.[^.]+$/,'')+'-chat';
+  downloadWordDoc(name,bodyHtml);
+}
+async function sendChatMsg(){
+  const input=document.getElementById('chatInput');
+  const q=input?.value?.trim();
+  if(!q)return;
+  const sess=S.chatSession;if(!sess)return;
+  sess.messages.push({role:'user',text:q});
+  saveChatSession(sess);
+  renderChatThread();
+  if(input)input.value='';
+  const btn=document.getElementById('chatSendBtn');if(btn)btn.disabled=true;
+  const wrap=document.getElementById('chatThread');
+  if(wrap)wrap.insertAdjacentHTML('beforeend',`<div id="chatTyping" style="align-self:flex-start;background:var(--surface2);border:1px solid var(--border);border-radius:14px 14px 14px 3px;padding:8px 12px;font-size:12px;color:var(--text3)"><div class="spinner" style="display:inline-block;width:10px;height:10px;margin-right:6px"></div>thinking…</div>`);
+  if(wrap)wrap.scrollTop=wrap.scrollHeight;
+  try{
+    const mediaBlock=buildMediaBlock(sess.dataUrl);
+    const apiMessages=[];
+    sess.messages.forEach((m,i)=>{
+      if(i===0&&m.role==='user'){
+        apiMessages.push({role:'user',content:[mediaBlock,{type:'text',text:m.text}]});
+      }else{
+        apiMessages.push({role:m.role,content:[{type:'text',text:m.text}]});
+      }
+    });
+    const data=await callClaudeAPI({model:'claude-sonnet-4-6',max_tokens:400,system:CHAT_SYSTEM_PROMPT,messages:apiMessages});
+    const text=data.content?.map(c=>c.text||'').join('')||'No response.';
+    sess.messages.push({role:'assistant',text});
+    saveChatSession(sess);
+    S.aiStats++;localStorage.setItem('scanai_ai',S.aiStats);
+    addHist('Chat with Document',q,'💬');
+  }catch(e){
+    sess.messages.push({role:'assistant',text:'⚠️ '+friendlyChatError(e)});
+    saveChatSession(sess);
+    notify('AI error — check connection.','e');
+  }finally{
+    const typing=document.getElementById('chatTyping');if(typing)typing.remove();
+    if(btn)btn.disabled=false;
+    renderChatThread();
+  }
+}
+function friendlyChatError(e){
+  const msg=(e&&e.message)||'';
+  if(/pattern|failed to fetch|networkerror|load failed/i.test(msg)){
+    return 'Request failed — this document may be too large for the AI to process in one go. Try a smaller file, a lower-resolution scan, or fewer pages.';
+  }
+  return msg||'Something went wrong. Please try again.';
+}
+function qOcr(){const src=S.img?getPDU():null;if(!src){notify('Load doc first.','e');return;}S.aiDataUrl=src;nav('ai');setAiTool('ocr');setTimeout(()=>runAI('ocr'),400);}
+function qClassify(){const src=S.img?getPDU():null;if(!src){notify('Load doc first.','e');return;}S.aiDataUrl=src;nav('ai');setAiTool('classify');setTimeout(()=>runAI('classify'),400);}
+
+
+// ══ ANNOTATE ══
+let annCtx,baseCtx;
+function initAnn(){
+  const hasImg=S.img||(S.docs.length>0);
+  document.getElementById('annWrap').style.display=hasImg?'flex':'none';
+  document.getElementById('annEmpty').style.display=hasImg?'none':'flex';
+  if(!hasImg)return;
+  const img=S.img||(() => {const i=new Image();i.src=S.docs[0].dataUrl;return i;})();
+  const base=document.getElementById('baseCanvas'),ann=document.getElementById('annotCanvas');
+  const maxW=Math.min(800,window.innerWidth-40);
+  const scale=Math.min(maxW/(img.naturalWidth||400),1);
+  const w=(img.naturalWidth||400)*scale,h=(img.naturalHeight||566)*scale;
+  base.width=ann.width=w;base.height=ann.height=h;
+  baseCtx=base.getContext('2d');annCtx=ann.getContext('2d');
+  const draw=()=>baseCtx.drawImage(img,0,0,w,h);
+  if(img.complete)draw();else img.onload=draw;
+  ann.onmousedown=e=>annStart(gPos(e,ann));ann.onmousemove=e=>annMove(gPos(e,ann));ann.onmouseup=ann.onmouseleave=e=>annEnd(gPos(e,ann));
+  ann.ontouchstart=e=>{e.preventDefault();annStart(gTPos(e,ann));};ann.ontouchmove=e=>{e.preventDefault();annMove(gTPos(e,ann));};ann.ontouchend=e=>{e.preventDefault();annEnd(gTPos(e,ann));};
+}
+function gPos(e,c){const r=c.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
+function gTPos(e,c){const r=c.getBoundingClientRect();const t=e.touches[0]||e.changedTouches[0];return{x:t.clientX-r.left,y:t.clientY-r.top};}
+function annStart({x,y}){if(S.drawMode==='select')return;S.drawing=true;S.lx=x;S.ly=y;annCtx.beginPath();annCtx.moveTo(x,y);}
+function annMove({x,y}){if(!S.drawing)return;if(S.drawMode==='pen'){annCtx.strokeStyle=S.drawColor;annCtx.lineWidth=+document.getElementById('brushSize').value;annCtx.lineCap='round';annCtx.lineTo(x,y);annCtx.stroke();annCtx.beginPath();annCtx.moveTo(x,y);}else if(S.drawMode==='highlight'){annCtx.strokeStyle=S.drawColor+'80';annCtx.lineWidth=18;annCtx.lineCap='square';annCtx.lineTo(x,y);annCtx.stroke();annCtx.beginPath();annCtx.moveTo(x,y);}}
+function annEnd({x,y}){if(!S.drawing)return;S.drawing=false;if(S.drawMode==='rect'){annCtx.strokeStyle=S.drawColor;annCtx.lineWidth=2;annCtx.strokeRect(S.lx,S.ly,x-S.lx,y-S.ly);}}
+function setAnnTool(t){S.drawMode=t;document.querySelectorAll('.ann-btn[id^=ann-]').forEach(b=>b.classList.remove('active'));const el=document.getElementById('ann-'+t);if(el)el.classList.add('active');}
+function setDColor(c,el){S.drawColor=c;document.querySelectorAll('.ann-bar .color-swatch').forEach(s=>s.classList.remove('sel'));el.classList.add('sel');}
+function addStamp(text){if(!annCtx)return;annCtx.save();annCtx.font='bold 20px sans-serif';annCtx.strokeStyle=S.drawColor;annCtx.lineWidth=2;annCtx.globalAlpha=.7;const tw=annCtx.measureText(text).width;annCtx.strokeRect(16,44,tw+12,30);annCtx.fillStyle=S.drawColor;annCtx.fillText(text,20,66);annCtx.restore();notify('"'+text+'" stamped!','s');}
+function clearAnn(){if(annCtx)annCtx.clearRect(0,0,annCtx.canvas.width,annCtx.canvas.height);}
+function saveAnn(){if(!annCtx)return;const base=document.getElementById('baseCanvas'),ann=document.getElementById('annotCanvas');const merged=document.createElement('canvas');merged.width=base.width;merged.height=base.height;const ctx=merged.getContext('2d');ctx.drawImage(base,0,0);ctx.drawImage(ann,0,0);const img=new Image();img.onload=()=>{S.img=img;renderPreview();};img.src=merged.toDataURL();notify('Annotations saved!','s');}
+
+// ══ MERGE / SPLIT ══
+function addMergeFiles(e){Array.from(e.target.files).forEach(f=>{const r=new FileReader();r.onload=ev=>{S.mergeFiles.push({name:f.name,dataUrl:ev.target.result});renderMerge();};r.readAsDataURL(f);});e.target.value='';}
+function renderMerge(){const list=document.getElementById('mergeList');if(!S.mergeFiles.length){list.innerHTML='<div style="color:var(--text3);font-size:11px;padding:6px;text-align:center">No files</div>';return;}list.innerHTML=S.mergeFiles.map((f,i)=>`<div class="fl-item"><span style="font-family:var(--fm);font-size:10px;color:var(--text3)">${i+1}</span><span class="fl-name">${esc(f.name)}</span><span class="fl-rm" onclick="S.mergeFiles.splice(${i},1);renderMerge()">✕</span></div>`).join('');}
+function mergePDF(){if(!S.mergeFiles.length){notify('Add files first.','e');return;}const{jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});let loaded=0;S.mergeFiles.forEach((f,i)=>{const img=new Image();img.onload=()=>{if(i>0)doc.addPage();doc.addImage(f.dataUrl,'PNG',0,0,210,297);loaded++;if(loaded===S.mergeFiles.length){doc.save('merged.pdf');addHist('Merged PDF',S.mergeFiles.length+' files','🔀');notify('PDF merged!','s');}};img.src=f.dataUrl;});}
+function splitDoc(){if(!S.img){notify('No doc loaded.','e');return;}const{jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});doc.addImage(getPDU(),'PNG',0,0,210,297);doc.save('extracted.pdf');notify('Extracted!','s');}
+function setCompQ(q,el){document.querySelectorAll('#cq-low,#cq-med,#cq-high').forEach(b=>b.classList.remove('active'));el.classList.add('active');S.compQ=q;}
+function compressPDF(){if(!S.img){notify('No doc loaded.','e');return;}const q=S.compQ==='low'?.4:S.compQ==='med'?.7:.92;const c=document.getElementById('previewCanvas');const{jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});doc.addImage(c.toDataURL('image/jpeg',q),'JPEG',0,0,210,297);doc.save('compressed.pdf');notify('Compressed!','s');}
+function applyWM(){
+  if(!S.img){notify('Load a doc first.','e');return;}
+  const c=document.getElementById('previewCanvas');const ctx=c.getContext('2d');
+  const textEl=document.getElementById('wmText')||document.getElementById('wmQuick');
+  const text=textEl?textEl.value:'CONFIDENTIAL';
+  const opEl=document.getElementById('wmOpacity');const opacity=opEl?(+opEl.value/100):.25;
+  const posEl=document.getElementById('wmPos');const pos=posEl?posEl.value:'center';
+  ctx.save();ctx.globalAlpha=opacity;ctx.fillStyle=S.wmColor;
+  ctx.font=`bold ${Math.round(c.width/10)}px sans-serif`;ctx.textAlign='center';
+  if(pos==='center'){ctx.translate(c.width/2,c.height/2);ctx.rotate(-Math.PI/4);ctx.fillText(text,0,0);}
+  else if(pos==='top'){ctx.fillText(text,c.width/2,50);}
+  else if(pos==='bottom'){ctx.fillText(text,c.width/2,c.height-30);}
+  else{for(let y=80;y<c.height;y+=120)for(let x=0;x<c.width;x+=200){ctx.save();ctx.translate(x,y);ctx.rotate(-Math.PI/6);ctx.font=`bold ${Math.round(c.width/15)}px sans-serif`;ctx.fillText(text,0,0);ctx.restore();}}
+  ctx.restore();const img=new Image();img.onload=()=>S.img=img;img.src=c.toDataURL();addHist('Watermark','Added: '+text,'💧');notify('Watermark applied!','s');
+}
+
+// ══ SIGNATURE ══
+function initSig(){
+  const canvas=document.getElementById('sigCanvas');if(!canvas)return;
+  const pw=canvas.parentElement.clientWidth-8;canvas.style.width=pw+'px';canvas.style.height=Math.round(pw*.33)+'px';
+  const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+  canvas.onmousedown=e=>{S.sigDrawing=true;const p=gPos(e,canvas);ctx.beginPath();ctx.moveTo(p.x,p.y);};
+  canvas.onmousemove=e=>{if(!S.sigDrawing)return;const p=gPos(e,canvas);ctx.strokeStyle=S.sigColor;ctx.lineWidth=+document.getElementById('sigWeight').value;ctx.lineCap='round';ctx.lineJoin='round';ctx.lineTo(p.x,p.y);ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);};
+  canvas.onmouseup=canvas.onmouseleave=()=>{S.sigDrawing=false;updateSigPreview();};
+  canvas.ontouchstart=e=>{e.preventDefault();canvas.onmousedown(e.touches[0]);};canvas.ontouchmove=e=>{e.preventDefault();canvas.onmousemove(e.touches[0]);};canvas.ontouchend=()=>canvas.onmouseup();
+}
+function clearSig(){const c=document.getElementById('sigCanvas');if(!c)return;const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);updateSigPreview();}
+function setSigColor(c,el){S.sigColor=c;document.querySelectorAll('.sig-wrap .color-swatch').forEach(s=>s.classList.remove('sel'));el.classList.add('sel');}
+function setSigFont(f,el){S.sigFont=f;document.querySelectorAll('#sigTypeMode .filter-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderTypedSig(document.getElementById('sigText')?.value||'');}
+function renderTypedSig(text){const c=document.getElementById('sigCanvas');if(!c)return;const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle=S.sigColor;ctx.font=`italic 36px ${S.sigFont}`;ctx.fillText(text,20,90);updateSigPreview();}
+function setSigMode(mode,el){S.sigMode=mode;document.querySelectorAll('.pill-tabs .pill-tab').forEach(b=>b.classList.remove('active'));el.classList.add('active');document.getElementById('sigDrawMode').style.display=mode==='draw'?'block':'none';document.getElementById('sigTypeMode').style.display=mode==='type'?'block':'none';document.getElementById('sigUploadMode').style.display=mode==='upload'?'block':'none';if(mode==='draw')setTimeout(initSig,60);}
+function loadSigImg(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{const img=new Image();img.onload=()=>{const c=document.getElementById('sigCanvas');const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);const s=Math.min(c.width/img.width,c.height/img.height);ctx.drawImage(img,0,0,img.width*s,img.height*s);updateSigPreview();};img.src=ev.target.result;};r.readAsDataURL(f);}
+function updateSigPreview(){const s=document.getElementById('sigCanvas');const p=document.getElementById('sigPreview');if(!s||!p)return;const ctx=p.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,p.width,p.height);ctx.drawImage(s,0,0,p.width,p.height);}
+function applySig(){if(!S.img){notify('Load a doc first.','e');return;}const sig=document.getElementById('sigCanvas');const c=document.getElementById('previewCanvas');const ctx=c.getContext('2d');ctx.globalAlpha=.85;ctx.drawImage(sig,c.width-sig.width/2-20,c.height-sig.height/2-20,sig.width/2,sig.height/2);ctx.globalAlpha=1;const img=new Image();img.onload=()=>S.img=img;img.src=c.toDataURL();addHist('Signature','Applied','✍️');notify('Signature applied!','s');}
+function downloadSig(){const c=document.getElementById('sigCanvas');if(!c)return;const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='signature.png';a.click();notify('Signature saved!','s');}
+
+// ══ WATERMARK / PROTECT ══
+function setWMColor(c,el){S.wmColor=c;document.querySelectorAll('.wm-layout .color-swatch,.ms-layout .color-swatch').forEach(s=>s.classList.remove('sel'));el.classList.add('sel');}
+function protectDoc(){
+  if(!S.img){notify('Load a doc first.','e');return;}
+  const pw=document.getElementById('docPW')?.value,pw2=document.getElementById('docPW2')?.value;
+  if(!pw){notify('Enter a password.','e');return;}if(pw!==pw2){notify('Passwords do not match.','e');return;}
+  const permPrint=document.getElementById('permPrint')?.checked||false;
+  const permCopy=document.getElementById('permCopy')?.checked||false;
+  const bar=document.getElementById('protectProg');let p=0;
+  if(bar)bar.style.width='10%';
+  setTimeout(()=>{
+    try{
+      const name=document.getElementById('docName').value||'scan';
+      const{jsPDF}=window.jspdf;
+      const doc=new jsPDF({unit:'mm',format:'a4'});
+      doc.addImage(getPDU(),'PNG',0,0,210,297);
+      if(bar)bar.style.width='45%';
+      const plainBytes=new Uint8Array(doc.output('arraybuffer'));
+      if(bar)bar.style.width='70%';
+      const encBytes=encryptPdf(plainBytes, pw, pw, {print:permPrint, modify:false, copy:permCopy, annotate:false});
+      if(bar)bar.style.width='95%';
+      const blob=new Blob([encBytes],{type:'application/pdf'});
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download=name+'-protected.pdf';
+      a.click();
+      if(bar)bar.style.width='100%';
+      addHist('Protected',name+'-protected.pdf','🔐');
+      notify('Password-protected PDF downloaded!','s');
+      setTimeout(()=>{if(bar)bar.style.width='0%';},1500);
+    }catch(err){
+      notify('Protection failed: '+err.message,'e');
+      if(bar)bar.style.width='0%';
+    }
+  },50);
+}
+let qrScanning=false;
+function detectQR(){
+  if(!S.img){notify('Load a doc first.','e');return;}
+  if(typeof jsQR==='undefined'){notify('QR scanner failed to load.','e');return;}
+  const div=document.getElementById('qrResult');
+  div.style.display='block';div.innerHTML='🔍 Scanning…';
+  qrScanning=true;
+  setTimeout(()=>{
+    if(!qrScanning)return;
+    try{
+      const c=document.getElementById('previewCanvas');
+      const ctx=c.getContext('2d');
+      const imgData=ctx.getImageData(0,0,c.width,c.height);
+      const result=jsQR(imgData.data,imgData.width,imgData.height);
+      if(result&&result.data){
+        div.innerHTML=`📱 <strong>QR detected!</strong><br/><code>${esc(result.data)}</code>`;
+        addHist('QR Detected',result.data,'📱');
+        notify('QR code found!','s');
+      }else{
+        div.innerHTML='🔍 No QR code found in this document.';
+        notify('No QR code detected.','i');
+      }
+    }catch(err){
+      div.innerHTML='⚠️ Scan failed: '+esc(err.message);
+      notify('Scan error.','e');
+    }
+  },400);
+}
+
+// ══ HISTORY ══
+function addHist(action,detail,icon='📄'){S.hist.unshift({id:Date.now(),action,detail,icon,time:new Date().toLocaleString()});if(S.hist.length>50)S.hist=S.hist.slice(0,50);try{localStorage.setItem('scanai_hist',JSON.stringify(S.hist));}catch(e){}}
+function renderHist(){const list=document.getElementById('histList');if(!S.hist.length){list.innerHTML='<div class="empty-state"><div class="es-icon">🕐</div><div class="es-text">No history</div></div>';return;}list.innerHTML=S.hist.map(h=>`<div class="hist-item"><div class="hist-ico">${h.icon}</div><div class="hist-info"><div class="hist-name">${esc(h.action)}</div><div class="hist-meta">${esc(h.detail)} · ${h.time}</div></div></div>`).join('');}
+function clearHist(){S.hist=[];localStorage.removeItem('scanai_hist');renderHist();notify('History cleared.','i');}
+
+// ══ SETTINGS ══
+function exportAll(){const data=JSON.stringify({docs:S.docs,hist:S.hist,exported:new Date().toISOString()},null,2);const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'application/json'}));a.download='scanai_export.json';a.click();notify('Exported!','s');}
+function confirmClear(){showModal(`<div class="modal-title">⚠️ Clear All Data?</div><div class="modal-sub">Permanently deletes everything. Cannot be undone.</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px"><button class="action-btn" onclick="closeModal()">Cancel</button><button class="action-btn red" onclick="doClear()">Delete All</button></div>`);}
+function doClear(){localStorage.clear();S.docs=[];S.hist=[];S.aiStats=0;S.ocrStats=0;closeModal();refreshDash();notify('Cleared.','i');}
+
+// ══ UTILS ══
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// Keyboard shortcuts
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')return;
+  if(e.key==='s')nav('scanner');if(e.key==='l')nav('library');if(e.key==='a')nav('ai');if(e.key==='Escape')closeModal();
+});
+window.addEventListener('resize',()=>{if(S.img)renderPreview();});
+
+// BOOT
+refreshDash();
+renderLib();
+</script>
+</body>
+</html>
