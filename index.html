@@ -419,6 +419,7 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
       <div class="sec-hdr">
         <div class="sec-title">Scanner</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="action-btn blue" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="startBatchScan()">📚 Multi-Page</button>
           <button class="action-btn" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="rotateImage(-90)">↺ L</button>
           <button class="action-btn" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="rotateImage(90)">↻ R</button>
           <button class="action-btn primary" style="width:auto;padding:7px 14px;margin:0;font-size:12px" onclick="saveDoc()">💾 Save</button>
@@ -1121,16 +1122,55 @@ function renderPreview(){
   const maxW=wrap.clientWidth||300,maxH=wrap.clientHeight||400;
   let w=img.naturalWidth,h=img.naturalHeight;
   const scale=Math.min(maxW/w,maxH/h,1);
-  w=w*scale;h=h*scale;canvas.width=w;canvas.height=h;
+  const dispW=w*scale,dispH=h*scale;
+  const dpr=Math.min(window.devicePixelRatio||1,3); // render at native screen resolution so the preview isn't blurry on retina/high-DPI phones
+  canvas.width=Math.max(1,Math.round(dispW*dpr));
+  canvas.height=Math.max(1,Math.round(dispH*dpr));
+  canvas.style.width=dispW+'px';
+  canvas.style.height=dispH+'px';
   const ctx=canvas.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
   const b=document.getElementById('slBright').value,c=document.getElementById('slContrast').value,sat=document.getElementById('slSat').value;
   ctx.save();
   ctx.filter=`brightness(${b}%) contrast(${c}%) saturate(${sat}%)${S.filter==='sepia'?' sepia(0.8)':''}`;
-  ctx.translate(w/2,h/2);ctx.rotate(S.rot*Math.PI/180);ctx.drawImage(img,-w/2,-h/2,w,h);
+  ctx.translate(dispW/2,dispH/2);ctx.rotate(S.rot*Math.PI/180);ctx.drawImage(img,-dispW/2,-dispH/2,dispW,dispH);
   ctx.restore();
 }
 function rotateImage(deg){const curr=+document.getElementById('slRot').value;let nv=((curr+deg)+360)%360;if(nv>180)nv-=360;document.getElementById('slRot').value=nv;applyFilters();}
-function getPDU(){return document.getElementById('previewCanvas').toDataURL('image/png');}
+// Full-resolution render used for every export, AI call, watermark, and signature — kept
+// separate from the (screen-sized) on-screen preview canvas so document quality is never
+// silently collapsed down to whatever the phone's viewport happens to be.
+const MAX_EXPORT_DIM=2600;
+function buildFullResCanvas(){
+  const img=S.img;if(!img)return null;
+  let w=img.naturalWidth||1,h=img.naturalHeight||1;
+  const scale=Math.min(1,MAX_EXPORT_DIM/Math.max(w,h));
+  w=Math.max(1,Math.round(w*scale));h=Math.max(1,Math.round(h*scale));
+  const canvas=document.createElement('canvas');
+  canvas.width=w;canvas.height=h;
+  const ctx=canvas.getContext('2d');
+  const b=document.getElementById('slBright')?.value||100;
+  const c=document.getElementById('slContrast')?.value||100;
+  const sat=document.getElementById('slSat')?.value||100;
+  ctx.save();
+  ctx.filter=`brightness(${b}%) contrast(${c}%) saturate(${sat}%)${S.filter==='sepia'?' sepia(0.8)':''}`;
+  ctx.translate(w/2,h/2);ctx.rotate((S.rot||0)*Math.PI/180);ctx.drawImage(img,-w/2,-h/2,w,h);
+  ctx.restore();
+  return canvas;
+}
+function getPDU(){const c=buildFullResCanvas();return c?c.toDataURL('image/png'):document.getElementById('previewCanvas').toDataURL('image/png');}
+// Full-res, unfiltered/unrotated copy — used by Annotate, which (like its on-screen base
+// canvas) always shows the raw photo so hand-drawn strokes stay aligned with what was drawn on.
+function buildFullResRawCanvas(){
+  const img=S.img;if(!img)return null;
+  let w=img.naturalWidth||1,h=img.naturalHeight||1;
+  const scale=Math.min(1,MAX_EXPORT_DIM/Math.max(w,h));
+  w=Math.max(1,Math.round(w*scale));h=Math.max(1,Math.round(h*scale));
+  const canvas=document.createElement('canvas');
+  canvas.width=w;canvas.height=h;
+  canvas.getContext('2d').drawImage(img,0,0,w,h);
+  return canvas;
+}
 
 // ══ SAVE ══
 function saveDoc(){
@@ -1155,7 +1195,7 @@ function exportAs(fmt){
   const name=document.getElementById('docName').value||'scan';
   if(fmt==='pdf'){const{jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});doc.addImage(getPDU(),'PNG',0,0,210,297);doc.save(name+'.pdf');notify('PDF exported!','s');}
   else if(fmt==='png'){const a=document.createElement('a');a.href=getPDU();a.download=name+'.png';a.click();notify('PNG exported!','s');}
-  else if(fmt==='jpg'){const c=document.getElementById('previewCanvas');const a=document.createElement('a');a.href=c.toDataURL('image/jpeg',.92);a.download=name+'.jpg';a.click();notify('JPG exported!','s');}
+  else if(fmt==='jpg'){const c=buildFullResCanvas();if(!c){notify('Load a doc first.','e');return;}const a=document.createElement('a');a.href=c.toDataURL('image/jpeg',.92);a.download=name+'.jpg';a.click();notify('JPG exported!','s');}
   else if(fmt==='txt'){if(!S.lastOcr){notify('Run OCR first.','i');return;}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([S.lastOcr],{type:'text/plain'}));a.download=name+'.txt';a.click();notify('TXT exported!','s');}
   addHist('Exported '+fmt.toUpperCase(),name,'📤');
 }
@@ -1814,8 +1854,13 @@ function initAnn(){
   const maxW=Math.min(800,window.innerWidth-40);
   const scale=Math.min(maxW/(img.naturalWidth||400),1);
   const w=(img.naturalWidth||400)*scale,h=(img.naturalHeight||566)*scale;
-  base.width=ann.width=w;base.height=ann.height=h;
+  const dpr=Math.min(window.devicePixelRatio||1,3); // avoid blurry preview on retina/high-DPI phones
+  [base,ann].forEach(c=>{
+    c.width=Math.max(1,Math.round(w*dpr));c.height=Math.max(1,Math.round(h*dpr));
+    c.style.width=w+'px';c.style.height=h+'px';
+  });
   baseCtx=base.getContext('2d');annCtx=ann.getContext('2d');
+  baseCtx.setTransform(dpr,0,0,dpr,0,0);annCtx.setTransform(dpr,0,0,dpr,0,0);
   const draw=()=>baseCtx.drawImage(img,0,0,w,h);
   if(img.complete)draw();else img.onload=draw;
   ann.onmousedown=e=>annStart(gPos(e,ann));ann.onmousemove=e=>annMove(gPos(e,ann));ann.onmouseup=ann.onmouseleave=e=>annEnd(gPos(e,ann));
@@ -1830,7 +1875,18 @@ function setAnnTool(t){S.drawMode=t;document.querySelectorAll('.ann-btn[id^=ann-
 function setDColor(c,el){S.drawColor=c;document.querySelectorAll('.ann-bar .color-swatch').forEach(s=>s.classList.remove('sel'));el.classList.add('sel');}
 function addStamp(text){if(!annCtx)return;annCtx.save();annCtx.font='bold 20px sans-serif';annCtx.strokeStyle=S.drawColor;annCtx.lineWidth=2;annCtx.globalAlpha=.7;const tw=annCtx.measureText(text).width;annCtx.strokeRect(16,44,tw+12,30);annCtx.fillStyle=S.drawColor;annCtx.fillText(text,20,66);annCtx.restore();notify('"'+text+'" stamped!','s');}
 function clearAnn(){if(annCtx)annCtx.clearRect(0,0,annCtx.canvas.width,annCtx.canvas.height);}
-function saveAnn(){if(!annCtx)return;const base=document.getElementById('baseCanvas'),ann=document.getElementById('annotCanvas');const merged=document.createElement('canvas');merged.width=base.width;merged.height=base.height;const ctx=merged.getContext('2d');ctx.drawImage(base,0,0);ctx.drawImage(ann,0,0);const img=new Image();img.onload=()=>{S.img=img;renderPreview();};img.src=merged.toDataURL();notify('Annotations saved!','s');}
+function saveAnn(){
+  if(!annCtx)return;
+  const ann=document.getElementById('annotCanvas');
+  // Composite the annotation strokes onto a FULL-RESOLUTION copy of the document instead
+  // of the small on-screen canvas, so drawing/highlighting never collapses document quality.
+  const merged=buildFullResRawCanvas();
+  if(!merged){notify('Load a doc first.','e');return;}
+  const ctx=merged.getContext('2d');
+  ctx.drawImage(ann,0,0,ann.width,ann.height,0,0,merged.width,merged.height);
+  const img=new Image();img.onload=()=>{S.img=img;renderPreview();};img.src=merged.toDataURL();
+  notify('Annotations saved!','s');
+}
 
 // ══ MERGE / SPLIT ══
 function addMergeFiles(e){Array.from(e.target.files).forEach(f=>{const r=new FileReader();r.onload=ev=>{S.mergeFiles.push({name:f.name,dataUrl:ev.target.result});renderMerge();};r.readAsDataURL(f);});e.target.value='';}
@@ -1838,10 +1894,10 @@ function renderMerge(){const list=document.getElementById('mergeList');if(!S.mer
 function mergePDF(){if(!S.mergeFiles.length){notify('Add files first.','e');return;}const{jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});let loaded=0;S.mergeFiles.forEach((f,i)=>{const img=new Image();img.onload=()=>{if(i>0)doc.addPage();doc.addImage(f.dataUrl,'PNG',0,0,210,297);loaded++;if(loaded===S.mergeFiles.length){doc.save('merged.pdf');addHist('Merged PDF',S.mergeFiles.length+' files','🔀');notify('PDF merged!','s');}};img.src=f.dataUrl;});}
 function splitDoc(){if(!S.img){notify('No doc loaded.','e');return;}const{jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});doc.addImage(getPDU(),'PNG',0,0,210,297);doc.save('extracted.pdf');notify('Extracted!','s');}
 function setCompQ(q,el){document.querySelectorAll('#cq-low,#cq-med,#cq-high').forEach(b=>b.classList.remove('active'));el.classList.add('active');S.compQ=q;}
-function compressPDF(){if(!S.img){notify('No doc loaded.','e');return;}const q=S.compQ==='low'?.4:S.compQ==='med'?.7:.92;const c=document.getElementById('previewCanvas');const{jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});doc.addImage(c.toDataURL('image/jpeg',q),'JPEG',0,0,210,297);doc.save('compressed.pdf');notify('Compressed!','s');}
+function compressPDF(){if(!S.img){notify('No doc loaded.','e');return;}const q=S.compQ==='low'?.4:S.compQ==='med'?.7:.92;const c=buildFullResCanvas();const{jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});doc.addImage(c.toDataURL('image/jpeg',q),'JPEG',0,0,210,297);doc.save('compressed.pdf');notify('Compressed!','s');}
 function applyWM(){
   if(!S.img){notify('Load a doc first.','e');return;}
-  const c=document.getElementById('previewCanvas');const ctx=c.getContext('2d');
+  const c=buildFullResCanvas();const ctx=c.getContext('2d');
   const textEl=document.getElementById('wmText')||document.getElementById('wmQuick');
   const text=textEl?textEl.value:'CONFIDENTIAL';
   const opEl=document.getElementById('wmOpacity');const opacity=opEl?(+opEl.value/100):.25;
@@ -1849,10 +1905,10 @@ function applyWM(){
   ctx.save();ctx.globalAlpha=opacity;ctx.fillStyle=S.wmColor;
   ctx.font=`bold ${Math.round(c.width/10)}px sans-serif`;ctx.textAlign='center';
   if(pos==='center'){ctx.translate(c.width/2,c.height/2);ctx.rotate(-Math.PI/4);ctx.fillText(text,0,0);}
-  else if(pos==='top'){ctx.fillText(text,c.width/2,50);}
-  else if(pos==='bottom'){ctx.fillText(text,c.width/2,c.height-30);}
-  else{for(let y=80;y<c.height;y+=120)for(let x=0;x<c.width;x+=200){ctx.save();ctx.translate(x,y);ctx.rotate(-Math.PI/6);ctx.font=`bold ${Math.round(c.width/15)}px sans-serif`;ctx.fillText(text,0,0);ctx.restore();}}
-  ctx.restore();const img=new Image();img.onload=()=>S.img=img;img.src=c.toDataURL();addHist('Watermark','Added: '+text,'💧');notify('Watermark applied!','s');
+  else if(pos==='top'){ctx.fillText(text,c.width/2,c.height*.04+50);}
+  else if(pos==='bottom'){ctx.fillText(text,c.width/2,c.height-c.height*.03-30);}
+  else{const step=Math.round(c.height/9),xstep=Math.round(c.width/5);for(let y=step;y<c.height;y+=step)for(let x=0;x<c.width;x+=xstep){ctx.save();ctx.translate(x,y);ctx.rotate(-Math.PI/6);ctx.font=`bold ${Math.round(c.width/15)}px sans-serif`;ctx.fillText(text,0,0);ctx.restore();}}
+  ctx.restore();const img=new Image();img.onload=()=>{S.img=img;renderPreview();};img.src=c.toDataURL();addHist('Watermark','Added: '+text,'💧');notify('Watermark applied!','s');
 }
 
 // ══ SIGNATURE ══
@@ -1872,7 +1928,16 @@ function renderTypedSig(text){const c=document.getElementById('sigCanvas');if(!c
 function setSigMode(mode,el){S.sigMode=mode;document.querySelectorAll('.pill-tabs .pill-tab').forEach(b=>b.classList.remove('active'));el.classList.add('active');document.getElementById('sigDrawMode').style.display=mode==='draw'?'block':'none';document.getElementById('sigTypeMode').style.display=mode==='type'?'block':'none';document.getElementById('sigUploadMode').style.display=mode==='upload'?'block':'none';if(mode==='draw')setTimeout(initSig,60);}
 function loadSigImg(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{const img=new Image();img.onload=()=>{const c=document.getElementById('sigCanvas');const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);const s=Math.min(c.width/img.width,c.height/img.height);ctx.drawImage(img,0,0,img.width*s,img.height*s);updateSigPreview();};img.src=ev.target.result;};r.readAsDataURL(f);}
 function updateSigPreview(){const s=document.getElementById('sigCanvas');const p=document.getElementById('sigPreview');if(!s||!p)return;const ctx=p.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,p.width,p.height);ctx.drawImage(s,0,0,p.width,p.height);}
-function applySig(){if(!S.img){notify('Load a doc first.','e');return;}const sig=document.getElementById('sigCanvas');const c=document.getElementById('previewCanvas');const ctx=c.getContext('2d');ctx.globalAlpha=.85;ctx.drawImage(sig,c.width-sig.width/2-20,c.height-sig.height/2-20,sig.width/2,sig.height/2);ctx.globalAlpha=1;const img=new Image();img.onload=()=>S.img=img;img.src=c.toDataURL();addHist('Signature','Applied','✍️');notify('Signature applied!','s');}
+function applySig(){
+  if(!S.img){notify('Load a doc first.','e');return;}
+  const sig=document.getElementById('sigCanvas');
+  const c=buildFullResCanvas();const ctx=c.getContext('2d');
+  // scale the signature proportionally to the full-res canvas instead of the small preview size
+  const sigW=c.width*0.3,sigH=sigW*(sig.height/sig.width);
+  const margin=c.width*0.03;
+  ctx.globalAlpha=.85;ctx.drawImage(sig,c.width-sigW-margin,c.height-sigH-margin,sigW,sigH);ctx.globalAlpha=1;
+  const img=new Image();img.onload=()=>{S.img=img;renderPreview();};img.src=c.toDataURL();addHist('Signature','Applied','✍️');notify('Signature applied!','s');
+}
 function downloadSig(){const c=document.getElementById('sigCanvas');if(!c)return;const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='signature.png';a.click();notify('Signature saved!','s');}
 
 // ══ WATERMARK / PROTECT ══
