@@ -11,6 +11,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 :root{
   --bg:#0a0c0f;--surface:#111318;--surface2:#181c23;--surface3:#1e232d;
@@ -24,7 +25,7 @@
   --text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;
   --fd:'Syne',sans-serif;--fm:'DM Mono',monospace;--fb:'Plus Jakarta Sans',sans-serif;
   --r:12px;--r2:8px;--shadow:0 4px 28px rgba(0,0,0,.5);
-  --topbar-h:56px;--sidebar-w:224px;--bn-h:64px;
+  --topbar-h:56px;--sidebar-w:224px;
 }
 body.light{
   --bg:#f0f4f8;--surface:#fff;--surface2:#f8fafc;--surface3:#eef2f7;
@@ -74,14 +75,6 @@ input,select,button{font-family:var(--fb);outline:none}
 .chip.on{background:linear-gradient(145deg,#34e07f,#189a4d);border-color:#1a9e4f;color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.25);box-shadow:0 2px 0 rgba(9,70,32,.5),0 4px 10px rgba(34,197,94,.4),inset 0 1px 0 rgba(255,255,255,.35),inset 0 -1px 2px rgba(0,0,0,.2)}
 .chip.on:active{box-shadow:0 0 0 rgba(9,70,32,.5),0 1px 4px rgba(34,197,94,.4),inset 0 1px 0 rgba(255,255,255,.2)}
 
-/* ── BOTTOM NAV mobile ── */
-.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:var(--bn-h);background:var(--surface);border-top:1px solid var(--border);z-index:300;padding-bottom:env(safe-area-inset-bottom,0px)}
-.bn-inner{display:flex;height:100%;align-items:center}
-.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:var(--text3);padding:4px 2px;transition:.15s;border-radius:var(--r2)}
-.bn-item.active{color:var(--accent)}
-.bn-ico{font-size:20px;line-height:1}
-.bn-lbl{font-size:10px;font-weight:600;font-family:var(--fm);letter-spacing:.2px}
-
 /* ── SIDEBAR OVERLAY mobile ── */
 .sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:249;backdrop-filter:blur(2px)}
 .sb-overlay.show{display:block}
@@ -94,8 +87,6 @@ input,select,button{font-family:var(--fb);outline:none}
   .sidebar.open{transform:translateX(0)}
   .tb-search{max-width:none}
   .new-btn .btn-txt{display:none}
-  .bottom-nav{display:block}
-  .main{padding-bottom:var(--bn-h)}
 }
 
 /* ── MAIN / VIEWS ── */
@@ -186,6 +177,16 @@ select.form-input option{background:var(--bg)}
 @media(min-width:768px){.scanner-wrap{flex-direction:row}}
 .scan-main{flex:1;display:flex;flex-direction:column;overflow:hidden;padding:12px;min-height:0}
 .drop-zone{flex:1;border:2px dashed var(--border2);border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;transition:.3s;position:relative;overflow:hidden;background:var(--surface2);min-height:160px}
+.batch-crop-wrap{position:relative;display:flex;justify-content:center;background:#000;border-radius:var(--r);overflow:hidden}
+.batch-crop-wrap img{display:block;max-width:100%;max-height:60vh;width:auto;height:auto}
+.batch-crop-svg{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+.batch-handle{fill:var(--accent);stroke:#fff;stroke-width:3;cursor:grab;touch-action:none}
+.batch-handle:active{cursor:grabbing;fill:var(--accent2)}
+.batch-thumb-strip{display:flex;gap:8px;overflow-x:auto;padding:4px 2px;-webkit-overflow-scrolling:touch}
+.batch-thumb{position:relative;flex-shrink:0;width:70px;height:96px;border-radius:8px;overflow:hidden;border:2px solid var(--border);background:var(--surface2)}
+.batch-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.batch-thumb .bt-num{position:absolute;top:2px;left:2px;background:rgba(0,0,0,.65);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:8px}
+.batch-thumb .bt-del{position:absolute;top:2px;right:2px;background:var(--red);color:#fff;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;line-height:1}
 .drop-zone.drag-over{border-color:var(--accent);background:var(--accent-dim)}
 .drop-icon{font-size:40px;opacity:.4}
 .drop-title{font-family:var(--fd);font-weight:700;font-size:clamp(14px,4vw,18px)}
@@ -304,7 +305,7 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
 .hist-meta{font-size:10px;color:var(--text3);font-family:var(--fm);margin-top:2px}
 
 /* ── NOTIF ── */
-.notif{position:fixed;bottom:calc(var(--bn-h) + 12px);right:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow);z-index:999;transform:translateY(80px);opacity:0;transition:.35s cubic-bezier(.34,1.56,.64,1);max-width:min(340px,calc(100vw - 28px))}
+.notif{position:fixed;bottom:20px;right:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow);z-index:999;transform:translateY(80px);opacity:0;transition:.35s cubic-bezier(.34,1.56,.64,1);max-width:min(340px,calc(100vw - 28px))}
 .notif.show{transform:translateY(0);opacity:1}
 .nd{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .nd.s{background:var(--green)} .nd.e{background:var(--red)} .nd.i{background:var(--blue)}
@@ -345,16 +346,16 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
   <!-- SIDEBAR -->
   <nav class="sidebar" id="sidebar">
     <div class="sb-label">WORKSPACE</div>
-    <div class="nav-item active" onclick="nav('dashboard')"><span class="ni-ico">🏠</span>Dashboard</div>
-    <div class="nav-item" onclick="nav('scanner')"><span class="ni-ico">📷</span>Scanner</div>
-    <div class="nav-item" onclick="nav('library')"><span class="ni-ico">📁</span>Library<span class="ni-badge" id="libCount">0</span></div>
-    <div class="nav-item" onclick="nav('ai')"><span class="ni-ico">🤖</span>AI Tools</div>
-    <div class="nav-item" onclick="nav('annotate')"><span class="ni-ico">✏️</span>Annotate</div>
-    <div class="nav-item" onclick="nav('merge')"><span class="ni-ico">🔀</span>Merge &amp; Split</div>
-    <div class="nav-item" onclick="nav('signature')"><span class="ni-ico">✍️</span>Signature</div>
-    <div class="nav-item" onclick="nav('watermark')"><span class="ni-ico">💧</span>Watermark</div>
-    <div class="nav-item" onclick="nav('history')"><span class="ni-ico">🕐</span>History</div>
-    <div class="nav-item" onclick="nav('settings')"><span class="ni-ico">⚙️</span>Settings</div>
+    <div class="nav-item active" data-nav="dashboard" onclick="nav('dashboard')"><span class="ni-ico">🏠</span>Dashboard</div>
+    <div class="nav-item" data-nav="scanner" onclick="nav('scanner')"><span class="ni-ico">📷</span>Scan</div>
+    <div class="nav-item" data-nav="library" onclick="nav('library')"><span class="ni-ico">📁</span>Library<span class="ni-badge" id="libCount">0</span></div>
+    <div class="nav-item" data-nav="ai" onclick="nav('ai')"><span class="ni-ico">🤖</span>AI Tools</div>
+    <div class="nav-item" data-nav="annotate" onclick="nav('annotate')"><span class="ni-ico">✏️</span>Annotate</div>
+    <div class="nav-item" data-nav="merge" onclick="nav('merge')"><span class="ni-ico">🔀</span>Merge &amp; Split</div>
+    <div class="nav-item" data-nav="signature" onclick="nav('signature')"><span class="ni-ico">✍️</span>Signature</div>
+    <div class="nav-item" data-nav="watermark" onclick="nav('watermark')"><span class="ni-ico">💧</span>Watermark</div>
+    <div class="nav-item" data-nav="history" onclick="nav('history')"><span class="ni-ico">🕐</span>History</div>
+    <div class="nav-item" data-nav="settings" onclick="nav('settings')"><span class="ni-ico">⚙️</span>Settings</div>
     <div class="nav-sep"></div>
     <div class="sb-footer">
       <div style="font-size:11px;color:var(--text3);font-family:var(--fm)">Storage: 1.7 GB / 5 GB</div>
@@ -417,24 +418,54 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
     <!-- SCANNER -->
     <div class="view" id="view-scanner">
       <div class="sec-hdr">
-        <div class="sec-title">Scanner</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <button class="action-btn blue" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="startBatchScan()">📚 Multi-Page</button>
+        <div class="sec-title">Scan</div>
+        <div id="scanEditorActions" style="display:none;gap:6px;flex-wrap:wrap">
+          <button class="action-btn" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="newScan()">🔄 New</button>
           <button class="action-btn" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="rotateImage(-90)">↺ L</button>
           <button class="action-btn" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="rotateImage(90)">↻ R</button>
           <button class="action-btn primary" style="width:auto;padding:7px 14px;margin:0;font-size:12px" onclick="saveDoc()">💾 Save</button>
         </div>
+        <button class="action-btn red" id="scanCancelBtn" style="display:none;width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="cancelScanFlow()">✕ Cancel</button>
       </div>
       <div class="scanner-wrap">
         <div class="scan-main">
-          <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()" ondragover="dOver(event)" ondragleave="dLeave()" ondrop="dDrop(event)">
-            <div class="scan-corners"><div class="sc tl"></div><div class="sc tr"></div><div class="sc bl"></div><div class="sc br"></div><div class="scan-line"></div></div>
-            <div class="drop-icon">📄</div>
-            <div class="drop-title">Tap to scan</div>
-            <div class="drop-sub">Upload image or PDF — camera or files</div>
-            <div class="drop-formats"><span class="fmt-pill">JPG</span><span class="fmt-pill">PNG</span><span class="fmt-pill">PDF</span><span class="fmt-pill">HEIC</span><span class="fmt-pill">TIFF</span></div>
+
+          <!-- STAGE 1: pick a photo (always the entry point — one door, not two) -->
+          <div id="scanStageUpload">
+            <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()" ondragover="dOver(event)" ondragleave="dLeave()" ondrop="dDrop(event)">
+              <div class="scan-corners"><div class="sc tl"></div><div class="sc tr"></div><div class="sc bl"></div><div class="sc br"></div><div class="scan-line"></div></div>
+              <div class="drop-icon">📄</div>
+              <div class="drop-title" id="scanUploadTitle">Tap to scan</div>
+              <div class="drop-sub">Upload a photo — camera or files. Add as many pages as you need.</div>
+              <div class="drop-formats"><span class="fmt-pill">JPG</span><span class="fmt-pill">PNG</span><span class="fmt-pill">HEIC</span><span class="fmt-pill">PDF</span></div>
+            </div>
+            <input type="file" id="fileInput" accept="image/*,application/pdf,.pdf" style="display:none" onchange="scanFileLoad(event)"/>
           </div>
-          <input type="file" id="fileInput" accept="image/*,.pdf" style="display:none" onchange="loadFile(event)"/>
+
+          <!-- STAGE 2: crop with independently-draggable corners (Apple-Preview-style perspective correction) -->
+          <div id="scanCropStage" style="display:none">
+            <div class="batch-crop-wrap" id="batchCropWrap">
+              <img id="batchCropImg" src=""/>
+              <svg class="batch-crop-svg" id="batchCropSvg"></svg>
+            </div>
+            <div style="font-size:11px;color:var(--text3);text-align:center;margin:8px 0">Drag each corner to match the page edges</div>
+            <div style="display:flex;gap:6px">
+              <button class="action-btn" style="flex:1;margin:0" onclick="resetBatchCorners()">↻ Reset</button>
+              <button class="action-btn primary" style="flex:2;margin:0" onclick="confirmScanCrop()">✓ Use This Page</button>
+            </div>
+          </div>
+
+          <!-- STAGE 3: collected pages — add more, or finish -->
+          <div id="scanPagesStage" style="display:none">
+            <div class="ds-title" style="justify-content:flex-start;gap:4px;margin-bottom:8px">Pages (<span id="scanPageCount">0</span>)</div>
+            <div class="batch-thumb-strip" id="scanPageStrip"></div>
+            <div style="display:flex;gap:6px;margin-top:14px">
+              <button class="action-btn" style="flex:1;margin:0" onclick="addAnotherScanPage()">➕ Add Another Page</button>
+              <button class="action-btn primary" style="flex:1;margin:0" onclick="finishScan()">✓ Done</button>
+            </div>
+          </div>
+
+          <!-- STAGE 4: single-page editor (filters/rotate/export) — shown once you tap Done with exactly 1 page -->
           <div class="canvas-wrap" id="canvasWrap" style="display:none"><canvas id="previewCanvas"></canvas></div>
           <div class="scan-mobile-bar" id="mobileBar" style="display:none">
             <button class="action-btn primary" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="exportAs('pdf')">📕 PDF</button>
@@ -443,7 +474,7 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
             <button class="action-btn green" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="qClassify()">🏷️ Classify</button>
           </div>
         </div>
-        <div class="scan-panel">
+        <div class="scan-panel" id="scanPanel" style="display:none">
           <div class="panel-sec">
             <div class="panel-title"><span class="pt-ico">🎨</span> Enhancement</div>
             <div class="sl-group"><div class="sl-label"><span>Brightness</span><span class="sl-val" id="vBright">100%</span></div><input type="range" id="slBright" min="0" max="200" value="100" oninput="applyFilters()"/></div>
@@ -564,9 +595,9 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
         <div class="ms-grid">
           <div class="ms-card">
             <div class="ms-title">🔀 Merge Files</div>
-            <div class="ms-desc">Combine multiple images into one PDF.</div>
+            <div class="ms-desc">Combine multiple images or PDFs into one PDF.</div>
             <div class="file-list" id="mergeList"><div style="color:var(--text3);font-size:11px;padding:6px;text-align:center">No files</div></div>
-            <input type="file" id="mergeInput" accept="image/*" multiple style="display:none" onchange="addMergeFiles(event)"/>
+            <input type="file" id="mergeInput" accept="image/*,application/pdf,.pdf" multiple style="display:none" onchange="addMergeFiles(event)"/>
             <button class="action-btn" onclick="document.getElementById('mergeInput').click()">➕ Add Files</button>
             <button class="action-btn primary" onclick="mergePDF()">🔀 Merge to PDF</button>
           </div>
@@ -727,13 +758,11 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
           <button class="action-btn green" onclick="notify('Settings saved!','s')">💾 Save Settings</button>
         </div>
         <div class="ms-card" style="margin-bottom:12px">
-          <div class="ms-title">🔌 AI Backend (Cloudflare Worker)</div>
-          <div class="form-group"><label class="form-label">Worker URL</label>
-            <input class="form-input" id="workerUrlInput" placeholder="https://your-worker.your-subdomain.workers.dev/"/>
+          <div class="ms-title">🤖 AI Provider</div>
+          <div class="form-group"><label class="form-label">Your favourite AI</label>
+            <select class="form-input" id="aiProviderSel" onchange="onProviderChange()"></select>
           </div>
-          <button class="action-btn primary" onclick="saveWorkerUrl()">💾 Save Backend URL</button>
-          <div id="workerUrlStatus" style="font-size:11px;color:var(--text3);margin-top:8px"></div>
-          <div style="font-size:11px;color:var(--text3);margin-top:6px">All AI tools (OCR, Chat, Tables, etc.) send their requests here instead of directly to Anthropic. Deploy the included Cloudflare Worker, put your API key in it as a secret, then paste its URL above.</div>
+          <div id="aiProviderBody"></div>
         </div>
         <div class="ms-card">
           <div class="ms-title">🔒 Privacy</div>
@@ -750,17 +779,6 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
 
   </main>
 </div>
-
-<!-- BOTTOM NAV -->
-<nav class="bottom-nav">
-  <div class="bn-inner">
-    <div class="bn-item active" id="bn-dashboard" onclick="nav('dashboard')"><div class="bn-ico">🏠</div><div class="bn-lbl">Home</div></div>
-    <div class="bn-item" id="bn-scanner" onclick="nav('scanner')"><div class="bn-ico">📷</div><div class="bn-lbl">Scan</div></div>
-    <div class="bn-item" id="bn-library" onclick="nav('library')"><div class="bn-ico">📁</div><div class="bn-lbl">Library</div></div>
-    <div class="bn-item" id="bn-ai" onclick="nav('ai')"><div class="bn-ico">🤖</div><div class="bn-lbl">AI</div></div>
-    <div class="bn-item" id="bn-more" onclick="toggleSB()"><div class="bn-ico">☰</div><div class="bn-lbl">More</div></div>
-  </div>
-</nav>
 
 <!-- Notification -->
 <div class="notif" id="notif"><div class="nd s" id="nd"></div><div class="nt" id="nt"></div></div>
@@ -1034,6 +1052,7 @@ const S={
   drawColor:'#ef4444',drawMode:'select',drawing:false,lx:0,ly:0,
   sigColor:'#1a1a2e',sigFont:'sans-serif',sigMode:'draw',sigDrawing:false,
   wmColor:'#ef4444',compQ:'med',
+  batch:{pages:[],currentImg:null,corners:null,pendingImages:[]},
   mergeFiles:[],libFilter:'all',light:false,
 };
 function tryP(k,d){try{return JSON.parse(localStorage.getItem(k)||'null')||d}catch{return d}}
@@ -1046,18 +1065,23 @@ function closeSB(){document.getElementById('sidebar').classList.remove('open');d
 function nav(id){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
   const el=document.getElementById('view-'+id);if(el)el.classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n=>{if(n.textContent.trim().toLowerCase().startsWith(id==='ai'?'ai':id.slice(0,5)))n.classList.add('active');});
-  const bn=document.getElementById('bn-'+id);if(bn)bn.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{if(n.dataset.nav===id)n.classList.add('active');});
   if(id==='dashboard')refreshDash();
   if(id==='library')renderLib();
   if(id==='annotate')initAnn();
   if(id==='ai')renderAiTool(S.aiTool);
   if(id==='history')renderHist();
   if(id==='signature')setTimeout(initSig,60);
-  if(id==='settings')renderWorkerUrlStatus();
+  if(id==='settings')renderAiProviderCard();
+  if(id==='scanner')enterScanner();
   closeSB();
+}
+function newScan(){
+  S.img=null;S.rot=0;S.filter='none';
+  document.getElementById('docName').value='';
+  showScanStage('upload');
+  document.getElementById('scanUploadTitle').textContent='Tap to scan';
 }
 
 // ══ THEME ══
@@ -1081,21 +1105,51 @@ function closeModal(){document.getElementById('overlay').classList.remove('show'
 // ══ FILE ══
 function dOver(e){e.preventDefault();document.getElementById('dropZone').classList.add('drag-over');}
 function dLeave(){document.getElementById('dropZone').classList.remove('drag-over');}
-function dDrop(e){e.preventDefault();dLeave();const f=e.dataTransfer.files[0];if(f)loadFileObj(f);}
-function loadFile(e){const f=e.target.files[0];if(f)loadFileObj(f);e.target.value='';}
-function loadFileObj(file){
+function dDrop(e){e.preventDefault();dLeave();const f=e.dataTransfer.files[0];if(f)loadScanFileObj(f);}
+function scanFileLoad(e){const f=e.target.files[0];if(f)loadScanFileObj(f);e.target.value='';}
+function loadImageDataUrlIntoCrop(dataUrl){
+  const img=new Image();
+  img.onload=()=>{
+    S.batch.currentImg=img;
+    S.batch.corners=defaultBatchCorners(img.naturalWidth,img.naturalHeight);
+    document.getElementById('batchCropImg').src=dataUrl;
+    showScanStage('crop');
+    renderBatchCropSVG();
+  };
+  img.src=dataUrl;
+}
+function setScanLoading(loading){
+  const icon=document.querySelector('#dropZone .drop-icon');
+  const title=document.getElementById('scanUploadTitle');
+  const sub=document.querySelector('#dropZone .drop-sub');
+  const zone=document.getElementById('dropZone');
+  if(loading){
+    icon.textContent='⏳';title.textContent='Reading PDF…';sub.textContent='Rendering pages, one moment';
+    zone.style.pointerEvents='none';zone.style.opacity='.6';
+  }else{
+    icon.textContent='📄';sub.textContent='Upload a photo — camera or files. Add as many pages as you need.';
+    zone.style.pointerEvents='';zone.style.opacity='';
+  }
+}
+async function loadScanFileObj(file){
+  if(isPdfFile(file)){
+    setScanLoading(true);
+    try{
+      const pages=await renderPdfToImages(file);
+      if(!pages.length){notify('That PDF has no pages.','e');return;}
+      S.batch.pendingImages=pages.slice(1); // queue the rest; load page 1 now
+      loadImageDataUrlIntoCrop(pages[0].dataUrl);
+      if(pages.length>1)notify(`PDF loaded — crop each of its ${pages.length} pages.`,'i');
+    }catch(err){
+      notify(err.message||'Could not read that PDF.','e');
+    }finally{
+      setScanLoading(false);
+    }
+    return;
+  }
   const r=new FileReader();
-  r.onload=ev=>{
-    const img=new Image();
-    img.onload=()=>{
-      S.img=img;
-      document.getElementById('dropZone').style.display='none';
-      document.getElementById('canvasWrap').style.display='flex';
-      document.getElementById('mobileBar').style.display='flex';
-      if(!document.getElementById('docName').value)document.getElementById('docName').value=file.name.replace(/\.[^.]+$/,'');
-      renderPreview();addHist('Scanned',file.name,'📄');notify('Document loaded!','s');initAnn();
-    };img.src=ev.target.result;
-  };r.readAsDataURL(file);
+  r.onload=ev=>loadImageDataUrlIntoCrop(ev.target.result);
+  r.readAsDataURL(file);
 }
 
 // ══ IMAGE PROCESSING ══
@@ -1172,6 +1226,242 @@ function buildFullResRawCanvas(){
   return canvas;
 }
 
+// ══ MULTI-PAGE SCAN (Apple-Preview-style corner-crop, combine pages into one PDF) ══
+// Solves the 3x3 homography mapping 4 'from' points to 4 'to' points (standard DLT method).
+function computeHomography(from,to){
+  const A=[],B=[];
+  for(let i=0;i<4;i++){
+    const[x,y]=from[i],[X,Y]=to[i];
+    A.push([x,y,1,0,0,0,-x*X,-y*X]);B.push(X);
+    A.push([0,0,0,x,y,1,-x*Y,-y*Y]);B.push(Y);
+  }
+  const n=8;
+  for(let col=0;col<n;col++){
+    let maxRow=col;
+    for(let r=col+1;r<n;r++)if(Math.abs(A[r][col])>Math.abs(A[maxRow][col]))maxRow=r;
+    [A[col],A[maxRow]]=[A[maxRow],A[col]];[B[col],B[maxRow]]=[B[maxRow],B[col]];
+    const pivot=A[col][col]||1e-10;
+    for(let r=0;r<n;r++){
+      if(r===col)continue;
+      const factor=A[r][col]/pivot;
+      for(let c=col;c<n;c++)A[r][c]-=factor*A[col][c];
+      B[r]-=factor*B[col];
+    }
+  }
+  const sol=B.map((b,i)=>b/(A[i][i]||1e-10));
+  return [...sol,1]; // 3x3 row-major, H[8]=1
+}
+// ══ PDF → IMAGE (so PDFs can flow through the same scan/crop/merge pipeline as photos) ══
+let pdfjsReady=false;
+function ensurePdfJs(){
+  if(pdfjsReady)return true;
+  const lib=window['pdfjs-dist/build/pdf'];
+  if(!lib)return false;
+  lib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  pdfjsReady=true;
+  return true;
+}
+async function renderPdfToImages(file){
+  if(!ensurePdfJs())throw new Error('PDF support failed to load. Check your connection and try again.');
+  const lib=window['pdfjs-dist/build/pdf'];
+  const buf=await file.arrayBuffer();
+  const pdf=await lib.getDocument({data:buf}).promise;
+  const pages=[];
+  for(let i=1;i<=pdf.numPages;i++){
+    const page=await pdf.getPage(i);
+    const viewport=page.getViewport({scale:2}); // 2x for crisp OCR/print quality
+    const canvas=document.createElement('canvas');
+    canvas.width=viewport.width;canvas.height=viewport.height;
+    await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;
+    pages.push({dataUrl:canvas.toDataURL('image/png'),w:canvas.width,h:canvas.height});
+  }
+  return pages;
+}
+function isPdfFile(file){return file.type==='application/pdf'||/\.pdf$/i.test(file.name||'');}
+
+function batchDist(a,b){return Math.hypot(a[0]-b[0],a[1]-b[1]);}
+function defaultBatchCorners(nw,nh){
+  const mx=nw*0.08,my=nh*0.08;
+  return{tl:[mx,my],tr:[nw-mx,my],br:[nw-mx,nh-my],bl:[mx,nh-my]};
+}
+// One scan flow, four stages — no separate "single" vs "multi-page" mode to pick upfront.
+function showScanStage(stage){
+  document.getElementById('scanStageUpload').style.display=stage==='upload'?'block':'none';
+  document.getElementById('scanCropStage').style.display=stage==='crop'?'block':'none';
+  document.getElementById('scanPagesStage').style.display=stage==='pages'?'block':'none';
+  document.getElementById('canvasWrap').style.display=stage==='editor'?'flex':'none';
+  document.getElementById('mobileBar').style.display=stage==='editor'?'flex':'none';
+  document.getElementById('scanPanel').style.display=stage==='editor'?'':'none';
+  document.getElementById('scanEditorActions').style.display=stage==='editor'?'flex':'none';
+  document.getElementById('scanCancelBtn').style.display=(stage==='crop'||stage==='pages')?'inline-flex':'none';
+}
+function enterScanner(){
+  if(S.img){showScanStage('editor');return;}
+  if(S.batch&&S.batch.pages&&S.batch.pages.length>0){showScanStage('pages');renderScanPageStrip();return;}
+  if(S.batch&&S.batch.currentImg){showScanStage('crop');renderBatchCropSVG();return;}
+  document.getElementById('scanUploadTitle').textContent='Tap to scan';
+  showScanStage('upload');
+}
+function addAnotherScanPage(){
+  document.getElementById('scanUploadTitle').textContent='Scan page '+(S.batch.pages.length+1);
+  showScanStage('upload');
+}
+function cancelScanFlow(){
+  if(!S.batch||!S.batch.pages.length){S.batch={pages:[],currentImg:null,corners:null,pendingImages:[]};showScanStage('upload');return;}
+  showModal(`<div class="modal-title">⚠️ Discard scan?</div><div class="modal-sub">You have ${S.batch.pages.length} page(s) not yet saved. They'll be lost.</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px"><button class="action-btn" onclick="closeModal()">Keep Going</button><button class="action-btn red" onclick="closeModal();S.batch={pages:[],currentImg:null,corners:null,pendingImages:[]};showScanStage('upload');">Discard</button></div>`);
+}
+function renderBatchCropSVG(){
+  const svg=document.getElementById('batchCropSvg');
+  const nw=S.batch.currentImg.naturalWidth,nh=S.batch.currentImg.naturalHeight;
+  svg.setAttribute('viewBox',`0 0 ${nw} ${nh}`);
+  const handleR=Math.max(nw,nh)*0.02,strokeW=Math.max(nw,nh)*0.006;
+  svg.innerHTML=`<path id="batchMaskPath" fill="rgba(0,0,0,0.55)" fill-rule="evenodd"/>
+    <polygon id="batchQuadPoly" fill="none" stroke="#f97316" stroke-width="${strokeW}"/>
+    <circle class="batch-handle" data-corner="tl" r="${handleR}"/>
+    <circle class="batch-handle" data-corner="tr" r="${handleR}"/>
+    <circle class="batch-handle" data-corner="br" r="${handleR}"/>
+    <circle class="batch-handle" data-corner="bl" r="${handleR}"/>`;
+  updateBatchCropVisual();
+  attachBatchHandleDrag();
+}
+function updateBatchCropVisual(){
+  const nw=S.batch.currentImg.naturalWidth,nh=S.batch.currentImg.naturalHeight;
+  const{tl,tr,br,bl}=S.batch.corners;
+  document.getElementById('batchMaskPath').setAttribute('d',`M0,0 L${nw},0 L${nw},${nh} L0,${nh} Z M${tl[0]},${tl[1]} L${tr[0]},${tr[1]} L${br[0]},${br[1]} L${bl[0]},${bl[1]} Z`);
+  document.getElementById('batchQuadPoly').setAttribute('points',`${tl[0]},${tl[1]} ${tr[0]},${tr[1]} ${br[0]},${br[1]} ${bl[0]},${bl[1]}`);
+  document.querySelectorAll('#batchCropSvg .batch-handle').forEach(h=>{
+    const c=S.batch.corners[h.dataset.corner];
+    h.setAttribute('cx',c[0]);h.setAttribute('cy',c[1]);
+  });
+}
+function attachBatchHandleDrag(){
+  document.querySelectorAll('#batchCropSvg .batch-handle').forEach(handle=>{
+    handle.onpointerdown=(e)=>{
+      e.preventDefault();
+      try{handle.setPointerCapture(e.pointerId);}catch(err){}
+      const corner=handle.dataset.corner;
+      const svg=document.getElementById('batchCropSvg');
+      const move=(ev)=>{
+        const rect=svg.getBoundingClientRect();
+        const nw=S.batch.currentImg.naturalWidth,nh=S.batch.currentImg.naturalHeight;
+        let x=(ev.clientX-rect.left)*(nw/rect.width);
+        let y=(ev.clientY-rect.top)*(nh/rect.height);
+        x=Math.max(0,Math.min(nw,x));y=Math.max(0,Math.min(nh,y));
+        S.batch.corners[corner]=[x,y];
+        updateBatchCropVisual();
+      };
+      const up=()=>{handle.removeEventListener('pointermove',move);handle.removeEventListener('pointerup',up);};
+      handle.addEventListener('pointermove',move);
+      handle.addEventListener('pointerup',up);
+    };
+  });
+}
+function resetBatchCorners(){
+  const img=S.batch.currentImg;if(!img)return;
+  S.batch.corners=defaultBatchCorners(img.naturalWidth,img.naturalHeight);
+  updateBatchCropVisual();
+}
+function warpQuadToRect(img,corners,outW,outH){
+  const srcCanvas=document.createElement('canvas');
+  srcCanvas.width=img.naturalWidth;srcCanvas.height=img.naturalHeight;
+  const sctx=srcCanvas.getContext('2d');sctx.drawImage(img,0,0);
+  const srcData=sctx.getImageData(0,0,srcCanvas.width,srcCanvas.height);
+  const sw=srcCanvas.width,sh=srcCanvas.height;
+  const dstCanvas=document.createElement('canvas');
+  dstCanvas.width=outW;dstCanvas.height=outH;
+  const dctx=dstCanvas.getContext('2d');
+  const dstData=dctx.createImageData(outW,outH);
+  const{tl,tr,br,bl}=corners;
+  const H=computeHomography([[0,0],[outW,0],[outW,outH],[0,outH]],[tl,tr,br,bl]);
+  for(let y=0;y<outH;y++){
+    for(let x=0;x<outW;x++){
+      const denom=H[6]*x+H[7]*y+H[8];
+      const sx=(H[0]*x+H[1]*y+H[2])/denom;
+      const sy=(H[3]*x+H[4]*y+H[5])/denom;
+      const di=(y*outW+x)*4;
+      if(sx>=0&&sx<sw-1&&sy>=0&&sy<sh-1){
+        const x0=Math.floor(sx),y0=Math.floor(sy),fx=sx-x0,fy=sy-y0;
+        const i00=(y0*sw+x0)*4,i10=(y0*sw+x0+1)*4,i01=((y0+1)*sw+x0)*4,i11=((y0+1)*sw+x0+1)*4;
+        for(let c=0;c<4;c++){
+          const top=srcData.data[i00+c]*(1-fx)+srcData.data[i10+c]*fx;
+          const bot=srcData.data[i01+c]*(1-fx)+srcData.data[i11+c]*fx;
+          dstData.data[di+c]=Math.round(top*(1-fy)+bot*fy);
+        }
+      }else{dstData.data[di]=255;dstData.data[di+1]=255;dstData.data[di+2]=255;dstData.data[di+3]=255;}
+    }
+  }
+  dctx.putImageData(dstData,0,0);
+  return dstCanvas;
+}
+function confirmScanCrop(){
+  const img=S.batch.currentImg;if(!img)return;
+  const{tl,tr,br,bl}=S.batch.corners;
+  let w=Math.round(Math.max(batchDist(tl,tr),batchDist(bl,br)));
+  let h=Math.round(Math.max(batchDist(tl,bl),batchDist(tr,br)));
+  const scale=Math.min(1,MAX_EXPORT_DIM/Math.max(w,h));
+  w=Math.max(1,Math.round(w*scale));h=Math.max(1,Math.round(h*scale));
+  const canvas=warpQuadToRect(img,S.batch.corners,w,h);
+  const dataUrl=canvas.toDataURL('image/jpeg',0.92);
+  S.batch.pages.push({id:Date.now()+'-'+Math.random(),dataUrl,w,h});
+  S.batch.currentImg=null;S.batch.corners=null;
+  notify('Page '+S.batch.pages.length+' added!','s');
+  if(S.batch.pendingImages&&S.batch.pendingImages.length){
+    // More pages queued from a multi-page PDF — keep going straight through crop, no extra taps.
+    const next=S.batch.pendingImages.shift();
+    loadImageDataUrlIntoCrop(next.dataUrl);
+    return;
+  }
+  showScanStage('pages');
+  renderScanPageStrip();
+}
+function renderScanPageStrip(){
+  const n=S.batch.pages.length;
+  document.getElementById('scanPageCount').textContent=n;
+  document.getElementById('scanPageStrip').innerHTML=S.batch.pages.map((p,i)=>`
+    <div class="batch-thumb"><img src="${p.dataUrl}"/><div class="bt-num">${i+1}</div><div class="bt-del" onclick="deleteScanPage('${p.id}')">✕</div></div>`).join('');
+}
+function deleteScanPage(id){
+  S.batch.pages=S.batch.pages.filter(p=>String(p.id)!==String(id));
+  if(!S.batch.pages.length){document.getElementById('scanUploadTitle').textContent='Tap to scan';showScanStage('upload');}
+  else renderScanPageStrip();
+}
+function mmSizeForImage(w,h){const maxW=210,maxH=297;const scale=Math.min(maxW/w,maxH/h);return[w*scale,h*scale];}
+function finishScan(){
+  if(!S.batch||!S.batch.pages.length){notify('Add at least one page first.','e');return;}
+  if(S.batch.pages.length===1){
+    // Exactly one page → drop straight into the familiar editor (filters/rotate/export), already cropped.
+    const p=S.batch.pages[0];
+    const img=new Image();
+    img.onload=()=>{
+      S.img=img;S.rot=0;
+      if(!document.getElementById('docName').value)document.getElementById('docName').value='Scan '+new Date().toLocaleDateString();
+      S.batch={pages:[],currentImg:null,corners:null,pendingImages:[]};
+      showScanStage('editor');
+      renderPreview();
+      addHist('Scanned','1 page','📄');
+      notify('Document ready to edit!','s');
+    };
+    img.src=p.dataUrl;
+    return;
+  }
+  // Two or more pages → combine straight into one PDF (per-page filter editing isn't offered here, to keep the flow to one screen).
+  const{jsPDF}=window.jspdf;
+  let doc=null;
+  S.batch.pages.forEach((p,i)=>{
+    const[pw,ph]=mmSizeForImage(p.w,p.h);
+    if(i===0)doc=new jsPDF({unit:'mm',format:[pw,ph]});
+    else doc.addPage([pw,ph]);
+    doc.addImage(p.dataUrl,'JPEG',0,0,pw,ph);
+  });
+  const name=(document.getElementById('docName')?.value||'scan')+'.pdf';
+  doc.save(name);
+  addHist('Scanned',S.batch.pages.length+' pages → '+name,'📄');
+  notify(S.batch.pages.length+'-page PDF created!','s');
+  S.batch={pages:[],currentImg:null,corners:null,pendingImages:[]};
+  document.getElementById('scanUploadTitle').textContent='Tap to scan';
+  showScanStage('upload');
+}
+
 // ══ SAVE ══
 function saveDoc(){
   if(!S.img){notify('Load a document first.','e');return;}
@@ -1231,43 +1521,216 @@ function deleteDoc(id){S.docs=S.docs.filter(d=>d.id!==id);saveDocs();closeModal(
 function aiFromDoc(id,tool){const d=S.docs.find(x=>x.id===id);if(!d)return;closeModal();S.aiDataUrl=d.dataUrl;nav('ai');setAiTool(tool);setTimeout(()=>runAI(tool,d.dataUrl),300);}
 
 // ══ AI TOOLS ══
-// ══ AI BACKEND (Cloudflare Worker proxy — holds the real API key server-side) ══
-const DEFAULT_AI_API_URL='https://YOUR-WORKER-SUBDOMAIN.workers.dev/';
-function getAiApiUrl(){
-  const saved=localStorage.getItem('scanai_worker_url');
-  return (saved&&saved.trim())?saved.trim():DEFAULT_AI_API_URL;
+// ══ AI PROVIDERS — every user brings their own key; it is stored only in this browser ══
+const AI_PROVIDERS={
+  anthropic:{name:'Claude (Anthropic)',keyUrl:'https://console.anthropic.com/settings/keys',modelsUrl:'https://platform.claude.com/docs/en/about-claude/models/overview',model:'claude-sonnet-5',keyHint:'sk-ant-…'},
+  openai:{name:'ChatGPT (OpenAI)',keyUrl:'https://platform.openai.com/api-keys',modelsUrl:'https://platform.openai.com/docs/models',model:'gpt-5.4-mini',keyHint:'sk-…'},
+  gemini:{name:'Gemini (Google)',tag:'free tier available',keyUrl:'https://aistudio.google.com/apikey',modelsUrl:'https://ai.google.dev/gemini-api/docs/models',model:'gemini-3.5-flash',keyHint:'AIza…'},
+  openrouter:{name:'OpenRouter (100+ models)',keyUrl:'https://openrouter.ai/keys',modelsUrl:'https://openrouter.ai/models',model:'openai/gpt-5.4-mini',keyHint:'sk-or-…'},
+  custom:{name:'My own backend (advanced)'}
+};
+function lsGetJSON(k){try{return JSON.parse(localStorage.getItem(k)||'{}')||{};}catch(e){return{};}}
+function getProviderId(){
+  const p=localStorage.getItem('scanai_provider');
+  if(p&&AI_PROVIDERS[p])return p;
+  return localStorage.getItem('scanai_worker_url')?'custom':'anthropic';
+}
+function getAiConfig(){
+  const provider=getProviderId(),P=AI_PROVIDERS[provider];
+  return{provider,key:lsGetJSON('scanai_keys')[provider]||'',model:lsGetJSON('scanai_models')[provider]||P.model||'',url:(localStorage.getItem('scanai_worker_url')||'').trim()};
+}
+function cleanKey(s){return String(s||'').replace(/^["'\s]+|["'\s]+$/g,'').replace(/^Bearer\s+/i,'');}
+
+function renderAiProviderCard(){
+  const sel=document.getElementById('aiProviderSel'),body=document.getElementById('aiProviderBody');
+  if(!sel||!body)return;
+  const cfg=getAiConfig(),P=AI_PROVIDERS[cfg.provider];
+  sel.innerHTML=Object.entries(AI_PROVIDERS).map(([id,p])=>`<option value="${id}"${id===cfg.provider?' selected':''}>${esc(p.name)}${p.tag?' — '+esc(p.tag):''}</option>`).join('');
+  if(cfg.provider==='custom'){
+    body.innerHTML=`<div class="form-group"><label class="form-label">Backend URL</label><input class="form-input" id="workerUrlInput" placeholder="https://your-worker.workers.dev/" value="${esc(cfg.url)}"/></div>
+      <button class="action-btn primary" onclick="saveWorkerUrl()">💾 Save backend URL</button>
+      <div style="font-size:12px;margin-top:8px;color:${cfg.url?'var(--green)':'var(--yellow)'}">${cfg.url?'✅ Backend URL saved':'⚠️ No backend URL yet'}</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:6px">For teams: your own small server (like the included Cloudflare Worker) holds the key, so people using the app don't need one. It receives requests in Claude format.</div>`;
+    return;
+  }
+  body.innerHTML=`<div style="font-size:12px;margin-bottom:10px;color:${cfg.key?'var(--green)':'var(--yellow)'}">${cfg.key?`✅ Key saved (••••${esc(cfg.key.slice(-4))}) · model ${esc(cfg.model)}`:'⚠️ No key yet — AI tools stay off until you add one.'}</div>
+    <a class="action-btn blue" href="${P.keyUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration:none">🔗 Get my ${esc(P.name)} API key</a>
+    <button class="action-btn primary" onclick="showApiKeyModal()">🔑 ${cfg.key?'Change':'Add'} API key</button>
+    <div style="font-size:11px;color:var(--text3)">Your key stays in this browser. Requests go straight from your device to ${esc(P.name)} — nothing passes through us.</div>`;
+}
+function onProviderChange(){
+  const id=document.getElementById('aiProviderSel').value;
+  if(!AI_PROVIDERS[id])return;
+  try{localStorage.setItem('scanai_provider',id);}catch(e){}
+  renderAiProviderCard();
+  if(id!=='custom'&&!getAiConfig().key)showApiKeyModal();
+  else notify('Now using '+AI_PROVIDERS[id].name,'s');
 }
 function saveWorkerUrl(){
-  const el=document.getElementById('workerUrlInput');
-  const val=el?el.value.trim():'';
-  if(!val){notify('Enter a Worker URL first.','e');return;}
+  const val=(document.getElementById('workerUrlInput')?.value||'').trim();
+  if(!val){notify('Enter your backend URL first.','e');return;}
   if(!/^https?:\/\//.test(val)){notify('URL must start with https://','e');return;}
-  localStorage.setItem('scanai_worker_url',val);
-  renderWorkerUrlStatus();
-  notify('Backend URL saved!','s');
+  try{localStorage.setItem('scanai_worker_url',val);}catch(e){notify('Could not save (storage blocked).','e');return;}
+  renderAiProviderCard();notify('Backend URL saved!','s');
 }
-function renderWorkerUrlStatus(){
-  const input=document.getElementById('workerUrlInput');
-  const status=document.getElementById('workerUrlStatus');
-  const saved=localStorage.getItem('scanai_worker_url');
-  if(input)input.value=saved||'';
-  if(status){
-    status.innerHTML=saved
-      ?`✅ Using your Worker: <code style="word-break:break-all">${esc(saved)}</code>`
-      :`⚠️ Not configured yet — AI calls will fail until you deploy the Worker and save its URL here.`;
+function showApiKeyModal(){
+  const id=getProviderId();
+  if(id==='custom'){nav('settings');notify('Add your backend URL in Settings.','i');return;}
+  const P=AI_PROVIDERS[id],cfg=getAiConfig();
+  showModal(`<div class="modal-title">🔑 ${esc(P.name)} API key</div>
+    <div class="modal-sub">1) Create a key on ${esc(P.name)}'s site. 2) Paste it below.</div>
+    <a class="action-btn blue" href="${P.keyUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;margin-top:10px">🔗 Open ${esc(P.name)} key page</a>
+    <div class="form-group" style="margin-top:12px"><label class="form-label">API key</label>
+      <div style="display:flex;gap:6px"><input class="form-input" id="apiKeyInput" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="${cfg.key?'Saved (••••'+esc(cfg.key.slice(-4))+') — paste to replace':esc(P.keyHint)}" style="margin-bottom:0"/>
+      <button class="action-btn" style="width:auto;padding:0 14px;margin:0" onclick="toggleKeyVisibility()" title="Show / hide">👁</button></div>
+    </div>
+    <div class="form-group"><label class="form-label">Model <a href="${P.modelsUrl}" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:400">(browse models)</a></label>
+      <input class="form-input" id="apiModelInput" value="${esc(cfg.model)}" autocapitalize="off" autocorrect="off" spellcheck="false"/>
+      <div style="font-size:10px;color:var(--text3);margin-top:4px">Needs a model that can read images. Change it if a model gets retired.</div>
+    </div>
+    <div id="apiKeyTestResult" style="font-size:11px;min-height:16px;margin-bottom:8px"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="action-btn" onclick="testApiKey()">🧪 Test</button><button class="action-btn primary" onclick="saveApiKey()">💾 Save</button></div>
+    ${cfg.key?'<button class="action-btn red" style="margin-top:8px" onclick="removeApiKey()">🗑 Remove saved key</button>':''}
+    <button class="action-btn" style="margin-top:8px" onclick="closeModal()">Cancel</button>
+    <div style="font-size:10px;color:var(--text3);margin-top:10px;line-height:1.5">Stored only in this browser and sent only to ${esc(P.name)}. Anyone using this same browser could read it, so set a spend limit on the key.</div>`);
+}
+function toggleKeyVisibility(){const i=document.getElementById('apiKeyInput');if(i)i.type=i.type==='password'?'text':'password';}
+function saveApiKey(){
+  const id=getProviderId(),P=AI_PROVIDERS[id];
+  const typed=cleanKey(document.getElementById('apiKeyInput')?.value);
+  const model=(document.getElementById('apiModelInput')?.value||'').trim()||P.model;
+  const keys=lsGetJSON('scanai_keys'),models=lsGetJSON('scanai_models');
+  if(!typed&&!keys[id]){notify('Paste your API key first.','e');return;}
+  if(typed){
+    if(/\s/.test(typed)||typed.length<12){notify("That doesn't look like a valid key.",'e');return;}
+    keys[id]=typed;
   }
+  models[id]=model;
+  try{localStorage.setItem('scanai_keys',JSON.stringify(keys));localStorage.setItem('scanai_models',JSON.stringify(models));}
+  catch(e){notify('Could not save (browser storage is blocked).','e');return;}
+  closeModal();renderAiProviderCard();notify(P.name+' key saved!','s');
 }
-async function callClaudeAPI(body){
-  const url=getAiApiUrl();
-  if(url===DEFAULT_AI_API_URL){
-    throw new Error('AI backend not configured. Go to Settings → AI Backend and paste your Cloudflare Worker URL.');
+function removeApiKey(){
+  const id=getProviderId(),keys=lsGetJSON('scanai_keys');
+  delete keys[id];
+  try{localStorage.setItem('scanai_keys',JSON.stringify(keys));}catch(e){}
+  closeModal();renderAiProviderCard();notify('Key removed.','i');
+}
+async function testApiKey(){
+  const id=getProviderId(),P=AI_PROVIDERS[id];
+  const setOut=(c,t)=>{const o=document.getElementById('apiKeyTestResult');if(o){o.style.color=c;o.textContent=t;}};
+  const key=cleanKey(document.getElementById('apiKeyInput')?.value)||getAiConfig().key;
+  const model=(document.getElementById('apiModelInput')?.value||'').trim()||P.model;
+  if(!key){setOut('var(--red)','Paste a key first.');return;}
+  setOut('var(--text3)','Testing…');
+  try{
+    const r=await callAI({max_tokens:20,messages:[{role:'user',content:[{type:'text',text:'Reply with the single word: OK'}]}]},{provider:id,key,model});
+    const t=(r.content||[]).map(c=>c.text||'').join('').trim().slice(0,40);
+    setOut('var(--green)','✅ Works'+(t?' — model said: '+t:''));
+  }catch(e){setOut('var(--red)','❌ '+e.message);}
+}
+
+// ── provider adapters: the app speaks Claude-format internally; these translate ──
+function providerError(P,status,data){
+  const e=data&&data.error;
+  const raw=(e&&(e.message||(typeof e==='string'?e:'')))||'';
+  if(status===401||status===403)return `${P.name} rejected your API key. Check it in Settings → AI Provider.`;
+  if(status===429)return `${P.name}: rate limit or quota reached. Try again later or check your plan.`;
+  if(status===404&&/model/i.test(raw))return 'That model was not found. Change the model name in Settings → AI Provider.';
+  return raw||`${P.name} error (${status})`;
+}
+async function aiFetch(P,url,headers,payload){
+  let resp;
+  try{resp=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify(payload)});}
+  catch(e){throw new Error(`Couldn't reach ${P.name}. Check your internet connection.`);}
+  let data=null;try{data=await resp.json();}catch(e){}
+  if(!resp.ok||(data&&data.error))throw new Error(providerError(P,resp.status,data));
+  return data||{};
+}
+const aiMaxTokens=b=>Math.max((b.max_tokens||1000)*4,2048); // headroom for "thinking" models
+function aiBlocks(m){return typeof m.content==='string'?[{type:'text',text:m.content}]:m.content;}
+async function pdfBase64ToImages(b64,maxPages){
+  if(!ensurePdfJs())throw new Error('PDF support failed to load. Check your connection.');
+  const lib=window['pdfjs-dist/build/pdf'];
+  const bin=atob(b64),bytes=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+  const pdf=await lib.getDocument({data:bytes}).promise;
+  const images=[];
+  for(let i=1;i<=Math.min(pdf.numPages,maxPages);i++){
+    const page=await pdf.getPage(i),vp=page.getViewport({scale:1.5});
+    const c=document.createElement('canvas');c.width=vp.width;c.height=vp.height;
+    await page.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
+    images.push(c.toDataURL('image/jpeg',0.85));
   }
-  const resp=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-  let data;
-  try{data=await resp.json();}catch(e){throw new Error('Backend returned an invalid response (check the Worker URL and that it is deployed).');}
-  if(!resp.ok||data.error){throw new Error((data.error&&(data.error.message||data.error))||('Backend error ('+resp.status+')'));}
-  return data;
+  return{images,total:pdf.numPages};
 }
+async function toOpenAIMessages(body){
+  const out=[];
+  if(body.system)out.push({role:'system',content:body.system});
+  for(const m of body.messages){
+    const blocks=aiBlocks(m);
+    if(m.role==='assistant'){out.push({role:'assistant',content:blocks.map(b=>b.text||'').join('')});continue;}
+    const parts=[];
+    for(const b of blocks){
+      if(b.type==='text')parts.push({type:'text',text:b.text});
+      else if(b.type==='image')parts.push({type:'image_url',image_url:{url:`data:${b.source.media_type};base64,${b.source.data}`}});
+      else if(b.type==='document'){
+        const{images,total}=await pdfBase64ToImages(b.source.data,6);
+        images.forEach(u=>parts.push({type:'image_url',image_url:{url:u}}));
+        if(total>images.length)parts.push({type:'text',text:`(Only the first ${images.length} of ${total} PDF pages were sent.)`});
+      }
+    }
+    out.push({role:'user',content:parts});
+  }
+  return out;
+}
+async function callAI(body,override){
+  const cfg=Object.assign(getAiConfig(),override||{});
+  const P=AI_PROVIDERS[cfg.provider]||AI_PROVIDERS.anthropic;
+  if(cfg.provider==='custom'){
+    if(!cfg.url)throw new Error('No backend URL set. Add it in Settings → AI Provider.');
+    let resp;
+    try{resp=await fetch(cfg.url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-5',...body})});}
+    catch(e){throw new Error("Couldn't reach your backend. Check the URL in Settings.");}
+    let data;try{data=await resp.json();}catch(e){throw new Error('Your backend returned an invalid response.');}
+    if(!resp.ok||data.error)throw new Error((data.error&&(data.error.message||data.error))||('Backend error ('+resp.status+')'));
+    return data;
+  }
+  if(!cfg.key){
+    showApiKeyModal();
+    throw new Error(`Add your ${P.name} API key to use AI features (Settings → AI Provider).`);
+  }
+  if(cfg.provider==='anthropic'){
+    return aiFetch(P,'https://api.anthropic.com/v1/messages',{'x-api-key':cfg.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},{...body,model:cfg.model});
+  }
+  if(cfg.provider==='openai'||cfg.provider==='openrouter'){
+    const isOR=cfg.provider==='openrouter';
+    const payload={model:cfg.model,messages:await toOpenAIMessages(body)};
+    payload[isOR?'max_tokens':'max_completion_tokens']=aiMaxTokens(body);
+    const data=await aiFetch(P,isOR?'https://openrouter.ai/api/v1/chat/completions':'https://api.openai.com/v1/chat/completions',{Authorization:'Bearer '+cfg.key},payload);
+    const ch=data.choices&&data.choices[0];
+    let text=ch&&ch.message&&ch.message.content;
+    if(Array.isArray(text))text=text.map(p=>p.text||'').join('');
+    if(!text)throw new Error(ch&&ch.finish_reason==='length'?'The model ran out of output space. Try another model in Settings.':'The model returned an empty answer.');
+    return{content:[{type:'text',text}]};
+  }
+  if(cfg.provider==='gemini'){
+    const contents=body.messages.map(m=>({role:m.role==='assistant'?'model':'user',parts:aiBlocks(m).map(b=>b.type==='image'?{inlineData:{mimeType:b.source.media_type,data:b.source.data}}:b.type==='document'?{inlineData:{mimeType:'application/pdf',data:b.source.data}}:{text:b.text||''})}));
+    const payload={contents,generationConfig:{maxOutputTokens:aiMaxTokens(body)}};
+    if(body.system)payload.systemInstruction={parts:[{text:body.system}]};
+    const model=String(cfg.model).replace(/^models\//,'');
+    const data=await aiFetch(P,`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,{'x-goog-api-key':cfg.key},payload);
+    const cand=data.candidates&&data.candidates[0];
+    const text=cand&&cand.content&&cand.content.parts?cand.content.parts.map(p=>p.text||'').join(''):'';
+    if(!text){
+      const why=data.promptFeedback&&data.promptFeedback.blockReason;
+      throw new Error(why?`Gemini blocked this request (${why}).`:(cand&&cand.finishReason==='MAX_TOKENS'?'The model ran out of output space. Try another model in Settings.':'The model returned an empty answer.'));
+    }
+    return{content:[{type:'text',text}]};
+  }
+  throw new Error('Unknown AI provider.');
+}
+
 const CHAT_SYSTEM_PROMPT='You are answering questions about an uploaded document in a mobile chat UI. Keep every reply SHORT and scannable: a few bullet points (use "•"), each one line, no long paragraphs. Give the direct answer first, skip preamble like "Based on the document". If the answer is a number, name, or value, lead with it in bold. Only add brief detail if the question truly needs it. Max ~5 bullets unless the user explicitly asks for a full list or detailed explanation.';
 const aiDefs={
   ocr:{icon:'🔤',title:'OCR Text Extraction',desc:'Extract all text — 40+ languages, handwriting, mixed scripts.',prompt:()=>'You are an expert OCR system. Extract ALL visible text from this scanned document image, preserving structure and line breaks. Return only the extracted text.'},
@@ -1336,7 +1799,7 @@ async function runAI(tool,dataUrl){
   if(tool==='translate'){const el=document.getElementById('trLang');extra=el?el.value:'English';}
   try{
     const mediaBlock=buildMediaBlock(src);
-    const data=await callClaudeAPI({model:'claude-sonnet-4-6',max_tokens:2000,messages:[{role:'user',content:[mediaBlock,{type:'text',text:t.prompt(extra)}]}]});
+    const data=await callAI({max_tokens:2000,messages:[{role:'user',content:[mediaBlock,{type:'text',text:t.prompt(extra)}]}]});
     const text=data.content?.map(c=>c.text||'').join('')||'No response.';
     if(tool==='table'){renderTableResult(text);}
     else if(tool==='texthand'){renderHandwriteResult(text);}
@@ -1815,7 +2278,7 @@ async function sendChatMsg(){
         apiMessages.push({role:m.role,content:[{type:'text',text:m.text}]});
       }
     });
-    const data=await callClaudeAPI({model:'claude-sonnet-4-6',max_tokens:400,system:CHAT_SYSTEM_PROMPT,messages:apiMessages});
+    const data=await callAI({max_tokens:400,system:CHAT_SYSTEM_PROMPT,messages:apiMessages});
     const text=data.content?.map(c=>c.text||'').join('')||'No response.';
     sess.messages.push({role:'assistant',text});
     saveChatSession(sess);
@@ -1889,7 +2352,24 @@ function saveAnn(){
 }
 
 // ══ MERGE / SPLIT ══
-function addMergeFiles(e){Array.from(e.target.files).forEach(f=>{const r=new FileReader();r.onload=ev=>{S.mergeFiles.push({name:f.name,dataUrl:ev.target.result});renderMerge();};r.readAsDataURL(f);});e.target.value='';}
+async function addMergeFiles(e){
+  const files=Array.from(e.target.files);e.target.value='';
+  for(const f of files){
+    if(isPdfFile(f)){
+      try{
+        const pages=await renderPdfToImages(f);
+        pages.forEach((p,i)=>S.mergeFiles.push({name:f.name+(pages.length>1?` (page ${i+1})`:''),dataUrl:p.dataUrl}));
+        renderMerge();
+      }catch(err){notify('Could not read '+f.name,'e');}
+    }else{
+      await new Promise(res=>{
+        const r=new FileReader();
+        r.onload=ev=>{S.mergeFiles.push({name:f.name,dataUrl:ev.target.result});renderMerge();res();};
+        r.readAsDataURL(f);
+      });
+    }
+  }
+}
 function renderMerge(){const list=document.getElementById('mergeList');if(!S.mergeFiles.length){list.innerHTML='<div style="color:var(--text3);font-size:11px;padding:6px;text-align:center">No files</div>';return;}list.innerHTML=S.mergeFiles.map((f,i)=>`<div class="fl-item"><span style="font-family:var(--fm);font-size:10px;color:var(--text3)">${i+1}</span><span class="fl-name">${esc(f.name)}</span><span class="fl-rm" onclick="S.mergeFiles.splice(${i},1);renderMerge()">✕</span></div>`).join('');}
 function mergePDF(){if(!S.mergeFiles.length){notify('Add files first.','e');return;}const{jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});let loaded=0;S.mergeFiles.forEach((f,i)=>{const img=new Image();img.onload=()=>{if(i>0)doc.addPage();doc.addImage(f.dataUrl,'PNG',0,0,210,297);loaded++;if(loaded===S.mergeFiles.length){doc.save('merged.pdf');addHist('Merged PDF',S.mergeFiles.length+' files','🔀');notify('PDF merged!','s');}};img.src=f.dataUrl;});}
 function splitDoc(){if(!S.img){notify('No doc loaded.','e');return;}const{jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});doc.addImage(getPDU(),'PNG',0,0,210,297);doc.save('extracted.pdf');notify('Extracted!','s');}
