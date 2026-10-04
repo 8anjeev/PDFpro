@@ -6,7 +6,14 @@
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="ScanAI Pro"/>
+<meta name="theme-color" content="#f97316"/>
 <title>ScanAI Pro</title>
+<!-- Home Screen / app icon — ScanAI.PNG lives next to this HTML file in the same repo, 1254x1254 square, used as-is so the ratio is never distorted -->
+<link rel="apple-touch-icon" href="ScanAI.PNG"/>
+<link rel="icon" type="image/png" href="ScanAI.PNG"/>
+<link rel="shortcut icon" type="image/png" href="ScanAI.PNG"/>
+<link rel="manifest" href="manifest.json"/>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js"></script>
@@ -706,7 +713,13 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
             <button class="action-btn primary" onclick="applyWM()">💧 Apply Watermark</button>
           </div>
           <div class="ms-card">
-            <div class="ms-title">🔐 Password Protect</div>
+            <div class="ms-title">🔐 Password Protect (Lock)</div>
+            <div class="form-group"><label class="form-label">Document to lock</label>
+              <div class="drop-zone" style="min-height:70px" onclick="document.getElementById('lockFileInput').click()">
+                <div style="font-size:12px;color:var(--text2)" id="lockFileLabel">Using your current scan — or tap to upload/scan a different PDF or image</div>
+              </div>
+              <input type="file" id="lockFileInput" accept="image/*,application/pdf,.pdf" style="display:none" onchange="lockFileChosen(event)"/>
+            </div>
             <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="docPW" type="password" placeholder="Strong password…"/></div>
             <div class="form-group"><label class="form-label">Confirm</label><input class="form-input" id="docPW2" type="password" placeholder="Confirm…"/></div>
             <div class="form-group"><label class="form-label">Permissions</label>
@@ -718,6 +731,19 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
             <button class="action-btn green" onclick="protectDoc()">🔐 Protect &amp; Download</button>
             <div class="progress-bar"><div class="progress-fill" id="protectProg" style="width:0%"></div></div>
             <div style="font-size:11px;color:var(--text3);margin-top:6px">Password-protects the PDF using RC4 encryption (PDF standard security handler) — opens only with the correct password in any PDF reader.</div>
+          </div>
+          <div class="ms-card">
+            <div class="ms-title">🔓 Remove PDF Password (Unlock)</div>
+            <div class="form-group"><label class="form-label">Locked PDF</label>
+              <div class="drop-zone" style="min-height:70px" onclick="document.getElementById('unlockFileInput').click()">
+                <div style="font-size:12px;color:var(--text2)" id="unlockFileLabel">Tap to upload the password-protected PDF</div>
+              </div>
+              <input type="file" id="unlockFileInput" accept="application/pdf,.pdf" style="display:none" onchange="unlockFileChosen(event)"/>
+            </div>
+            <div class="form-group"><label class="form-label">Current password</label><input class="form-input" id="unlockPW" type="password" placeholder="Enter it once…"/></div>
+            <button class="action-btn blue" onclick="unlockPdf()">🔓 Unlock &amp; Download</button>
+            <div id="unlockStatus" style="font-size:11px;color:var(--text3);margin-top:8px"></div>
+            <div style="font-size:11px;color:var(--text3);margin-top:6px">Enter the password once — the file you download has the password removed permanently. The original password itself is never changed or stored.</div>
           </div>
         </div>
         <div class="ms-card" style="margin-top:14px">
@@ -1040,6 +1066,192 @@ function encryptPdf(pdfBytesU8, userPw, ownerPw, permissions){
   return outBytes;
 }
 
+// ══ PDF DECRYPTION (unlock) — reverses encryptPdf, and also reads RC4-protected PDFs made
+// by other tools (40 or 128-bit RC4 / "Standard" security handler). AES-encrypted PDFs are
+// detected and clearly rejected rather than silently failing. ══
+function hexToBytes(hex){
+  hex=hex.replace(/\s/g,'');
+  const out=new Uint8Array(Math.floor(hex.length/2));
+  for(let i=0;i<out.length;i++)out[i]=parseInt(hex.substr(i*2,2),16)||0;
+  return out;
+}
+function parseEncryptDict(bin){
+  const trailerM=/trailer\s*<<([\s\S]*?)>>\s*(?:startxref|stream)/.exec(bin) || /trailer\s*<<([\s\S]*?)>>/.exec(bin);
+  if(!trailerM) return null;
+  const trailerDict=trailerM[1];
+  const encRefM=/\/Encrypt\s+(\d+)\s+(\d+)\s+R/.exec(trailerDict);
+  if(!encRefM) return {encrypted:false};
+  const idM=/\/ID\s*\[\s*<([0-9A-Fa-f]*)>/.exec(trailerDict);
+  const encNum=encRefM[1];
+  const objRe=new RegExp(encNum+'\\s+\\d+\\s+obj([\\s\\S]*?)endobj');
+  const objM=objRe.exec(bin);
+  if(!objM) return {encrypted:true, unsupported:true, reason:'Could not locate the encryption dictionary in this PDF.'};
+  const dict=objM[1];
+  const get=(re)=>{const m=re.exec(dict);return m?m[1]:null;};
+  const V=parseInt(get(/\/V\s+(\d+)/)||'1',10);
+  const R=parseInt(get(/\/R\s+(\d+)/)||'2',10);
+  const P=parseInt(get(/\/P\s+(-?\d+)/)||'0',10);
+  const Length=parseInt(get(/\/Length\s+(\d+)/)||'40',10);
+  const cfm=get(/\/CFM\s*\/(\w+)/);
+  const filter=get(/\/Filter\s*\/(\w+)/);
+  function parsePdfStringAt(str,key){
+    const idx=str.indexOf('/'+key);if(idx<0)return null;
+    let i=idx+key.length+1;
+    while(str[i]===' '||str[i]==='\n'||str[i]==='\r')i++;
+    if(str[i]==='('){
+      const ranges=findLiteralStrings(str.slice(i));if(!ranges.length)return null;
+      const[s,e]=ranges[0];
+      return unescapePdfString(str.slice(i+s+1,i+e-1));
+    }else if(str[i]==='<'){
+      let j=i+1,hex='';
+      while(str[j]!=='>'){hex+=str[j];j++;}
+      return hexToBytes(hex);
+    }
+    return null;
+  }
+  const O=parsePdfStringAt(dict,'O'),U=parsePdfStringAt(dict,'U');
+  if(!O||!U) return {encrypted:true, unsupported:true, reason:"Could not read this PDF's encryption values."};
+  if(V>=4&&cfm&&/AESV/.test(cfm)) return {encrypted:true, unsupported:true, reason:'This PDF uses AES encryption, which isn\'t supported here yet — only the common RC4/"legacy" password protection can be unlocked.'};
+  if(filter&&filter!=='Standard') return {encrypted:true, unsupported:true, reason:'This PDF uses a non-standard security handler ('+filter+') that isn\'t supported.'};
+  const idBytes=idM?hexToBytes(idM[1]):new Uint8Array(0);
+  const n=R===2?5:Math.max(5,Math.min(16,Math.floor(Length/8)||5));
+  return {encrypted:true, unsupported:false, V, R, P, n, O, U, idBytes};
+}
+function computeFileKeyAnyR(pw,O,P,idBytes,n,R){
+  let hash=md5(concatBytes(padPw(pw),O,int32LE(P),idBytes));
+  if(R>=3){for(let i=0;i<50;i++)hash=md5(hash.slice(0,n));}
+  return hash.slice(0,n);
+}
+function computeUCheck(fileKey,R,idBytes){
+  if(R===2) return rc4(fileKey,PAD);
+  let val=rc4(fileKey,md5(concatBytes(PAD,idBytes)).slice(0,16));
+  for(let i=1;i<=19;i++){
+    const xored=new Uint8Array(fileKey.length);
+    for(let k=0;k<fileKey.length;k++)xored[k]=fileKey[k]^i;
+    val=rc4(xored,val);
+  }
+  return val;
+}
+function recoverUserPwFromOwner(ownerPw,O,n,R){
+  let hash=md5(padPw(ownerPw));
+  if(R>=3){for(let i=0;i<50;i++)hash=md5(hash.slice(0,n));}
+  const key=hash.slice(0,n);
+  if(R===2) return rc4(key,O);
+  let val=O.slice();
+  for(let i=19;i>=0;i--){
+    const xored=new Uint8Array(key.length);
+    for(let k=0;k<key.length;k++)xored[k]=key[k]^i;
+    val=rc4(xored,val);
+  }
+  return val;
+}
+function bytesEqualN(a,b,len){for(let i=0;i<len;i++)if((a[i]||0)!==(b[i]||0))return false;return true;}
+function findFileKey(enc,password){
+  let fileKey=computeFileKeyAnyR(password,enc.O,enc.P,enc.idBytes,enc.n,enc.R);
+  const cmpLen=enc.R===2?32:16;
+  if(bytesEqualN(computeUCheck(fileKey,enc.R,enc.idBytes),enc.U,cmpLen)) return {fileKey,asOwner:false};
+  const recovered=recoverUserPwFromOwner(password,enc.O,enc.n,enc.R);
+  let realPw='';
+  for(let i=0;i<32;i++){
+    let isPad=true;
+    for(let k=0;k<32-i;k++){if((recovered[i+k]||0)!==PAD[k]){isPad=false;break;}}
+    if(isPad){for(let j=0;j<i;j++)realPw+=String.fromCharCode(recovered[j]);break;}
+    if(i===31)for(let j=0;j<32;j++)realPw+=String.fromCharCode(recovered[j]);
+  }
+  fileKey=computeFileKeyAnyR(realPw,enc.O,enc.P,enc.idBytes,enc.n,enc.R);
+  if(bytesEqualN(computeUCheck(fileKey,enc.R,enc.idBytes),enc.U,cmpLen)) return {fileKey,asOwner:true};
+  return null;
+}
+function decryptObjectStrings(dictStr,key){
+  const ranges=findLiteralStrings(dictStr);
+  let out='',last=0;
+  for(const[s,e] of ranges){
+    out+=dictStr.slice(last,s);
+    const raw=unescapePdfString(dictStr.slice(s+1,e-1));
+    out+='('+escapePdfBytes(rc4(key,raw))+')';
+    last=e;
+  }
+  return out+dictStr.slice(last);
+}
+function decryptPdf(pdfBytesU8,password){
+  let bin='';
+  for(let i=0;i<pdfBytesU8.length;i+=0x2000)bin+=String.fromCharCode.apply(null,pdfBytesU8.subarray(i,i+0x2000));
+  const enc=parseEncryptDict(bin);
+  if(!enc||!enc.encrypted) return {status:'not-encrypted'};
+  if(enc.unsupported) return {status:'unsupported', reason:enc.reason};
+  const found=findFileKey(enc,password||'');
+  if(!found) return {status:'wrong-password'};
+  const fileKey=found.fileKey;
+
+  const objRe=/(\d+)\s+(\d+)\s+obj([\s\S]*?)endobj/g;
+  let m;const objs=[];
+  while((m=objRe.exec(bin))) objs.push({num:+m[1],gen:+m[2],body:m[3]});
+
+  const trailerM=/trailer\s*<<([\s\S]*?)>>/.exec(bin);
+  const trailerDict=trailerM?trailerM[1]:'';
+  const rootM=/\/Root\s+(\d+)\s+(\d+)\s+R/.exec(trailerDict);
+  const infoM=/\/Info\s+(\d+)\s+(\d+)\s+R/.exec(trailerDict);
+  const idM2=/\/ID\s*\[\s*(<[0-9A-Fa-f]*>)\s*(<[0-9A-Fa-f]*>)?/.exec(trailerDict);
+  const rootRef2=rootM?`${rootM[1]} ${rootM[2]} R`:null;
+  const infoRef2=infoM?`${infoM[1]} ${infoM[2]} R`:null;
+  const encRefM2=/\/Encrypt\s+(\d+)\s+(\d+)\s+R/.exec(trailerDict);
+  const encNum2=encRefM2?parseInt(encRefM2[1],10):-1;
+
+  const outObjs2=[];
+  for(const o of objs){
+    if(o.num===encNum2) continue;
+    const key=objectKey(fileKey,o.num,o.gen);
+    let body=o.body;
+    const streamIdx=body.indexOf('stream');
+    if(streamIdx>=0){
+      let dictPart=body.slice(0,streamIdx);
+      const lenM=/\/Length\s+(\d+)/.exec(dictPart);
+      dictPart=decryptObjectStrings(dictPart,key);
+      let dataStart=streamIdx+6;
+      if(body[dataStart]==='\r')dataStart++;
+      if(body[dataStart]==='\n')dataStart++;
+      let length=lenM?parseInt(lenM[1],10):null;
+      if(length==null){const endIdx=body.indexOf('endstream',dataStart);length=endIdx-dataStart;}
+      const rawStr=body.slice(dataStart,dataStart+length);
+      const rawBytes=new Uint8Array(rawStr.length);
+      for(let i=0;i<rawStr.length;i++)rawBytes[i]=rawStr.charCodeAt(i)&255;
+      const decBytes=rc4(key,rawBytes);
+      let decStr='';for(let i=0;i<decBytes.length;i++)decStr+=String.fromCharCode(decBytes[i]);
+      body=dictPart+'stream\n'+decStr+'\nendstream\n';
+    }else{
+      body=decryptObjectStrings(body,key);
+    }
+    outObjs2.push({num:o.num,gen:o.gen,body});
+  }
+  outObjs2.sort((a,b)=>a.num-b.num);
+
+  let out2='%PDF-1.3\n%\xE2\xE3\xCF\xD3\n';
+  const offsets2={};
+  for(const o of outObjs2){
+    offsets2[o.num]=out2.length;
+    out2+=`${o.num} ${o.gen} obj${o.body}endobj\n`;
+  }
+  const maxNum2=outObjs2.reduce((a,o)=>Math.max(a,o.num),0);
+  const size2=maxNum2+1;
+  const xrefStart2=out2.length;
+  let xref2=`xref\n0 ${size2}\n0000000000 65535 f \n`;
+  for(let n=1;n<size2;n++){
+    const off=offsets2[n];
+    xref2+= off===undefined ? '0000000000 00000 f \n' : String(off).padStart(10,'0')+' 00000 n \n';
+  }
+  out2+=xref2;
+  let trailerOut='trailer\n<< /Size '+size2;
+  if(rootRef2)trailerOut+=' /Root '+rootRef2;
+  if(infoRef2)trailerOut+=' /Info '+infoRef2;
+  if(idM2)trailerOut+=' /ID ['+idM2[1]+' '+(idM2[2]||idM2[1])+']';
+  trailerOut+=' >>\nstartxref\n'+xrefStart2+'\n%%EOF';
+  out2+=trailerOut;
+
+  const outBytes2=new Uint8Array(out2.length);
+  for(let i=0;i<out2.length;i++)outBytes2[i]=out2.charCodeAt(i)&255;
+  return {status:'ok', bytes:outBytes2, asOwner:found.asOwner};
+}
+
 // ══ STATE ══
 const S={
   docs:tryP('scanai_docs',[]),
@@ -1051,7 +1263,7 @@ const S={
   aiTool:'ocr',
   drawColor:'#ef4444',drawMode:'select',drawing:false,lx:0,ly:0,
   sigColor:'#1a1a2e',sigFont:'sans-serif',sigMode:'draw',sigDrawing:false,
-  wmColor:'#ef4444',compQ:'med',
+  wmColor:'#ef4444',compQ:'med',lockFile:null,unlockFile:null,
   batch:{pages:[],currentImg:null,corners:null,pendingImages:[]},
   mergeFiles:[],libFilter:'all',light:false,
 };
@@ -2422,39 +2634,104 @@ function downloadSig(){const c=document.getElementById('sigCanvas');if(!c)return
 
 // ══ WATERMARK / PROTECT ══
 function setWMColor(c,el){S.wmColor=c;document.querySelectorAll('.wm-layout .color-swatch,.ms-layout .color-swatch').forEach(s=>s.classList.remove('sel'));el.classList.add('sel');}
-function protectDoc(){
-  if(!S.img){notify('Load a doc first.','e');return;}
+function lockFileChosen(e){
+  const f=e.target.files[0];if(!f)return;
+  S.lockFile=f;
+  const lbl=document.getElementById('lockFileLabel');
+  if(lbl)lbl.textContent='📄 '+f.name+' — ready to lock';
+}
+async function fileToPdfBytes(file){
+  if(isPdfFile(file)) return new Uint8Array(await file.arrayBuffer());
+  const dataUrl=await new Promise((res,rej)=>{const r=new FileReader();r.onload=ev=>res(ev.target.result);r.onerror=()=>rej(new Error('Could not read that file.'));r.readAsDataURL(file);});
+  const img=await new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>rej(new Error('Could not read that image.'));im.src=dataUrl;});
+  const fmtM=/^data:image\/(\w+)/.exec(dataUrl);
+  const type=(fmtM&&fmtM[1]==='png')?'PNG':'JPEG';
+  const w=img.naturalWidth||800,h=img.naturalHeight||1100;
+  const scale=Math.min(210/w,297/h);
+  const pw=w*scale,ph=h*scale;
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:'mm',format:[pw,ph]});
+  doc.addImage(dataUrl,type,0,0,pw,ph);
+  return new Uint8Array(doc.output('arraybuffer'));
+}
+async function protectDoc(){
+  if(!S.img&&!S.lockFile){notify('Scan, load, or upload a document first.','e');return;}
   const pw=document.getElementById('docPW')?.value,pw2=document.getElementById('docPW2')?.value;
-  if(!pw){notify('Enter a password.','e');return;}if(pw!==pw2){notify('Passwords do not match.','e');return;}
+  if(!pw){notify('Enter a password.','e');return;}
+  if(pw!==pw2){notify('Passwords do not match.','e');return;}
   const permPrint=document.getElementById('permPrint')?.checked||false;
   const permCopy=document.getElementById('permCopy')?.checked||false;
-  const bar=document.getElementById('protectProg');let p=0;
+  const bar=document.getElementById('protectProg');
   if(bar)bar.style.width='10%';
-  setTimeout(()=>{
-    try{
-      const name=document.getElementById('docName').value||'scan';
+  try{
+    const name=document.getElementById('docName')?.value||(S.lockFile?S.lockFile.name.replace(/\.[^.]+$/,''):'scan');
+    let plainBytes;
+    if(S.lockFile){
+      plainBytes=await fileToPdfBytes(S.lockFile);
+      if(bar)bar.style.width='40%';
+      if(isPdfFile(S.lockFile)){
+        let binCheck='';for(let i=0;i<Math.min(plainBytes.length,200000);i+=0x2000)binCheck+=String.fromCharCode.apply(null,plainBytes.subarray(i,i+0x2000));
+        const existing=parseEncryptDict(binCheck);
+        if(existing&&existing.encrypted){notify('This PDF is already password-protected. Unlock it first, then lock it with a new password.','e');if(bar)bar.style.width='0%';return;}
+      }
+    }else{
       const{jsPDF}=window.jspdf;
       const doc=new jsPDF({unit:'mm',format:'a4'});
       doc.addImage(getPDU(),'PNG',0,0,210,297);
+      plainBytes=new Uint8Array(doc.output('arraybuffer'));
       if(bar)bar.style.width='45%';
-      const plainBytes=new Uint8Array(doc.output('arraybuffer'));
-      if(bar)bar.style.width='70%';
-      const encBytes=encryptPdf(plainBytes, pw, pw, {print:permPrint, modify:false, copy:permCopy, annotate:false});
-      if(bar)bar.style.width='95%';
-      const blob=new Blob([encBytes],{type:'application/pdf'});
-      const a=document.createElement('a');
-      a.href=URL.createObjectURL(blob);
-      a.download=name+'-protected.pdf';
-      a.click();
-      if(bar)bar.style.width='100%';
-      addHist('Protected',name+'-protected.pdf','🔐');
-      notify('Password-protected PDF downloaded!','s');
-      setTimeout(()=>{if(bar)bar.style.width='0%';},1500);
-    }catch(err){
-      notify('Protection failed: '+err.message,'e');
-      if(bar)bar.style.width='0%';
     }
-  },50);
+    if(bar)bar.style.width='70%';
+    const encBytes=encryptPdf(plainBytes, pw, pw, {print:permPrint, modify:false, copy:permCopy, annotate:false});
+    if(bar)bar.style.width='95%';
+    const blob=new Blob([encBytes],{type:'application/pdf'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=name+'-protected.pdf';
+    a.click();
+    if(bar)bar.style.width='100%';
+    addHist('Protected',name+'-protected.pdf','🔐');
+    notify('Password-protected PDF downloaded!','s');
+    setTimeout(()=>{if(bar)bar.style.width='0%';},1500);
+  }catch(err){
+    notify('Protection failed: '+err.message,'e');
+    if(bar)bar.style.width='0%';
+  }
+}
+function unlockFileChosen(e){
+  const f=e.target.files[0];if(!f)return;
+  S.unlockFile=f;
+  const lbl=document.getElementById('unlockFileLabel');
+  if(lbl)lbl.textContent='📄 '+f.name;
+  const status=document.getElementById('unlockStatus');
+  if(status){status.style.color='var(--text3)';status.textContent='';}
+}
+async function unlockPdf(){
+  const f=S.unlockFile;
+  if(!f){notify('Upload the locked PDF first.','e');return;}
+  const pw=document.getElementById('unlockPW')?.value;
+  if(!pw){notify('Enter its current password.','e');return;}
+  const status=document.getElementById('unlockStatus');
+  const set=(color,text)=>{if(status){status.style.color=color;status.textContent=text;}};
+  set('var(--text3)','Unlocking…');
+  try{
+    const bytes=new Uint8Array(await f.arrayBuffer());
+    const result=decryptPdf(bytes,pw);
+    if(result.status==='not-encrypted'){set('var(--yellow)',"This PDF isn't password-protected — there's nothing to remove.");return;}
+    if(result.status==='unsupported'){set('var(--red)','⚠️ '+result.reason);return;}
+    if(result.status==='wrong-password'){set('var(--red)','❌ Wrong password — try again.');return;}
+    const blob=new Blob([result.bytes],{type:'application/pdf'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=f.name.replace(/\.pdf$/i,'')+'-unlocked.pdf';
+    a.click();
+    set('var(--green)','✅ Unlocked — the password has been permanently removed in the downloaded file.');
+    addHist('Unlocked',f.name,'🔓');
+    notify('PDF unlocked and downloaded!','s');
+    document.getElementById('unlockPW').value='';
+  }catch(err){
+    set('var(--red)','⚠️ '+(err.message||'Could not process this PDF.'));
+  }
 }
 let qrScanning=false;
 function detectQR(){
