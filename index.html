@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="ScanAI Pro"/>
-<meta name="theme-color" content="#f97316"/>
+<meta name="theme-color" content="#0b0c0e"/>
 <title>ScanAI Pro</title>
 <!-- Home Screen / app icon — ScanAI.PNG lives next to this HTML file in the same repo, 1254x1254 square, used as-is so the ratio is never distorted -->
 <link rel="apple-touch-icon" sizes="1254x1254" href="ScanAI.PNG"/>
@@ -15,30 +15,31 @@
 <link rel="icon" type="image/png" sizes="1254x1254" href="ScanAI.PNG"/>
 <link rel="shortcut icon" type="image/png" href="ScanAI.PNG"/>
 <link rel="manifest" href="manifest.json"/>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 :root{
-  --bg:#0a0c0f;--surface:#111318;--surface2:#181c23;--surface3:#1e232d;
-  --border:#252b36;--border2:#2e3545;
-  --accent:#f97316;--accent2:#fb923c;--accent-dim:rgba(249,115,22,.13);--accent-glow:rgba(249,115,22,.32);
-  --green:#22c55e;--green-dim:rgba(34,197,94,.13);
-  --blue:#3b82f6;--blue-dim:rgba(59,130,246,.13);
-  --purple:#a855f7;--purple-dim:rgba(168,85,247,.13);
-  --red:#ef4444;--red-dim:rgba(239,68,68,.13);
-  --yellow:#eab308;
-  --text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;
-  --fd:'Syne',sans-serif;--fm:'DM Mono',monospace;--fb:'Plus Jakarta Sans',sans-serif;
-  --r:12px;--r2:8px;--shadow:0 4px 28px rgba(0,0,0,.5);
+  --bg:#0b0c0e;--surface:#141517;--surface2:#1b1c1e;--surface3:#222326;
+  --border:#27282b;--border2:#333437;
+  --accent:#9f2232;--accent2:#b8384a;--accent-dim:rgba(159,34,50,.14);
+  --green:#2a9d6f;--green-dim:rgba(42,157,111,.13);
+  --blue:#4c6fe0;--blue-dim:rgba(76,111,224,.13);
+  --purple:#8568d8;--purple-dim:rgba(133,104,216,.13);
+  --red:#e5484d;--red-dim:rgba(229,72,77,.13);
+  --yellow:#c98a1f;
+  --text:#f0f0ef;--text2:#9b9a97;--text3:#6b6a66;
+  --fd:'Inter',sans-serif;--fm:'JetBrains Mono',monospace;--fb:'Inter',sans-serif;
+  --r:10px;--r2:7px;--shadow:0 10px 28px rgba(0,0,0,.4),0 2px 7px rgba(0,0,0,.28);
   --topbar-h:56px;--sidebar-w:224px;
 }
+.i{width:1em;height:1em;display:inline-block;vertical-align:-0.15em;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 body.light{
-  --bg:#f0f4f8;--surface:#fff;--surface2:#f8fafc;--surface3:#eef2f7;
-  --border:#dde3ec;--border2:#c9d3e0;--text:#0f172a;--text2:#475569;--text3:#94a3b8;
-  --shadow:0 4px 20px rgba(0,0,0,.10);
+  --bg:#f6f5f3;--surface:#fff;--surface2:#f3f2ef;--surface3:#ebe9e5;
+  --border:#e2e0db;--border2:#d1cec7;--text:#1a1a18;--text2:#5c5b57;--text3:#8f8d87;
+  --shadow:0 8px 22px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.05);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden}
@@ -53,9 +54,9 @@ input,select,button{font-family:var(--fb);outline:none}
 /* ── TOPBAR ── */
 .topbar{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:0 16px;background:var(--surface);border-bottom:1px solid var(--border);z-index:200;position:relative;overflow:hidden}
 .hamburger{display:none;width:38px;height:38px;border:1px solid var(--border);border-radius:var(--r2);background:var(--surface2);cursor:pointer;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;color:var(--text2)}
-.logo{font-family:var(--fd);font-weight:800;font-size:18px;letter-spacing:-.5px;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0}
-.logo-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent-glow)}
-.logo span{color:var(--accent)}
+.logo{font-family:var(--fd);font-weight:700;font-size:17px;letter-spacing:-.3px;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0}
+.logo-dot{width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.logo span{color:var(--text3);font-weight:500}
 .tb-search{flex:1;display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:7px 12px;min-width:0;max-width:400px}
 .tb-search input{flex:1;background:none;border:none;color:var(--text);font-size:13px;min-width:0}
 .tb-search input::placeholder{color:var(--text3)}
@@ -63,7 +64,7 @@ input,select,button{font-family:var(--fb);outline:none}
 .icon-btn{width:36px;height:36px;border-radius:var(--r2);border:1px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:.2s}
 .icon-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
 .new-btn{display:flex;align-items:center;gap:5px;padding:0 14px;height:36px;background:var(--accent);color:#fff;border:none;border-radius:var(--r2);cursor:pointer;font-family:var(--fd);font-weight:700;font-size:13px;white-space:nowrap;transition:.2s}
-.new-btn:hover{background:var(--accent2);box-shadow:0 0 16px var(--accent-glow)}
+.new-btn:hover{background:var(--accent2)}
 
 /* ── SIDEBAR desktop ── */
 .sidebar{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;z-index:150}
@@ -76,12 +77,8 @@ input,select,button{font-family:var(--fb);outline:none}
 .nav-sep{height:1px;background:var(--border);margin:6px 14px}
 .sb-footer{margin-top:auto;padding:12px}
 .storage-bar{background:var(--surface3);border-radius:4px;height:4px;overflow:hidden;margin:4px 0 8px}
-.storage-fill{width:34%;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:4px}
+.storage-fill{width:0%;height:100%;background:var(--accent);border-radius:4px;transition:width .3s}
 .sb-chips{display:flex;gap:5px;flex-wrap:wrap}
-.chip{padding:5px 11px;border-radius:20px;font-size:10px;font-weight:700;border:1px solid var(--border2);color:var(--text3);font-family:var(--fm);display:inline-flex;align-items:center;gap:4px;background:linear-gradient(145deg,var(--surface3),var(--surface));box-shadow:0 2px 0 rgba(0,0,0,.25),0 4px 8px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.08),inset 0 -1px 2px rgba(0,0,0,.15);transform:translateY(0);transition:transform .12s ease,box-shadow .12s ease}
-.chip:active{transform:translateY(2px);box-shadow:0 0 0 rgba(0,0,0,.25),0 1px 3px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.06)}
-.chip.on{background:linear-gradient(145deg,#34e07f,#189a4d);border-color:#1a9e4f;color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.25);box-shadow:0 2px 0 rgba(9,70,32,.5),0 4px 10px rgba(34,197,94,.4),inset 0 1px 0 rgba(255,255,255,.35),inset 0 -1px 2px rgba(0,0,0,.2)}
-.chip.on:active{box-shadow:0 0 0 rgba(9,70,32,.5),0 1px 4px rgba(34,197,94,.4),inset 0 1px 0 rgba(255,255,255,.2)}
 
 /* ── SIDEBAR OVERLAY mobile ── */
 .sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:249;backdrop-filter:blur(2px)}
@@ -108,7 +105,7 @@ input,select,button{font-family:var(--fb);outline:none}
 .action-btn:last-child{margin-bottom:0}
 .action-btn:hover,.action-btn:active{border-color:var(--accent);background:var(--accent-dim);color:var(--accent)}
 .action-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
-.action-btn.primary:hover,.action-btn.primary:active{background:var(--accent2);box-shadow:0 0 14px var(--accent-glow)}
+.action-btn.primary:hover,.action-btn.primary:active{background:var(--accent2)}
 .action-btn.green{background:var(--green-dim);border-color:var(--green);color:var(--green)}
 .action-btn.blue{background:var(--blue-dim);border-color:var(--blue);color:var(--blue)}
 .action-btn.red{border-color:var(--red);color:var(--red)}
@@ -143,19 +140,21 @@ select.form-input option{background:var(--bg)}
 /* ── DASHBOARD ── */
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px 20px}
 @media(min-width:600px){.stat-grid{grid-template-columns:repeat(4,1fr)}}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
-.stat-card.o::before{background:linear-gradient(90deg,var(--accent),var(--accent2))}
-.stat-card.g::before{background:linear-gradient(90deg,var(--green),#4ade80)}
-.stat-card.b::before{background:linear-gradient(90deg,var(--blue),#60a5fa)}
-.stat-card.p::before{background:linear-gradient(90deg,var(--purple),#c084fc)}
-.stat-icon{font-size:20px;margin-bottom:8px}
-.stat-val{font-family:var(--fd);font-size:clamp(22px,6vw,32px);font-weight:800;letter-spacing:-1px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;position:relative}
+.stat-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.stat-icon .i{width:16px;height:16px;stroke-width:1.7}
+.stat-card.o .stat-icon{background:var(--accent-dim);color:var(--accent)}
+.stat-card.g .stat-icon{background:var(--green-dim);color:var(--green)}
+.stat-card.b .stat-icon{background:var(--blue-dim);color:var(--blue)}
+.stat-card.p .stat-icon{background:var(--purple-dim);color:var(--purple)}
+.stat-val{font-family:var(--fd);font-size:clamp(20px,5.5vw,28px);font-weight:700;letter-spacing:-.5px}
 .stat-lbl{color:var(--text3);font-size:10px;margin-top:2px;font-family:var(--fm);letter-spacing:.5px}
+.chip{padding:5px 11px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:.2px;border:1px solid var(--border2);color:var(--text3);font-family:var(--fm);display:inline-flex;align-items:center;gap:5px;background:var(--surface2)}
+.chip.on{background:var(--green-dim);border-color:var(--green);color:var(--green)}
 .dash-row{display:grid;grid-template-columns:1fr;gap:12px;padding:0 20px 20px}
 @media(min-width:768px){.dash-row{grid-template-columns:3fr 2fr}}
 .dash-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px}
-.ds-title{font-family:var(--fd);font-weight:700;font-size:14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.ds-title{font-family:var(--fd);font-weight:600;font-size:11px;letter-spacing:.9px;text-transform:uppercase;color:var(--text3);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
 .ds-link{font-size:12px;color:var(--accent);cursor:pointer}
 .recent-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);cursor:pointer}
 .recent-item:last-child{border-bottom:none}
@@ -329,6 +328,22 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
 .modal-title{font-family:var(--fd);font-size:18px;font-weight:800;margin-bottom:6px}
 .modal-sub{color:var(--text2);font-size:12px;margin-bottom:16px;line-height:1.5}
 .modal-close{float:right;cursor:pointer;color:var(--text3);font-size:20px;line-height:1;padding:2px}
+.at-ico{background:var(--surface3)!important;color:var(--text2)}
+.at-ico .i{width:16px;height:16px}
+.ai-tool.active .at-ico{background:var(--accent-dim)!important;color:var(--accent)}
+#scanStageUpload .drop-zone{min-height:min(56vh,380px);padding:28px 20px}
+.drop-icon{color:var(--text3)}
+.drop-icon .i{width:44px;height:44px;stroke-width:1.1}
+.sec-title{font-weight:700;letter-spacing:-.3px}
+
+.action-btn.blue,.action-btn.green{background:var(--surface2);border-color:var(--border2);color:var(--text)}
+.action-btn.blue:hover,.action-btn.green:hover{border-color:var(--text3)}
+.action-btn.blue .i,.action-btn.green .i{color:var(--text2)}
+.action-btn.red{background:transparent}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:4px;background:var(--surface3);outline:none;border:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:var(--text);border:3px solid var(--accent);box-shadow:0 1px 4px rgba(0,0,0,.4);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--text);border:3px solid var(--accent);cursor:pointer}
+input[type=range]::-moz-range-track{height:4px;border-radius:4px;background:var(--surface3)}
 </style>
 </head>
 <body>
@@ -339,14 +354,14 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
 
   <!-- TOPBAR -->
   <header class="topbar">
-    <button class="hamburger" onclick="toggleSB()">☰</button>
-    <div class="logo"><div class="logo-dot"></div>Scan<span>AI</span> Pro</div>
+    <button class="hamburger" onclick="toggleSB()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 5.5h14M3 10h14M3 14.5h14"/></g></svg></button>
+    <div class="logo"><div class="logo-dot"></div>ScanAI<span>Pro</span></div>
     <div class="tb-search">
-      <span style="color:var(--text3);font-size:14px">🔍</span>
-      <input placeholder="Search documents, text…" oninput="handleGSearch(this.value)"/>
+      <span style="color:var(--text3);font-size:14px"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><circle cx="8.5" cy="8.5" r="5.5"/><path d="M16.5 16.5l-4-4"/></g></svg></span>
+      <input placeholder="Search" oninput="handleGSearch(this.value)"/>
     </div>
     <div class="tb-actions">
-      <button class="icon-btn" onclick="toggleTheme()" title="Theme">🌙</button>
+      <button class="icon-btn" onclick="toggleTheme()" title="Theme"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M16.5 12.2A7 7 0 1 1 7.8 3.5a5.6 5.6 0 0 0 8.7 8.7z"/></g></svg></button>
       <button class="new-btn" onclick="nav('scanner')">＋<span class="btn-txt"> Scan</span></button>
     </div>
   </header>
@@ -354,21 +369,20 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
   <!-- SIDEBAR -->
   <nav class="sidebar" id="sidebar">
     <div class="sb-label">WORKSPACE</div>
-    <div class="nav-item active" data-nav="dashboard" onclick="nav('dashboard')"><span class="ni-ico">🏠</span>Dashboard</div>
-    <div class="nav-item" data-nav="scanner" onclick="nav('scanner')"><span class="ni-ico">📷</span>Scan</div>
-    <div class="nav-item" data-nav="library" onclick="nav('library')"><span class="ni-ico">📁</span>Library<span class="ni-badge" id="libCount">0</span></div>
-    <div class="nav-item" data-nav="ai" onclick="nav('ai')"><span class="ni-ico">🤖</span>AI Tools</div>
-    <div class="nav-item" data-nav="annotate" onclick="nav('annotate')"><span class="ni-ico">✏️</span>Annotate</div>
-    <div class="nav-item" data-nav="merge" onclick="nav('merge')"><span class="ni-ico">🔀</span>Merge &amp; Split</div>
-    <div class="nav-item" data-nav="signature" onclick="nav('signature')"><span class="ni-ico">✍️</span>Signature</div>
-    <div class="nav-item" data-nav="watermark" onclick="nav('watermark')"><span class="ni-ico">💧</span>Watermark</div>
-    <div class="nav-item" data-nav="history" onclick="nav('history')"><span class="ni-ico">🕐</span>History</div>
-    <div class="nav-item" data-nav="settings" onclick="nav('settings')"><span class="ni-ico">⚙️</span>Settings</div>
+    <div class="nav-item active" data-nav="dashboard" onclick="nav('dashboard')"><span class="ni-ico"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 9.5 10 3l7 6.5"/><path d="M5 8.5V16.5h10V8.5"/></g></svg></span>Dashboard</div>
+    <div class="nav-item" data-nav="scanner" onclick="nav('scanner')"><span class="ni-ico"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><circle cx="10" cy="11" r="3.2"/><path d="M3 7.5a1.5 1.5 0 0 1 1.5-1.5h2l1-2h5l1 2h2A1.5 1.5 0 0 1 17 7.5v7A1.5 1.5 0 0 1 15.5 16h-11A1.5 1.5 0 0 1 3 14.5z"/></g></svg></span>Scan</div>
+    <div class="nav-item" data-nav="library" onclick="nav('library')"><span class="ni-ico"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 5.5a1 1 0 0 1 1-1h3.5l1.5 2H16a1 1 0 0 1 1 1v6.5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></g></svg></span>Library<span class="ni-badge" id="libCount">0</span></div>
+    <div class="nav-item" data-nav="ai" onclick="nav('ai')"><span class="ni-ico"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M8 10h4M8 13h4"/></g></svg></span>Analyze</div>
+    <div class="nav-item" data-nav="annotate" onclick="nav('annotate')"><span class="ni-ico"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M12.5 3.5 16 7l-9 9H3v-4z"/></g></svg></span>Annotate</div>
+    <div class="nav-item" data-nav="merge" onclick="nav('merge')"><span class="ni-ico"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 5h2.3c1.6 0 2.4 1 3.4 2.4M3 15h2.3c1.6 0 2.4-1 3.4-2.4M14.3 5H17M14.3 15H17"/><path d="M12 3l2 2-2 2M12 13l2 2-2 2"/></g></svg></span>Merge &amp; Split</div>
+    <div class="nav-item" data-nav="signature" onclick="nav('signature')"><span class="ni-ico"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 14c2-1 2.5-4.5 4-4.5s0 4 1.8 4 1.7-6 3.4-6 .8 4.3 2.3 4.3 1-1.3 2-1.3"/></g></svg></span>Signature</div>
+    <div class="nav-item" data-nav="watermark" onclick="nav('watermark')"><span class="ni-ico"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M10 2.5S4.5 8.4 4.5 12a5.5 5.5 0 0 0 11 0C15.5 8.4 10 2.5 10 2.5z"/></g></svg></span>Watermark</div>
+    <div class="nav-item" data-nav="history" onclick="nav('history')"><span class="ni-ico"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><circle cx="10" cy="10" r="7"/><path d="M10 6v4.3l3 1.8"/></g></svg></span>History</div>
+    <div class="nav-item" data-nav="settings" onclick="nav('settings')"><span class="ni-ico"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><circle cx="10" cy="10" r="2.6"/><path d="M10 2.8v2M10 15.2v2M17.2 10h-2M4.8 10h-2M15.1 4.9l-1.4 1.4M6.3 13.7l-1.4 1.4M15.1 15.1l-1.4-1.4M6.3 6.3 4.9 4.9"/></g></svg></span>Settings</div>
     <div class="nav-sep"></div>
     <div class="sb-footer">
-      <div style="font-size:11px;color:var(--text3);font-family:var(--fm)">Storage: 1.7 GB / 5 GB</div>
-      <div class="storage-bar"><div class="storage-fill"></div></div>
-      <div class="sb-chips"><div class="chip on">🔒 Encrypted</div><div class="chip on">☁️ Synced</div></div>
+      <div id="sbStorageText" style="font-size:11px;color:var(--text3);font-family:var(--fm)">On this device</div>
+      <div class="storage-bar"><div class="storage-fill" id="sbStorageFill" style="width:0%"></div></div>
     </div>
   </nav>
 
@@ -379,48 +393,31 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
     <div class="view active" id="view-dashboard">
       <div class="scroll">
         <div style="padding:18px 20px 0">
-          <div style="font-family:var(--fd);font-size:clamp(18px,5vw,26px);font-weight:800;letter-spacing:-.5px">Good day! 👋</div>
-          <div style="color:var(--text2);font-size:13px;margin-top:3px">Your intelligent document workspace</div>
+          <div id="greetTitle" style="font-family:var(--fd);font-size:clamp(20px,5.5vw,26px);font-weight:700;letter-spacing:-.4px">Welcome back</div>
+          <div style="color:var(--text2);font-size:13px;margin-top:4px">Scan, organize and sign your documents.</div>
         </div>
         <div style="padding:14px 20px 0">
-          <div class="ds-title" style="margin-bottom:10px">⚡ Quick Actions</div>
+          <div class="ds-title" style="margin-bottom:10px">Quick actions</div>
           <div class="qa-grid">
-            <div class="qa-btn" onclick="nav('scanner')"><div class="qa-ico">📷</div><div class="qa-title">Scan</div></div>
-            <div class="qa-btn" onclick="nav('ai');setAiTool('ocr')"><div class="qa-ico">🔤</div><div class="qa-title">OCR</div></div>
-            <div class="qa-btn" onclick="nav('ai');setAiTool('summarize')"><div class="qa-ico">📝</div><div class="qa-title">Summarize</div></div>
-            <div class="qa-btn" onclick="nav('signature')"><div class="qa-ico">✍️</div><div class="qa-title">Sign</div></div>
-            <div class="qa-btn" onclick="nav('merge')"><div class="qa-ico">🔀</div><div class="qa-title">Merge</div></div>
-            <div class="qa-btn" onclick="nav('watermark')"><div class="qa-ico">💧</div><div class="qa-title">Watermark</div></div>
+            <div class="qa-btn" onclick="nav('scanner')"><div class="qa-ico"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><circle cx="10" cy="11" r="3.2"/><path d="M3 7.5a1.5 1.5 0 0 1 1.5-1.5h2l1-2h5l1 2h2A1.5 1.5 0 0 1 17 7.5v7A1.5 1.5 0 0 1 15.5 16h-11A1.5 1.5 0 0 1 3 14.5z"/></g></svg></div><div class="qa-title">Scan</div></div>
+            <div class="qa-btn" onclick="nav('ai');setAiTool('ocr')"><div class="qa-ico"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 4h12M10 4v12M7 16h6"/></g></svg></div><div class="qa-title">OCR</div></div>
+            <div class="qa-btn" onclick="nav('ai');setAiTool('summarize')"><div class="qa-ico"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M7 5h10M7 10h10M7 15h10"/><circle cx="3.5" cy="5" r=".8"/><circle cx="3.5" cy="10" r=".8"/><circle cx="3.5" cy="15" r=".8"/></g></svg></div><div class="qa-title">Summarize</div></div>
+            <div class="qa-btn" onclick="nav('signature')"><div class="qa-ico"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 14c2-1 2.5-4.5 4-4.5s0 4 1.8 4 1.7-6 3.4-6 .8 4.3 2.3 4.3 1-1.3 2-1.3"/></g></svg></div><div class="qa-title">Sign</div></div>
+            <div class="qa-btn" onclick="nav('merge')"><div class="qa-ico"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 5h2.3c1.6 0 2.4 1 3.4 2.4M3 15h2.3c1.6 0 2.4-1 3.4-2.4M14.3 5H17M14.3 15H17"/><path d="M12 3l2 2-2 2M12 13l2 2-2 2"/></g></svg></div><div class="qa-title">Merge</div></div>
+            <div class="qa-btn" onclick="nav('watermark')"><div class="qa-ico"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M10 2.5S4.5 8.4 4.5 12a5.5 5.5 0 0 0 11 0C15.5 8.4 10 2.5 10 2.5z"/></g></svg></div><div class="qa-title">Watermark</div></div>
           </div>
         </div>
         <div class="stat-grid">
-          <div class="stat-card o"><div class="stat-icon">📄</div><div class="stat-val" id="statDocs">0</div><div class="stat-lbl">DOCUMENTS</div></div>
-          <div class="stat-card g"><div class="stat-icon">🔤</div><div class="stat-val" id="statOcr">0</div><div class="stat-lbl">OCR RUNS</div></div>
-          <div class="stat-card b"><div class="stat-icon">🤖</div><div class="stat-val" id="statAi">0</div><div class="stat-lbl">AI ANALYSES</div></div>
-          <div class="stat-card p"><div class="stat-icon">💾</div><div class="stat-val">0 MB</div><div class="stat-lbl">STORAGE</div></div>
+          <div class="stat-card o"><div class="stat-icon"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M11 2.5V6a.5.5 0 0 0 .5.5H15"/></g></svg></div><div class="stat-val" id="statDocs">0</div><div class="stat-lbl">DOCUMENTS</div></div>
+          <div class="stat-card b"><div class="stat-icon"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 3.5h9L16.5 7v9.5a.5.5 0 0 1-.5.5H4a.5.5 0 0 1-.5-.5v-12A.5.5 0 0 1 4 3.5z"/><path d="M6.5 3.5V8h6V3.5M6.5 17v-5h7v5"/></g></svg></div><div class="stat-val" id="statStorage">0 KB</div><div class="stat-lbl">ON THIS DEVICE</div></div>
         </div>
         <div class="dash-row">
           <div class="dash-section" style="flex:1">
             <div class="ds-title">Recent <span class="ds-link" onclick="nav('library')">All →</span></div>
-            <div id="recentList"><div class="empty-state" style="padding:14px 0"><div class="es-icon" style="font-size:30px">📭</div><div class="es-text">No docs yet</div></div></div>
+            <div id="recentList"><div class="empty-state" style="padding:14px 0"><div class="es-icon" style="font-size:30px"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 11h4l1.5 2h3L13 11h4"/><path d="M3 11 5 4h10l2 7v4.5A1.5 1.5 0 0 1 15.5 17h-11A1.5 1.5 0 0 1 3 15.5z"/></g></svg></div><div class="es-text">No docs yet</div></div></div>
           </div>
         </div>
-        <div style="padding:0 20px 8px;font-size:11px;font-weight:600;color:var(--text3);font-family:var(--fm);letter-spacing:.5px">30 FEATURES — 2× THE COMPETITION</div>
-        <div class="feat-grid">
-          <div class="fs-card"><div class="fs-ico">🔤</div><div><div class="fs-title">AI OCR 40+ Lang</div><div class="fs-sub">Claude-powered extraction</div></div></div>
-          <div class="fs-card"><div class="fs-ico">📝</div><div><div class="fs-title">Summarization</div><div class="fs-sub">Key points instantly</div></div></div>
-          <div class="fs-card"><div class="fs-ico">🏷️</div><div><div class="fs-title">Auto-Classify<span class="new-badge">NEW</span></div><div class="fs-sub">Invoice, Receipt…</div></div></div>
-          <div class="fs-card"><div class="fs-ico">🌍</div><div><div class="fs-title">Translation<span class="new-badge">NEW</span></div><div class="fs-sub">50+ languages</div></div></div>
-          <div class="fs-card"><div class="fs-ico">🧾</div><div><div class="fs-title">Data Extraction<span class="new-badge">NEW</span></div><div class="fs-sub">Vendors, totals…</div></div></div>
-          <div class="fs-card"><div class="fs-ico">📊</div><div><div class="fs-title">Table Extract<span class="new-badge">NEW</span></div><div class="fs-sub">Scanned → CSV</div></div></div>
-          <div class="fs-card"><div class="fs-ico">✏️</div><div><div class="fs-title">Annotation<span class="new-badge">NEW</span></div><div class="fs-sub">Draw, highlight, stamp</div></div></div>
-          <div class="fs-card"><div class="fs-ico">✍️</div><div><div class="fs-title">Signature Pad</div><div class="fs-sub">Draw, type, upload</div></div></div>
-          <div class="fs-card"><div class="fs-ico">🔀</div><div><div class="fs-title">Merge &amp; Split</div><div class="fs-sub">Combine or extract</div></div></div>
-          <div class="fs-card"><div class="fs-ico">💧</div><div><div class="fs-title">Watermarks</div><div class="fs-sub">Custom text &amp; tiled</div></div></div>
-          <div class="fs-card"><div class="fs-ico">🔐</div><div><div class="fs-title">Password Lock<span class="new-badge">NEW</span></div><div class="fs-sub">Password-protect PDFs</div></div></div>
-          <div class="fs-card"><div class="fs-ico">💬</div><div><div class="fs-title">Chat with Doc<span class="new-badge">NEW</span></div><div class="fs-sub">Ask questions via AI</div></div></div>
-        </div>
-      </div>
+              </div>
     </div>
 
     <!-- SCANNER -->
@@ -428,10 +425,10 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
       <div class="sec-hdr">
         <div class="sec-title">Scan</div>
         <div id="scanEditorActions" style="display:none;gap:6px;flex-wrap:wrap">
-          <button class="action-btn" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="newScan()">🔄 New</button>
-          <button class="action-btn" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="rotateImage(-90)">↺ L</button>
-          <button class="action-btn" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="rotateImage(90)">↻ R</button>
-          <button class="action-btn primary" style="width:auto;padding:7px 14px;margin:0;font-size:12px" onclick="saveDoc()">💾 Save</button>
+          <button class="action-btn" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="newScan()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M16 10a6 6 0 1 1-2-4.5M16 3v4h-4"/></g></svg> New</button>
+          <button class="action-btn" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="rotateImage(-90)"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 10a6 6 0 1 0 2-4.5M4 3v4h4"/></g></svg> L</button>
+          <button class="action-btn" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="rotateImage(90)"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M16 10a6 6 0 1 1-2-4.5M16 3v4h-4"/></g></svg> R</button>
+          <button class="action-btn primary" style="width:auto;padding:7px 14px;margin:0;font-size:12px" onclick="saveDoc()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 3.5h9L16.5 7v9.5a.5.5 0 0 1-.5.5H4a.5.5 0 0 1-.5-.5v-12A.5.5 0 0 1 4 3.5z"/><path d="M6.5 3.5V8h6V3.5M6.5 17v-5h7v5"/></g></svg> Save</button>
         </div>
         <button class="action-btn red" id="scanCancelBtn" style="display:none;width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="cancelScanFlow()">✕ Cancel</button>
       </div>
@@ -442,7 +439,7 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
           <div id="scanStageUpload">
             <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()" ondragover="dOver(event)" ondragleave="dLeave()" ondrop="dDrop(event)">
               <div class="scan-corners"><div class="sc tl"></div><div class="sc tr"></div><div class="sc bl"></div><div class="sc br"></div><div class="scan-line"></div></div>
-              <div class="drop-icon">📄</div>
+              <div class="drop-icon"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><circle cx="10" cy="11" r="3.2"/><path d="M3 7.5a1.5 1.5 0 0 1 1.5-1.5h2l1-2h5l1 2h2A1.5 1.5 0 0 1 17 7.5v7A1.5 1.5 0 0 1 15.5 16h-11A1.5 1.5 0 0 1 3 14.5z"/></g></svg></div>
               <div class="drop-title" id="scanUploadTitle">Tap to scan</div>
               <div class="drop-sub">Upload a photo — camera or files. Add as many pages as you need.</div>
               <div class="drop-formats"><span class="fmt-pill">JPG</span><span class="fmt-pill">PNG</span><span class="fmt-pill">HEIC</span><span class="fmt-pill">PDF</span></div>
@@ -458,7 +455,7 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
             </div>
             <div style="font-size:11px;color:var(--text3);text-align:center;margin:8px 0">Drag each corner to match the page edges</div>
             <div style="display:flex;gap:6px">
-              <button class="action-btn" style="flex:1;margin:0" onclick="resetBatchCorners()">↻ Reset</button>
+              <button class="action-btn" style="flex:1;margin:0" onclick="resetBatchCorners()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M16 10a6 6 0 1 1-2-4.5M16 3v4h-4"/></g></svg> Reset</button>
               <button class="action-btn primary" style="flex:2;margin:0" onclick="confirmScanCrop()">✓ Use This Page</button>
             </div>
           </div>
@@ -468,7 +465,7 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
             <div class="ds-title" style="justify-content:flex-start;gap:4px;margin-bottom:8px">Pages (<span id="scanPageCount">0</span>)</div>
             <div class="batch-thumb-strip" id="scanPageStrip"></div>
             <div style="display:flex;gap:6px;margin-top:14px">
-              <button class="action-btn" style="flex:1;margin:0" onclick="addAnotherScanPage()">➕ Add Another Page</button>
+              <button class="action-btn" style="flex:1;margin:0" onclick="addAnotherScanPage()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M10 4v12M4 10h12"/></g></svg> Add Another Page</button>
               <button class="action-btn primary" style="flex:1;margin:0" onclick="finishScan()">✓ Done</button>
             </div>
           </div>
@@ -476,22 +473,22 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
           <!-- STAGE 4: single-page editor (filters/rotate/export) — shown once you tap Done with exactly 1 page -->
           <div class="canvas-wrap" id="canvasWrap" style="display:none"><canvas id="previewCanvas"></canvas></div>
           <div class="scan-mobile-bar" id="mobileBar" style="display:none">
-            <button class="action-btn primary" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="exportAs('pdf')">📕 PDF</button>
-            <button class="action-btn" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="exportAs('png')">🖼️ PNG</button>
-            <button class="action-btn blue" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="qOcr()">🔤 OCR</button>
-            <button class="action-btn green" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="qClassify()">🏷️ Classify</button>
+            <button class="action-btn primary" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="exportAs('pdf')"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M11 2.5V6a.5.5 0 0 0 .5.5H15"/></g></svg> PDF</button>
+            <button class="action-btn" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="exportAs('png')"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><rect x="2.5" y="3.5" width="15" height="13" rx="1.5"/><circle cx="7" cy="8" r="1.4"/><path d="M4 15l4.2-4.2a1.5 1.5 0 0 1 2.1 0L16 16.5"/></g></svg> PNG</button>
+            <button class="action-btn blue" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="qOcr()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 4h12M10 4v12M7 16h6"/></g></svg> OCR</button>
+            <button class="action-btn green" style="width:auto;padding:7px 12px;margin:0;font-size:12px" onclick="qClassify()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M9.5 3H16v6.5L9.3 16.2a1.5 1.5 0 0 1-2.1 0L3.8 12.8a1.5 1.5 0 0 1 0-2.1z"/><circle cx="13" cy="6.5" r="1.1"/></g></svg> Classify</button>
           </div>
         </div>
         <div class="scan-panel" id="scanPanel" style="display:none">
           <div class="panel-sec">
-            <div class="panel-title"><span class="pt-ico">🎨</span> Enhancement</div>
+            <div class="panel-title"><span class="pt-ico"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M10 17a7 7 0 1 1 0-14c3.9 0 7 2.2 7 5.5 0 1.9-1.4 3-3 3h-1.3c-1 0-1.4 1.4-.6 2.1.9.8.2 2.3-1 2.3Z"/><circle cx="6.8" cy="9" r=".9"/><circle cx="9" cy="6.3" r=".9"/><circle cx="12.3" cy="7" r=".9"/></g></svg></span> Enhancement</div>
             <div class="sl-group"><div class="sl-label"><span>Brightness</span><span class="sl-val" id="vBright">100%</span></div><input type="range" id="slBright" min="0" max="200" value="100" oninput="applyFilters()"/></div>
             <div class="sl-group"><div class="sl-label"><span>Contrast</span><span class="sl-val" id="vContrast">100%</span></div><input type="range" id="slContrast" min="0" max="200" value="100" oninput="applyFilters()"/></div>
             <div class="sl-group"><div class="sl-label"><span>Saturation</span><span class="sl-val" id="vSat">100%</span></div><input type="range" id="slSat" min="0" max="200" value="100" oninput="applyFilters()"/></div>
             <div class="sl-group"><div class="sl-label"><span>Rotation</span><span class="sl-val" id="vRot">0°</span></div><input type="range" id="slRot" min="-180" max="180" value="0" oninput="applyFilters()"/></div>
           </div>
           <div class="panel-sec">
-            <div class="panel-title"><span class="pt-ico">🖼️</span> Filters</div>
+            <div class="panel-title"><span class="pt-ico"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><rect x="2.5" y="3.5" width="15" height="13" rx="1.5"/><circle cx="7" cy="8" r="1.4"/><path d="M4 15l4.2-4.2a1.5 1.5 0 0 1 2.1 0L16 16.5"/></g></svg></span> Filters</div>
             <div class="filter-grid">
               <div class="filter-btn active" onclick="setFilter('none',this)">Original</div>
               <div class="filter-btn" onclick="setFilter('grayscale',this)">Grayscale</div>
@@ -502,29 +499,29 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
             </div>
           </div>
           <div class="panel-sec">
-            <div class="panel-title"><span class="pt-ico">🏷️</span> Details</div>
+            <div class="panel-title"><span class="pt-ico"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M9.5 3H16v6.5L9.3 16.2a1.5 1.5 0 0 1-2.1 0L3.8 12.8a1.5 1.5 0 0 1 0-2.1z"/><circle cx="13" cy="6.5" r="1.1"/></g></svg></span> Details</div>
             <div style="margin-bottom:8px"><input class="form-input" id="docName" placeholder="Document name…"/></div>
             <select class="form-input" id="docCat">
-              <option value="other">📄 Other</option><option value="receipt">🧾 Receipt</option>
-              <option value="invoice">💼 Invoice</option><option value="contract">📑 Contract</option>
-              <option value="medical">🏥 Medical</option><option value="id">🪪 ID</option>
-              <option value="bill">💰 Bill</option><option value="photo">📸 Photo</option>
+              <option value="other">Other</option><option value="receipt">Receipt</option>
+              <option value="invoice">Invoice</option><option value="contract">Contract</option>
+              <option value="medical">Medical</option><option value="id">ID</option>
+              <option value="bill">Bill</option><option value="photo">Photo</option>
             </select>
           </div>
           <div class="panel-sec">
-            <div class="panel-title"><span class="pt-ico">📤</span> Export</div>
+            <div class="panel-title"><span class="pt-ico"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 10l14-7-4.5 14-3-5.5L3 10z"/></g></svg></span> Export</div>
             <div class="export-grid">
-              <div class="exp-btn" onclick="exportAs('pdf')"><div class="ef">📕</div><div class="et">PDF</div></div>
-              <div class="exp-btn" onclick="exportAs('png')"><div class="ef">🖼️</div><div class="et">PNG</div></div>
-              <div class="exp-btn" onclick="exportAs('jpg')"><div class="ef">📷</div><div class="et">JPG</div></div>
-              <div class="exp-btn" onclick="exportAs('txt')"><div class="ef">📝</div><div class="et">TXT</div></div>
+              <div class="exp-btn" onclick="exportAs('pdf')"><div class="ef"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M11 2.5V6a.5.5 0 0 0 .5.5H15"/></g></svg></div><div class="et">PDF</div></div>
+              <div class="exp-btn" onclick="exportAs('png')"><div class="ef"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><rect x="2.5" y="3.5" width="15" height="13" rx="1.5"/><circle cx="7" cy="8" r="1.4"/><path d="M4 15l4.2-4.2a1.5 1.5 0 0 1 2.1 0L16 16.5"/></g></svg></div><div class="et">PNG</div></div>
+              <div class="exp-btn" onclick="exportAs('jpg')"><div class="ef"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><circle cx="10" cy="11" r="3.2"/><path d="M3 7.5a1.5 1.5 0 0 1 1.5-1.5h2l1-2h5l1 2h2A1.5 1.5 0 0 1 17 7.5v7A1.5 1.5 0 0 1 15.5 16h-11A1.5 1.5 0 0 1 3 14.5z"/></g></svg></div><div class="et">JPG</div></div>
+              <div class="exp-btn" onclick="exportAs('txt')"><div class="ef"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M12.5 3.5 16 7l-9 9H3v-4z"/></g></svg></div><div class="et">TXT</div></div>
             </div>
           </div>
           <div class="panel-sec" style="border-bottom:none">
-            <div class="panel-title"><span class="pt-ico">🤖</span> AI Quick</div>
-            <button class="action-btn blue" onclick="qOcr()">🔤 Extract Text (OCR)</button>
-            <button class="action-btn green" onclick="qClassify()">🏷️ Auto-Classify</button>
-            <button class="action-btn" onclick="nav('ai')">More AI Tools →</button>
+            <div class="panel-title"><span class="pt-ico"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M8 10h4M8 13h4"/></g></svg></span> Analyze</div>
+            <button class="action-btn blue" onclick="qOcr()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 4h12M10 4v12M7 16h6"/></g></svg> Extract Text (OCR)</button>
+            <button class="action-btn green" onclick="qClassify()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M9.5 3H16v6.5L9.3 16.2a1.5 1.5 0 0 1-2.1 0L3.8 12.8a1.5 1.5 0 0 1 0-2.1z"/><circle cx="13" cy="6.5" r="1.1"/></g></svg> Auto-Classify</button>
+            <button class="action-btn" onclick="nav('ai')">More analysis tools →</button>
           </div>
         </div>
       </div>
@@ -533,7 +530,7 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
     <!-- LIBRARY -->
     <div class="view" id="view-library">
       <div class="lib-bar">
-        <div class="lib-search"><span style="color:var(--text3)">🔍</span><input id="libSearch" placeholder="Search…" oninput="filterDocs(this.value)"/></div>
+        <div class="lib-search"><span style="color:var(--text3)"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><circle cx="8.5" cy="8.5" r="5.5"/><path d="M16.5 16.5l-4-4"/></g></svg></span><input id="libSearch" placeholder="Search…" oninput="filterDocs(this.value)"/></div>
         <div class="filter-tabs" id="libFilters">
           <div class="ft active" onclick="filterTag('all',this)">All</div>
           <div class="ft" onclick="filterTag('receipt',this)">Receipt</div>
@@ -544,23 +541,23 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
         </div>
         <button class="action-btn primary" style="width:auto;padding:7px 12px;margin:0;font-size:12px;flex-shrink:0" onclick="nav('scanner')">＋ New</button>
       </div>
-      <div class="scroll"><div class="doc-grid" id="docGrid"><div class="empty-state" style="grid-column:1/-1"><div class="es-icon">📂</div><div class="es-text">Library empty — start scanning!</div></div></div></div>
+      <div class="scroll"><div class="doc-grid" id="docGrid"><div class="empty-state" style="grid-column:1/-1"><div class="es-icon"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 5.5a1 1 0 0 1 1-1h3.5l1.5 2H16a1 1 0 0 1 1 1v6.5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></g></svg></div><div class="es-text">Library empty — start scanning!</div></div></div></div>
     </div>
 
     <!-- AI TOOLS -->
     <div class="view" id="view-ai">
       <div class="ai-wrap">
         <div class="ai-sb" id="aiSB">
-          <div class="ai-tool active" id="ait-ocr" onclick="setAiTool('ocr')"><div class="at-ico" style="background:var(--blue-dim)">🔤</div><div><div class="at-title">OCR</div><div class="at-sub">Extract text</div></div></div>
-          <div class="ai-tool" id="ait-summarize" onclick="setAiTool('summarize')"><div class="at-ico" style="background:var(--green-dim)">📝</div><div><div class="at-title">Summarize</div><div class="at-sub">Key points</div></div></div>
-          <div class="ai-tool" id="ait-classify" onclick="setAiTool('classify')"><div class="at-ico" style="background:var(--purple-dim)">🏷️</div><div><div class="at-title">Classify</div><div class="at-sub">Doc type</div></div></div>
-          <div class="ai-tool" id="ait-translate" onclick="setAiTool('translate')"><div class="at-ico" style="background:var(--accent-dim)">🌍</div><div><div class="at-title">Translate</div><div class="at-sub">50+ langs</div></div></div>
-          <div class="ai-tool" id="ait-extract" onclick="setAiTool('extract')"><div class="at-ico" style="background:var(--green-dim)">🧾</div><div><div class="at-title">Data</div><div class="at-sub">Extract</div></div></div>
-          <div class="ai-tool" id="ait-table" onclick="setAiTool('table')"><div class="at-ico" style="background:var(--red-dim)">📊</div><div><div class="at-title">Tables</div><div class="at-sub">→ Excel</div></div></div>
-          <div class="ai-tool" id="ait-bizcard" onclick="setAiTool('bizcard')"><div class="at-ico" style="background:var(--blue-dim)">🏢</div><div><div class="at-title">Biz Card</div><div class="at-sub">Contacts</div></div></div>
-          <div class="ai-tool" id="ait-handwriting" onclick="setAiTool('handwriting')"><div class="at-ico" style="background:var(--green-dim)">✍️</div><div><div class="at-title">Handwrite</div><div class="at-sub">Cursive</div></div></div>
-          <div class="ai-tool" id="ait-texthand" onclick="setAiTool('texthand')"><div class="at-ico" style="background:var(--yellow-dim,rgba(234,179,8,.13))">🖋️</div><div><div class="at-title">To Handwrite</div><div class="at-sub">Text→ink</div></div></div>
-          <div class="ai-tool" id="ait-chat" onclick="setAiTool('chat')"><div class="at-ico" style="background:var(--accent-dim)">💬</div><div><div class="at-title">Chat Doc</div><div class="at-sub">Q&amp;A</div></div></div>
+          <div class="ai-tool active" id="ait-ocr" onclick="setAiTool('ocr')"><div class="at-ico" style="background:var(--blue-dim)"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 4h12M10 4v12M7 16h6"/></g></svg></div><div><div class="at-title">OCR</div><div class="at-sub">Extract text</div></div></div>
+          <div class="ai-tool" id="ait-summarize" onclick="setAiTool('summarize')"><div class="at-ico" style="background:var(--green-dim)"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M7 5h10M7 10h10M7 15h10"/><circle cx="3.5" cy="5" r=".8"/><circle cx="3.5" cy="10" r=".8"/><circle cx="3.5" cy="15" r=".8"/></g></svg></div><div><div class="at-title">Summarize</div><div class="at-sub">Key points</div></div></div>
+          <div class="ai-tool" id="ait-classify" onclick="setAiTool('classify')"><div class="at-ico" style="background:var(--purple-dim)"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M9.5 3H16v6.5L9.3 16.2a1.5 1.5 0 0 1-2.1 0L3.8 12.8a1.5 1.5 0 0 1 0-2.1z"/><circle cx="13" cy="6.5" r="1.1"/></g></svg></div><div><div class="at-title">Classify</div><div class="at-sub">Doc type</div></div></div>
+          <div class="ai-tool" id="ait-translate" onclick="setAiTool('translate')"><div class="at-ico" style="background:var(--accent-dim)"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><circle cx="10" cy="10" r="7"/><path d="M3 10h14M10 3c2 2.3 2 11.7 0 14M10 3C8 5.3 8 14.7 10 17"/></g></svg></div><div><div class="at-title">Translate</div><div class="at-sub">50+ langs</div></div></div>
+          <div class="ai-tool" id="ait-extract" onclick="setAiTool('extract')"><div class="at-ico" style="background:var(--green-dim)"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M5 2.5h10v15l-2-1.3-2 1.3-2-1.3-2 1.3-2-1.3z"/><path d="M7.3 6.5h5.4M7.3 9.3h5.4M7.3 12h3.4"/></g></svg></div><div><div class="at-title">Data</div><div class="at-sub">Extract</div></div></div>
+          <div class="ai-tool" id="ait-table" onclick="setAiTool('table')"><div class="at-ico" style="background:var(--red-dim)"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 16V10M10 16V4M16 16v-7"/></g></svg></div><div><div class="at-title">Tables</div><div class="at-sub">→ Excel</div></div></div>
+          <div class="ai-tool" id="ait-bizcard" onclick="setAiTool('bizcard')"><div class="at-ico" style="background:var(--blue-dim)"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><rect x="3" y="7" width="14" height="9" rx="1.4"/><path d="M7.3 7V5.3a1.3 1.3 0 0 1 1.3-1.3h2.8a1.3 1.3 0 0 1 1.3 1.3V7M3 11.5h14"/></g></svg></div><div><div class="at-title">Biz Card</div><div class="at-sub">Contacts</div></div></div>
+          <div class="ai-tool" id="ait-handwriting" onclick="setAiTool('handwriting')"><div class="at-ico" style="background:var(--green-dim)"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 14c2-1 2.5-4.5 4-4.5s0 4 1.8 4 1.7-6 3.4-6 .8 4.3 2.3 4.3 1-1.3 2-1.3"/></g></svg></div><div><div class="at-title">Handwrite</div><div class="at-sub">Cursive</div></div></div>
+          <div class="ai-tool" id="ait-texthand" onclick="setAiTool('texthand')"><div class="at-ico" style="background:var(--yellow-dim,rgba(234,179,8,.13))"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 14c2-1 2.5-4.5 4-4.5s0 4 1.8 4 1.7-6 3.4-6 .8 4.3 2.3 4.3 1-1.3 2-1.3"/></g></svg></div><div><div class="at-title">To Handwrite</div><div class="at-sub">Text→ink</div></div></div>
+          <div class="ai-tool" id="ait-chat" onclick="setAiTool('chat')"><div class="at-ico" style="background:var(--accent-dim)"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 4.5h14v9H8.5L5 16.5v-3H3z"/></g></svg></div><div><div class="at-title">Chat Doc</div><div class="at-sub">Q&amp;A</div></div></div>
         </div>
         <div class="ai-main" id="aiMain"></div>
       </div>
@@ -569,13 +566,13 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
     <!-- ANNOTATE -->
     <div class="view" id="view-annotate">
       <div class="ann-bar">
-        <button class="ann-btn active" id="ann-select" onclick="setAnnTool('select')">☝️ Select</button>
-        <button class="ann-btn" id="ann-pen" onclick="setAnnTool('pen')">✏️ Draw</button>
-        <button class="ann-btn" id="ann-highlight" onclick="setAnnTool('highlight')">🟡 Hi</button>
-        <button class="ann-btn" id="ann-rect" onclick="setAnnTool('rect')">⬜ Rect</button>
-        <button class="ann-btn" onclick="addStamp('APPROVED')">✅</button>
-        <button class="ann-btn" onclick="addStamp('CONFIDENTIAL')">🔴</button>
-        <button class="ann-btn" onclick="addStamp('DRAFT')">📋</button>
+        <button class="ann-btn active" id="ann-select" onclick="setAnnTool('select')"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M5 3.5 15 9l-4.2 1.3L9 15z"/></g></svg> Select</button>
+        <button class="ann-btn" id="ann-pen" onclick="setAnnTool('pen')"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M12.5 3.5 16 7l-9 9H3v-4z"/></g></svg> Draw</button>
+        <button class="ann-btn" id="ann-highlight" onclick="setAnnTool('highlight')"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M12.5 3.5 16 7l-7 7-4 1 1-4z"/><path d="M4 17h5"/></g></svg> Hi</button>
+        <button class="ann-btn" id="ann-rect" onclick="setAnnTool('rect')"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><rect x="4" y="4" width="12" height="12" rx="1.5"/></g></svg> Rect</button>
+        <button class="ann-btn" onclick="addStamp('APPROVED')"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 10.5l3.8 3.8L16 6"/></g></svg></button>
+        <button class="ann-btn" onclick="addStamp('CONFIDENTIAL')"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M7 11V8a3 3 0 0 1 6 0v3"/><rect x="4" y="11" width="12" height="3.5" rx=".8"/><path d="M3 17h14"/></g></svg></button>
+        <button class="ann-btn" onclick="addStamp('DRAFT')"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><rect x="7" y="7" width="9.5" height="9.5" rx="1.4"/><path d="M13 7V4.9A1.4 1.4 0 0 0 11.6 3.5H4.9A1.4 1.4 0 0 0 3.5 4.9v6.7A1.4 1.4 0 0 0 4.9 13H7"/></g></svg></button>
         <div style="display:flex;align-items:center;gap:5px;margin-left:auto;flex-wrap:wrap">
           <div class="color-swatch sel" style="width:20px;height:20px;background:#ef4444" onclick="setDColor('#ef4444',this)"></div>
           <div class="color-swatch" style="width:20px;height:20px;background:#3b82f6" onclick="setDColor('#3b82f6',this)"></div>
@@ -583,15 +580,15 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
           <div class="color-swatch" style="width:20px;height:20px;background:#f97316" onclick="setDColor('#f97316',this)"></div>
           <div class="color-swatch" style="width:20px;height:20px;background:#000" onclick="setDColor('#000',this)"></div>
           <input type="range" id="brushSize" min="1" max="20" value="3" style="width:60px;accent-color:var(--accent)"/>
-          <button class="ann-btn" onclick="clearAnn()">🗑️</button>
-          <button class="ann-btn" style="border-color:var(--accent);color:var(--accent)" onclick="saveAnn()">💾</button>
+          <button class="ann-btn" onclick="clearAnn()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 6h12M8 6V4.3A1.3 1.3 0 0 1 9.3 3h1.4A1.3 1.3 0 0 1 12 4.3V6M5.5 6l.6 9.5A1.5 1.5 0 0 0 7.6 17h4.8a1.5 1.5 0 0 0 1.5-1.5L14.5 6"/></g></svg></button>
+          <button class="ann-btn" style="border-color:var(--accent);color:var(--accent)" onclick="saveAnn()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 3.5h9L16.5 7v9.5a.5.5 0 0 1-.5.5H4a.5.5 0 0 1-.5-.5v-12A.5.5 0 0 1 4 3.5z"/><path d="M6.5 3.5V8h6V3.5M6.5 17v-5h7v5"/></g></svg></button>
         </div>
       </div>
       <div class="ann-canvas-area" id="annWrap" style="display:none">
         <div class="ann-wrap"><canvas id="baseCanvas"></canvas><canvas id="annotCanvas"></canvas></div>
       </div>
       <div class="empty-state" id="annEmpty">
-        <div class="es-icon">✏️</div><div class="es-text">Scan a document first</div>
+        <div class="es-icon"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M12.5 3.5 16 7l-9 9H3v-4z"/></g></svg></div><div class="es-text">Scan a document first</div>
         <button class="action-btn primary" style="width:180px;margin-top:8px" onclick="nav('scanner')">Go to Scanner</button>
       </div>
     </div>
@@ -602,30 +599,30 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
         <div class="sec-title" style="margin-bottom:16px">Merge &amp; Split</div>
         <div class="ms-grid">
           <div class="ms-card">
-            <div class="ms-title">🔀 Merge Files</div>
+            <div class="ms-title"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 5h2.3c1.6 0 2.4 1 3.4 2.4M3 15h2.3c1.6 0 2.4-1 3.4-2.4M14.3 5H17M14.3 15H17"/><path d="M12 3l2 2-2 2M12 13l2 2-2 2"/></g></svg> Merge Files</div>
             <div class="ms-desc">Combine multiple images or PDFs into one PDF.</div>
             <div class="file-list" id="mergeList"><div style="color:var(--text3);font-size:11px;padding:6px;text-align:center">No files</div></div>
             <input type="file" id="mergeInput" accept="image/*,application/pdf,.pdf" multiple style="display:none" onchange="addMergeFiles(event)"/>
-            <button class="action-btn" onclick="document.getElementById('mergeInput').click()">➕ Add Files</button>
-            <button class="action-btn primary" onclick="mergePDF()">🔀 Merge to PDF</button>
+            <button class="action-btn" onclick="document.getElementById('mergeInput').click()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M10 4v12M4 10h12"/></g></svg> Add Files</button>
+            <button class="action-btn primary" onclick="mergePDF()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 5h2.3c1.6 0 2.4 1 3.4 2.4M3 15h2.3c1.6 0 2.4-1 3.4-2.4M14.3 5H17M14.3 15H17"/><path d="M12 3l2 2-2 2M12 13l2 2-2 2"/></g></svg> Merge to PDF</button>
           </div>
           <div class="ms-card">
-            <div class="ms-title">✂️ Split / Compress</div>
+            <div class="ms-title"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><circle cx="6" cy="6" r="2"/><circle cx="6" cy="14" r="2"/><path d="M7.5 7.5 16 16M16 4 7.5 12.5"/></g></svg> Split / Compress</div>
             <div class="ms-desc">Extract current doc or compress PDF.</div>
-            <button class="action-btn blue" onclick="splitDoc()">✂️ Extract as PDF</button>
+            <button class="action-btn blue" onclick="splitDoc()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><circle cx="6" cy="6" r="2"/><circle cx="6" cy="14" r="2"/><path d="M7.5 7.5 16 16M16 4 7.5 12.5"/></g></svg> Extract as PDF</button>
             <div style="margin-top:12px">
-              <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px">🗜️ Compress Quality</div>
+              <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 8V5a1 1 0 0 1 1-1h3M17 8V5a1 1 0 0 0-1-1h-3M3 12v3a1 1 0 0 0 1 1h3M17 12v3a1 1 0 0 1-1 1h-3"/></g></svg> Compress Quality</div>
               <div class="filter-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:8px">
                 <div class="filter-btn" id="cq-low" onclick="setCompQ('low',this)">Low</div>
                 <div class="filter-btn active" id="cq-med" onclick="setCompQ('med',this)">Medium</div>
                 <div class="filter-btn" id="cq-high" onclick="setCompQ('high',this)">High</div>
               </div>
-              <button class="action-btn green" onclick="compressPDF()">🗜️ Compress &amp; Download</button>
+              <button class="action-btn green" onclick="compressPDF()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 8V5a1 1 0 0 1 1-1h3M17 8V5a1 1 0 0 0-1-1h-3M3 12v3a1 1 0 0 0 1 1h3M17 12v3a1 1 0 0 1-1 1h-3"/></g></svg> Compress &amp; Download</button>
             </div>
           </div>
         </div>
         <div class="ms-card" style="margin-top:14px">
-          <div class="ms-title">💧 Quick Watermark</div>
+          <div class="ms-title"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M10 2.5S4.5 8.4 4.5 12a5.5 5.5 0 0 0 11 0C15.5 8.4 10 2.5 10 2.5z"/></g></svg> Quick Watermark</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
             <input class="form-input" id="wmQuick" value="CONFIDENTIAL" style="flex:1;min-width:130px"/>
             <button class="action-btn primary" style="width:auto;padding:9px 14px;margin:0;flex-shrink:0" onclick="applyWM()">Apply</button>
@@ -641,9 +638,9 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
         <div class="two-col">
           <div>
             <div class="pill-tabs">
-              <div class="pill-tab active" onclick="setSigMode('draw',this)">✏️ Draw</div>
-              <div class="pill-tab" onclick="setSigMode('type',this)">⌨️ Type</div>
-              <div class="pill-tab" onclick="setSigMode('upload',this)">📁 Upload</div>
+              <div class="pill-tab active" onclick="setSigMode('draw',this)"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M12.5 3.5 16 7l-9 9H3v-4z"/></g></svg> Draw</div>
+              <div class="pill-tab" onclick="setSigMode('type',this)">⌨ Type</div>
+              <div class="pill-tab" onclick="setSigMode('upload',this)"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 5.5a1 1 0 0 1 1-1h3.5l1.5 2H16a1 1 0 0 1 1 1v6.5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></g></svg> Upload</div>
             </div>
             <div id="sigDrawMode">
               <div class="sig-pad-area">
@@ -661,11 +658,11 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
             </div>
             <div id="sigUploadMode" style="display:none">
               <input type="file" id="sigUpload" accept="image/*" style="display:none" onchange="loadSigImg(event)"/>
-              <div class="ai-upload" onclick="document.getElementById('sigUpload').click()"><div style="font-size:28px">🖼️</div><div style="font-size:12px;margin-top:6px">Upload signature image</div></div>
+              <div class="ai-upload" onclick="document.getElementById('sigUpload').click()"><div style="font-size:28px"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><rect x="2.5" y="3.5" width="15" height="13" rx="1.5"/><circle cx="7" cy="8" r="1.4"/><path d="M4 15l4.2-4.2a1.5 1.5 0 0 1 2.1 0L16 16.5"/></g></svg></div><div style="font-size:12px;margin-top:6px">Upload signature image</div></div>
             </div>
             <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
-              <button class="action-btn green" onclick="applySig()" style="flex:1">✅ Apply to Doc</button>
-              <button class="action-btn" onclick="downloadSig()" style="flex:1">💾 Save Sig</button>
+              <button class="action-btn green" onclick="applySig()" style="flex:1"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 10.5l3.8 3.8L16 6"/></g></svg> Apply to Doc</button>
+              <button class="action-btn" onclick="downloadSig()" style="flex:1"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 3.5h9L16.5 7v9.5a.5.5 0 0 1-.5.5H4a.5.5 0 0 1-.5-.5v-12A.5.5 0 0 1 4 3.5z"/><path d="M6.5 3.5V8h6V3.5M6.5 17v-5h7v5"/></g></svg> Save Sig</button>
             </div>
           </div>
           <div>
@@ -697,7 +694,7 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
         <div class="sec-title" style="margin-bottom:14px">Watermark &amp; Protect</div>
         <div class="two-col">
           <div class="ms-card">
-            <div class="ms-title">💧 Add Watermark</div>
+            <div class="ms-title"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M10 2.5S4.5 8.4 4.5 12a5.5 5.5 0 0 0 11 0C15.5 8.4 10 2.5 10 2.5z"/></g></svg> Add Watermark</div>
             <div class="form-group"><label class="form-label">Text</label><input class="form-input" id="wmText" value="CONFIDENTIAL"/></div>
             <div class="form-group"><label class="form-label">Position</label>
               <select class="form-input" id="wmPos"><option value="center">Center Diagonal</option><option value="top">Top</option><option value="bottom">Bottom</option><option value="repeat">Tiled</option></select>
@@ -711,10 +708,10 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
                 <div class="color-swatch" style="width:26px;height:26px;background:#000" onclick="setWMColor('#000',this)"></div>
               </div>
             </div>
-            <button class="action-btn primary" onclick="applyWM()">💧 Apply Watermark</button>
+            <button class="action-btn primary" onclick="applyWM()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M10 2.5S4.5 8.4 4.5 12a5.5 5.5 0 0 0 11 0C15.5 8.4 10 2.5 10 2.5z"/></g></svg> Apply Watermark</button>
           </div>
           <div class="ms-card">
-            <div class="ms-title">🔐 Password Protect (Lock)</div>
+            <div class="ms-title"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><rect x="7.5" y="11" width="5" height="4" rx=".8"/><path d="M8.7 11V9.6a1.3 1.3 0 0 1 2.6 0V11"/></g></svg> Password Protect (Lock)</div>
             <div class="form-group"><label class="form-label">Document to lock</label>
               <div class="drop-zone" style="min-height:70px" onclick="document.getElementById('lockFileInput').click()">
                 <div style="font-size:12px;color:var(--text2)" id="lockFileLabel">Using your current scan — or tap to upload/scan a different PDF or image</div>
@@ -729,12 +726,12 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
                 <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer"><input type="checkbox" id="permCopy" style="accent-color:var(--accent)"/> Allow copying</label>
               </div>
             </div>
-            <button class="action-btn green" onclick="protectDoc()">🔐 Protect &amp; Download</button>
+            <button class="action-btn green" onclick="protectDoc()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><rect x="7.5" y="11" width="5" height="4" rx=".8"/><path d="M8.7 11V9.6a1.3 1.3 0 0 1 2.6 0V11"/></g></svg> Protect &amp; Download</button>
             <div class="progress-bar"><div class="progress-fill" id="protectProg" style="width:0%"></div></div>
             <div style="font-size:11px;color:var(--text3);margin-top:6px">Password-protects the PDF using RC4 encryption (PDF standard security handler) — opens only with the correct password in any PDF reader.</div>
           </div>
           <div class="ms-card">
-            <div class="ms-title">🔓 Remove PDF Password (Unlock)</div>
+            <div class="ms-title"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><rect x="4.5" y="9" width="11" height="8" rx="1.5"/><path d="M6.5 9V6.2a3.5 3.5 0 0 1 6.6-1.6"/></g></svg> Remove PDF Password (Unlock)</div>
             <div class="form-group"><label class="form-label">Locked PDF</label>
               <div class="drop-zone" style="min-height:70px" onclick="document.getElementById('unlockFileInput').click()">
                 <div style="font-size:12px;color:var(--text2)" id="unlockFileLabel">Tap to upload the password-protected PDF</div>
@@ -742,14 +739,14 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
               <input type="file" id="unlockFileInput" accept="application/pdf,.pdf" style="display:none" onchange="unlockFileChosen(event)"/>
             </div>
             <div class="form-group"><label class="form-label">Current password</label><input class="form-input" id="unlockPW" type="password" placeholder="Enter it once…"/></div>
-            <button class="action-btn blue" onclick="unlockPdf()">🔓 Unlock &amp; Download</button>
+            <button class="action-btn blue" onclick="unlockPdf()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><rect x="4.5" y="9" width="11" height="8" rx="1.5"/><path d="M6.5 9V6.2a3.5 3.5 0 0 1 6.6-1.6"/></g></svg> Unlock &amp; Download</button>
             <div id="unlockStatus" style="font-size:11px;color:var(--text3);margin-top:8px"></div>
             <div style="font-size:11px;color:var(--text3);margin-top:6px">Enter the password once — the file you download has the password removed permanently. The original password itself is never changed or stored.</div>
           </div>
         </div>
         <div class="ms-card" style="margin-top:14px">
-          <div class="ms-title">📱 QR &amp; Barcode <span class="new-badge">NEW</span></div>
-          <button class="action-btn blue" onclick="detectQR()">📱 Detect in Current Doc</button>
+          <div class="ms-title"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="11" y="3" width="6" height="6" rx="1"/><rect x="3" y="11" width="6" height="6" rx="1"/><rect x="11" y="11" width="6" height="6" rx="1"/></g></svg> QR &amp; Barcode <span class="new-badge">NEW</span></div>
+          <button class="action-btn blue" onclick="detectQR()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="11" y="3" width="6" height="6" rx="1"/><rect x="3" y="11" width="6" height="6" rx="1"/><rect x="11" y="11" width="6" height="6" rx="1"/></g></svg> Detect in Current Doc</button>
           <div id="qrResult" style="display:none;margin-top:8px;background:var(--surface2);border-radius:var(--r2);padding:10px;border:1px solid var(--border);font-size:12px;color:var(--text2)"></div>
         </div>
       </div>
@@ -759,9 +756,9 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
     <div class="view" id="view-history">
       <div class="sec-hdr">
         <div class="sec-title">History</div>
-        <button class="action-btn red" style="width:auto;padding:6px 12px;margin:0;font-size:12px" onclick="clearHist()">🗑️ Clear</button>
+        <button class="action-btn red" style="width:auto;padding:6px 12px;margin:0;font-size:12px" onclick="clearHist()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 6h12M8 6V4.3A1.3 1.3 0 0 1 9.3 3h1.4A1.3 1.3 0 0 1 12 4.3V6M5.5 6l.6 9.5A1.5 1.5 0 0 0 7.6 17h4.8a1.5 1.5 0 0 0 1.5-1.5L14.5 6"/></g></svg> Clear</button>
       </div>
-      <div class="hist-list" id="histList"><div class="empty-state"><div class="es-icon">🕐</div><div class="es-text">No history yet</div></div></div>
+      <div class="hist-list" id="histList"><div class="empty-state"><div class="es-icon"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><circle cx="10" cy="10" r="7"/><path d="M10 6v4.3l3 1.8"/></g></svg></div><div class="es-text">No history yet</div></div></div>
     </div>
 
     <!-- SETTINGS -->
@@ -769,37 +766,23 @@ canvas#sigCanvas{display:block;cursor:crosshair;touch-action:none;width:100%;bac
       <div class="wm-layout">
         <div class="sec-title" style="margin-bottom:14px">Settings</div>
         <div class="ms-card" style="margin-bottom:12px">
-          <div class="ms-title">🎨 Appearance</div>
+          <div class="ms-title"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M10 17a7 7 0 1 1 0-14c3.9 0 7 2.2 7 5.5 0 1.9-1.4 3-3 3h-1.3c-1 0-1.4 1.4-.6 2.1.9.8.2 2.3-1 2.3Z"/><circle cx="6.8" cy="9" r=".9"/><circle cx="9" cy="6.3" r=".9"/><circle cx="12.3" cy="7" r=".9"/></g></svg> Appearance</div>
           <div class="form-group"><label class="form-label">Theme</label>
-            <div class="filter-grid"><div class="filter-btn active" onclick="setTheme('dark',this)">🌙 Dark</div><div class="filter-btn" onclick="setTheme('light',this)">☀️ Light</div></div>
+            <div class="filter-grid"><div class="filter-btn active" onclick="setTheme('dark',this)"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M16.5 12.2A7 7 0 1 1 7.8 3.5a5.6 5.6 0 0 0 8.7 8.7z"/></g></svg> Dark</div><div class="filter-btn" onclick="setTheme('light',this)"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><circle cx="10" cy="10" r="3"/><path d="M10 3v1.5M10 15.5V17M17 10h-1.5M4.5 10H3M14.8 5.2l-1 1M6.2 13.8l-1 1M14.8 14.8l-1-1M6.2 6.2l-1-1"/></g></svg> Light</div></div>
           </div>
-          <div class="form-group"><label class="form-label">Default Export</label>
-            <select class="form-input"><option>PDF</option><option>PNG</option><option>JPG</option></select>
-          </div>
-        </div>
-        <div class="ms-card" style="margin-bottom:12px">
-          <div class="ms-title">🤖 AI Settings</div>
-          <div class="form-group"><label class="form-label">Default OCR Language</label>
-            <select class="form-input"><option>Auto-detect</option><option>English</option><option>Hindi</option><option>Spanish</option><option>French</option><option>Arabic</option><option>Chinese</option><option>Japanese</option></select>
-          </div>
-          <button class="action-btn green" onclick="notify('Settings saved!','s')">💾 Save Settings</button>
-        </div>
-        <div class="ms-card" style="margin-bottom:12px">
-          <div class="ms-title">🤖 AI Provider</div>
-          <div class="form-group"><label class="form-label">Your favourite AI</label>
+                  </div>
+                <div class="ms-card" style="margin-bottom:12px">
+          <div class="ms-title"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><circle cx="6" cy="14" r="3"/><path d="M8.2 11.8 15 5M13 7l2 2M11 9l2 2"/></g></svg> AI provider</div>
+          <div class="form-group"><label class="form-label">Provider</label>
             <select class="form-input" id="aiProviderSel" onchange="onProviderChange()"></select>
           </div>
           <div id="aiProviderBody"></div>
         </div>
         <div class="ms-card">
-          <div class="ms-title">🔒 Privacy</div>
-          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
-            <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer"><input type="checkbox" checked style="accent-color:var(--accent)"/> On-device processing</label>
-            <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer"><input type="checkbox" checked style="accent-color:var(--accent)"/> Password-protect exported PDFs</label>
-            <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer"><input type="checkbox" style="accent-color:var(--accent)"/> Auto-delete after 30 days</label>
-          </div>
-          <button class="action-btn" onclick="exportAll()">📤 Export All Data</button>
-          <button class="action-btn red" onclick="confirmClear()">🗑️ Clear All Data</button>
+          <div class="ms-title"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><rect x="4.5" y="9" width="11" height="8" rx="1.5"/><path d="M6.5 9V6.2a3.5 3.5 0 0 1 7 0V9"/></g></svg> Your data</div>
+          <p style="font-size:12px;line-height:1.6;color:var(--text2);margin-bottom:14px">Your documents and history are stored only in this browser, on this device. When you run an analysis tool, the document you choose is sent to the AI provider selected above — nothing else leaves your device.</p>
+          <button class="action-btn" onclick="exportAll()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 10l14-7-4.5 14-3-5.5L3 10z"/></g></svg> Export all data</button>
+          <button class="action-btn red" onclick="confirmClear()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 6h12M8 6V4.3A1.3 1.3 0 0 1 9.3 3h1.4A1.3 1.3 0 0 1 12 4.3V6M5.5 6l.6 9.5A1.5 1.5 0 0 0 7.6 17h4.8a1.5 1.5 0 0 0 1.5-1.5L14.5 6"/></g></svg> Clear all data</button>
         </div>
       </div>
     </div>
@@ -1337,10 +1320,10 @@ function setScanLoading(loading){
   const sub=document.querySelector('#dropZone .drop-sub');
   const zone=document.getElementById('dropZone');
   if(loading){
-    icon.textContent='⏳';title.textContent='Reading PDF…';sub.textContent='Rendering pages, one moment';
+    icon.innerHTML='<div class="spinner" style="margin:0 auto"></div>';title.textContent='Reading PDF…';sub.textContent='Rendering pages, one moment';
     zone.style.pointerEvents='none';zone.style.opacity='.6';
   }else{
-    icon.textContent='📄';sub.textContent='Upload a photo — camera or files. Add as many pages as you need.';
+    icon.innerHTML='<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><circle cx="10" cy="11" r="3.2"/><path d="M3 7.5a1.5 1.5 0 0 1 1.5-1.5h2l1-2h5l1 2h2A1.5 1.5 0 0 1 17 7.5v7A1.5 1.5 0 0 1 15.5 16h-11A1.5 1.5 0 0 1 3 14.5z"/></g></svg>';sub.textContent='Upload a photo — camera or files. Add as many pages as you need.';
     zone.style.pointerEvents='';zone.style.opacity='';
   }
 }
@@ -1521,7 +1504,7 @@ function addAnotherScanPage(){
 }
 function cancelScanFlow(){
   if(!S.batch||!S.batch.pages.length){S.batch={pages:[],currentImg:null,corners:null,pendingImages:[]};showScanStage('upload');return;}
-  showModal(`<div class="modal-title">⚠️ Discard scan?</div><div class="modal-sub">You have ${S.batch.pages.length} page(s) not yet saved. They'll be lost.</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px"><button class="action-btn" onclick="closeModal()">Keep Going</button><button class="action-btn red" onclick="closeModal();S.batch={pages:[],currentImg:null,corners:null,pendingImages:[]};showScanStage('upload');">Discard</button></div>`);
+  showModal(`<div class="modal-title"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M10 3 2.5 16h15z"/><path d="M10 8.3v3.2M10 14h.01"/></g></svg> Discard scan?</div><div class="modal-sub">You have ${S.batch.pages.length} page(s) not yet saved. They'll be lost.</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px"><button class="action-btn" onclick="closeModal()">Keep Going</button><button class="action-btn red" onclick="closeModal();S.batch={pages:[],currentImg:null,corners:null,pendingImages:[]};showScanStage('upload');">Discard</button></div>`);
 }
 function renderBatchCropSVG(){
   const svg=document.getElementById('batchCropSvg');
@@ -1651,7 +1634,7 @@ function finishScan(){
       S.batch={pages:[],currentImg:null,corners:null,pendingImages:[]};
       showScanStage('editor');
       renderPreview();
-      addHist('Scanned','1 page','📄');
+      addHist('Scanned','1 page','<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M11 2.5V6a.5.5 0 0 0 .5.5H15"/></g></svg>');
       notify('Document ready to edit!','s');
     };
     img.src=p.dataUrl;
@@ -1668,7 +1651,7 @@ function finishScan(){
   });
   const name=(document.getElementById('docName')?.value||'scan')+'.pdf';
   doc.save(name);
-  addHist('Scanned',S.batch.pages.length+' pages → '+name,'📄');
+  addHist('Scanned',S.batch.pages.length+' pages → '+name,'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M11 2.5V6a.5.5 0 0 0 .5.5H15"/></g></svg>');
   notify(S.batch.pages.length+'-page PDF created!','s');
   S.batch={pages:[],currentImg:null,corners:null,pendingImages:[]};
   document.getElementById('scanUploadTitle').textContent='Tap to scan';
@@ -1682,14 +1665,21 @@ function saveDoc(){
   const cat=document.getElementById('docCat').value;
   const dataUrl=getPDU();
   S.docs.unshift({id:Date.now(),name,cat,dataUrl,created:new Date().toLocaleString(),size:Math.round(dataUrl.length*.75/1024)+' KB',ocr:'',summary:''});
-  saveDocs();updateStats();addHist('Saved',name,'💾');notify(`"${name}" saved!`,'s');
+  saveDocs();updateStats();addHist('Saved',name,'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 3.5h9L16.5 7v9.5a.5.5 0 0 1-.5.5H4a.5.5 0 0 1-.5-.5v-12A.5.5 0 0 1 4 3.5z"/><path d="M6.5 3.5V8h6V3.5M6.5 17v-5h7v5"/></g></svg>');notify(`"${name}" saved!`,'s');
 }
 function saveDocs(){try{localStorage.setItem('scanai_docs',JSON.stringify(S.docs));}catch(e){}}
 function updateStats(){
   document.getElementById('statDocs').textContent=S.docs.length;
-  document.getElementById('statOcr').textContent=S.ocrStats;
-  document.getElementById('statAi').textContent=S.aiStats;
   document.getElementById('libCount').textContent=S.docs.length;
+  updateStorageMeter();
+}
+function updateStorageMeter(){
+  let bytes=0;
+  try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);bytes+=(k.length+(localStorage.getItem(k)||'').length)*2;}}catch(e){}
+  const label=bytes<1048576?Math.max(1,Math.round(bytes/1024))+' KB':(bytes/1048576).toFixed(1)+' MB';
+  const a=document.getElementById('statStorage');if(a)a.textContent=label;
+  const b=document.getElementById('sbStorageText');if(b)b.textContent='On this device · '+label;
+  const c=document.getElementById('sbStorageFill');if(c)c.style.width=Math.min(100,bytes/(5*1048576)*100)+'%';
 }
 
 // ══ EXPORT ══
@@ -1700,16 +1690,17 @@ function exportAs(fmt){
   else if(fmt==='png'){const a=document.createElement('a');a.href=getPDU();a.download=name+'.png';a.click();notify('PNG exported!','s');}
   else if(fmt==='jpg'){const c=buildFullResCanvas();if(!c){notify('Load a doc first.','e');return;}const a=document.createElement('a');a.href=c.toDataURL('image/jpeg',.92);a.download=name+'.jpg';a.click();notify('JPG exported!','s');}
   else if(fmt==='txt'){if(!S.lastOcr){notify('Run OCR first.','i');return;}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([S.lastOcr],{type:'text/plain'}));a.download=name+'.txt';a.click();notify('TXT exported!','s');}
-  addHist('Exported '+fmt.toUpperCase(),name,'📤');
+  addHist('Exported '+fmt.toUpperCase(),name,'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 10l14-7-4.5 14-3-5.5L3 10z"/></g></svg>');
 }
 
 // ══ DASHBOARD ══
 function refreshDash(){
   updateStats();
+  const gt=document.getElementById('greetTitle');if(gt){const h=new Date().getHours();gt.textContent=h<12?'Good morning':h<18?'Good afternoon':'Good evening';}
   const list=document.getElementById('recentList');
-  if(!S.docs.length){list.innerHTML='<div class="empty-state" style="padding:10px 0"><div class="es-icon" style="font-size:28px">📭</div><div class="es-text">No docs yet</div></div>';return;}
+  if(!S.docs.length){list.innerHTML='<div class="empty-state" style="padding:10px 0"><div class="es-icon" style="font-size:28px"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 11h4l1.5 2h3L13 11h4"/><path d="M3 11 5 4h10l2 7v4.5A1.5 1.5 0 0 1 15.5 17h-11A1.5 1.5 0 0 1 3 15.5z"/></g></svg></div><div class="es-text">No docs yet</div></div>';return;}
   const tags={receipt:'tag-receipt',invoice:'tag-invoice',contract:'tag-contract',medical:'tag-medical',other:'tag-other',id:'tag-other',bill:'tag-invoice',photo:'tag-other'};
-  list.innerHTML=S.docs.slice(0,5).map(d=>`<div class="recent-item" onclick="openDoc(${d.id})"><div class="doc-thumb"><img src="${d.dataUrl}" onerror="this.parentElement.innerHTML='📄'"/></div><div class="doc-info"><div class="doc-name">${esc(d.name)}</div><div class="doc-meta">${d.created}</div></div><div class="doc-tag ${tags[d.cat]||'tag-other'}">${d.cat}</div></div>`).join('');
+  list.innerHTML=S.docs.slice(0,5).map(d=>`<div class="recent-item" onclick="openDoc(${d.id})"><div class="doc-thumb"><img src="${d.dataUrl}" onerror="thumbFallback(this)"/></div><div class="doc-info"><div class="doc-name">${esc(d.name)}</div><div class="doc-meta">${d.created}</div></div><div class="doc-tag ${tags[d.cat]||'tag-other'}">${d.cat}</div></div>`).join('');
 }
 
 // ══ LIBRARY ══
@@ -1719,15 +1710,15 @@ function renderLib(filter=S.libFilter,search=''){
   if(filter!=='all')docs=docs.filter(d=>d.cat===filter);
   if(search)docs=docs.filter(d=>d.name.toLowerCase().includes(search.toLowerCase())||(d.ocr||'').toLowerCase().includes(search.toLowerCase()));
   const tags={receipt:'tag-receipt',invoice:'tag-invoice',contract:'tag-contract',medical:'tag-medical',other:'tag-other',id:'tag-other',bill:'tag-invoice',photo:'tag-other'};
-  if(!docs.length){grid.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="es-icon">📂</div><div class="es-text">No documents found</div></div>';return;}
-  grid.innerHTML=docs.map(d=>`<div class="doc-card" onclick="openDoc(${d.id})"><div class="doc-card-thumb">${d.dataUrl?`<img src="${d.dataUrl}" onerror="this.parentElement.innerHTML='📄'"/>`:'📄'}</div><div class="doc-card-body"><div class="dc-name">${esc(d.name)}</div><div class="dc-meta">${d.created}</div><div class="dc-tag"><span class="doc-tag ${tags[d.cat]||'tag-other'}">${d.cat}</span></div></div></div>`).join('');
+  if(!docs.length){grid.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="es-icon"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 5.5a1 1 0 0 1 1-1h3.5l1.5 2H16a1 1 0 0 1 1 1v6.5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></g></svg></div><div class="es-text">No documents found</div></div>';return;}
+  grid.innerHTML=docs.map(d=>`<div class="doc-card" onclick="openDoc(${d.id})"><div class="doc-card-thumb">${d.dataUrl?`<img src="${d.dataUrl}" onerror="thumbFallback(this)"/>`:'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M11 2.5V6a.5.5 0 0 0 .5.5H15"/></g></svg>'}</div><div class="doc-card-body"><div class="dc-name">${esc(d.name)}</div><div class="dc-meta">${d.created}</div><div class="dc-tag"><span class="doc-tag ${tags[d.cat]||'tag-other'}">${d.cat}</span></div></div></div>`).join('');
 }
 function filterTag(tag,el){document.querySelectorAll('#libFilters .ft').forEach(b=>b.classList.remove('active'));el.classList.add('active');S.libFilter=tag;renderLib(tag,document.getElementById('libSearch').value);}
 function filterDocs(val){renderLib(S.libFilter,val);}
 function handleGSearch(val){if(document.getElementById('view-library').classList.contains('active'))filterDocs(val);}
 function openDoc(id){
   const d=S.docs.find(x=>x.id===id);if(!d)return;
-  showModal(`<span class="modal-close" onclick="closeModal()">✕</span><div class="modal-title">${esc(d.name)}</div><div class="modal-sub">${d.cat} · ${d.created} · ${d.size}</div><img src="${d.dataUrl}" style="width:100%;border-radius:8px;margin-bottom:14px;border:1px solid var(--border)"/>${d.ocr?`<div class="result-label">EXTRACTED TEXT</div><div style="background:var(--surface2);padding:10px;border-radius:6px;font-size:12px;max-height:80px;overflow-y:auto;margin-bottom:10px;color:var(--text2)">${esc(d.ocr).substring(0,300)}</div>`:''}<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px"><button class="action-btn primary" onclick="loadDocScan(${id})">✏️ Edit</button><button class="action-btn green" onclick="aiFromDoc(${id},'ocr')">🔤 OCR</button><button class="action-btn blue" onclick="aiFromDoc(${id},'summarize')">📝 Sum</button><button class="action-btn red" onclick="deleteDoc(${id})">🗑️ Delete</button></div>`);
+  showModal(`<span class="modal-close" onclick="closeModal()">✕</span><div class="modal-title">${esc(d.name)}</div><div class="modal-sub">${d.cat} · ${d.created} · ${d.size}</div><img src="${d.dataUrl}" style="width:100%;border-radius:8px;margin-bottom:14px;border:1px solid var(--border)"/>${d.ocr?`<div class="result-label">EXTRACTED TEXT</div><div style="background:var(--surface2);padding:10px;border-radius:6px;font-size:12px;max-height:80px;overflow-y:auto;margin-bottom:10px;color:var(--text2)">${esc(d.ocr).substring(0,300)}</div>`:''}<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px"><button class="action-btn primary" onclick="loadDocScan(${id})"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M12.5 3.5 16 7l-9 9H3v-4z"/></g></svg> Edit</button><button class="action-btn green" onclick="aiFromDoc(${id},'ocr')"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 4h12M10 4v12M7 16h6"/></g></svg> OCR</button><button class="action-btn blue" onclick="aiFromDoc(${id},'summarize')"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M12.5 3.5 16 7l-9 9H3v-4z"/></g></svg> Sum</button><button class="action-btn red" onclick="deleteDoc(${id})"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 6h12M8 6V4.3A1.3 1.3 0 0 1 9.3 3h1.4A1.3 1.3 0 0 1 12 4.3V6M5.5 6l.6 9.5A1.5 1.5 0 0 0 7.6 17h4.8a1.5 1.5 0 0 0 1.5-1.5L14.5 6"/></g></svg> Delete</button></div>`);
 }
 function loadDocScan(id){const d=S.docs.find(x=>x.id===id);if(!d)return;closeModal();nav('scanner');const img=new Image();img.onload=()=>{S.img=img;document.getElementById('dropZone').style.display='none';document.getElementById('canvasWrap').style.display='flex';document.getElementById('mobileBar').style.display='flex';document.getElementById('docName').value=d.name;document.getElementById('docCat').value=d.cat;renderPreview();};img.src=d.dataUrl;}
 function deleteDoc(id){S.docs=S.docs.filter(d=>d.id!==id);saveDocs();closeModal();renderLib();updateStats();notify('Deleted.','i');}
@@ -1761,14 +1752,14 @@ function renderAiProviderCard(){
   sel.innerHTML=Object.entries(AI_PROVIDERS).map(([id,p])=>`<option value="${id}"${id===cfg.provider?' selected':''}>${esc(p.name)}${p.tag?' — '+esc(p.tag):''}</option>`).join('');
   if(cfg.provider==='custom'){
     body.innerHTML=`<div class="form-group"><label class="form-label">Backend URL</label><input class="form-input" id="workerUrlInput" placeholder="https://your-worker.workers.dev/" value="${esc(cfg.url)}"/></div>
-      <button class="action-btn primary" onclick="saveWorkerUrl()">💾 Save backend URL</button>
-      <div style="font-size:12px;margin-top:8px;color:${cfg.url?'var(--green)':'var(--yellow)'}">${cfg.url?'✅ Backend URL saved':'⚠️ No backend URL yet'}</div>
+      <button class="action-btn primary" onclick="saveWorkerUrl()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 3.5h9L16.5 7v9.5a.5.5 0 0 1-.5.5H4a.5.5 0 0 1-.5-.5v-12A.5.5 0 0 1 4 3.5z"/><path d="M6.5 3.5V8h6V3.5M6.5 17v-5h7v5"/></g></svg> Save backend URL</button>
+      <div style="font-size:12px;margin-top:8px;color:${cfg.url?'var(--green)':'var(--yellow)'}">${cfg.url?'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 10.5l3.8 3.8L16 6"/></g></svg> Backend URL saved':'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M10 3 2.5 16h15z"/><path d="M10 8.3v3.2M10 14h.01"/></g></svg> No backend URL yet'}</div>
       <div style="font-size:11px;color:var(--text3);margin-top:6px">For teams: your own small server (like the included Cloudflare Worker) holds the key, so people using the app don't need one. It receives requests in Claude format.</div>`;
     return;
   }
-  body.innerHTML=`<div style="font-size:12px;margin-bottom:10px;color:${cfg.key?'var(--green)':'var(--yellow)'}">${cfg.key?`✅ Key saved (••••${esc(cfg.key.slice(-4))}) · model ${esc(cfg.model)}`:'⚠️ No key yet — AI tools stay off until you add one.'}</div>
-    <a class="action-btn blue" href="${P.keyUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration:none">🔗 Get my ${esc(P.name)} API key</a>
-    <button class="action-btn primary" onclick="showApiKeyModal()">🔑 ${cfg.key?'Change':'Add'} API key</button>
+  body.innerHTML=`<div style="font-size:12px;margin-bottom:10px;color:${cfg.key?'var(--green)':'var(--yellow)'}">${cfg.key?`<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 10.5l3.8 3.8L16 6"/></g></svg> Key saved (••••${esc(cfg.key.slice(-4))}) · model ${esc(cfg.model)}`:'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M10 3 2.5 16h15z"/><path d="M10 8.3v3.2M10 14h.01"/></g></svg> No key yet — AI tools stay off until you add one.'}</div>
+    <a class="action-btn blue" href="${P.keyUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration:none"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M8.5 11.5a3 3 0 0 0 4.2.3l2-2a3 3 0 0 0-4.2-4.2l-1 1"/><path d="M11.5 8.5a3 3 0 0 0-4.2-.3l-2 2a3 3 0 0 0 4.2 4.2l1-1"/></g></svg> Get my ${esc(P.name)} API key</a>
+    <button class="action-btn primary" onclick="showApiKeyModal()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><circle cx="6" cy="14" r="3"/><path d="M8.2 11.8 15 5M13 7l2 2M11 9l2 2"/></g></svg> ${cfg.key?'Change':'Add'} API key</button>
     <div style="font-size:11px;color:var(--text3)">Your key stays in this browser. Requests go straight from your device to ${esc(P.name)} — nothing passes through us.</div>`;
 }
 function onProviderChange(){
@@ -1790,20 +1781,20 @@ function showApiKeyModal(){
   const id=getProviderId();
   if(id==='custom'){nav('settings');notify('Add your backend URL in Settings.','i');return;}
   const P=AI_PROVIDERS[id],cfg=getAiConfig();
-  showModal(`<div class="modal-title">🔑 ${esc(P.name)} API key</div>
+  showModal(`<div class="modal-title"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><circle cx="6" cy="14" r="3"/><path d="M8.2 11.8 15 5M13 7l2 2M11 9l2 2"/></g></svg> ${esc(P.name)} API key</div>
     <div class="modal-sub">1) Create a key on ${esc(P.name)}'s site. 2) Paste it below.</div>
-    <a class="action-btn blue" href="${P.keyUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;margin-top:10px">🔗 Open ${esc(P.name)} key page</a>
+    <a class="action-btn blue" href="${P.keyUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;margin-top:10px"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M8.5 11.5a3 3 0 0 0 4.2.3l2-2a3 3 0 0 0-4.2-4.2l-1 1"/><path d="M11.5 8.5a3 3 0 0 0-4.2-.3l-2 2a3 3 0 0 0 4.2 4.2l1-1"/></g></svg> Open ${esc(P.name)} key page</a>
     <div class="form-group" style="margin-top:12px"><label class="form-label">API key</label>
       <div style="display:flex;gap:6px"><input class="form-input" id="apiKeyInput" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="${cfg.key?'Saved (••••'+esc(cfg.key.slice(-4))+') — paste to replace':esc(P.keyHint)}" style="margin-bottom:0"/>
-      <button class="action-btn" style="width:auto;padding:0 14px;margin:0" onclick="toggleKeyVisibility()" title="Show / hide">👁</button></div>
+      <button class="action-btn" style="width:auto;padding:0 14px;margin:0" onclick="toggleKeyVisibility()" title="Show / hide"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M2 10s2.8-5.5 8-5.5S18 10 18 10s-2.8 5.5-8 5.5S2 10 2 10z"/><circle cx="10" cy="10" r="2.3"/></g></svg></button></div>
     </div>
     <div class="form-group"><label class="form-label">Model <a href="${P.modelsUrl}" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:400">(browse models)</a></label>
       <input class="form-input" id="apiModelInput" value="${esc(cfg.model)}" autocapitalize="off" autocorrect="off" spellcheck="false"/>
       <div style="font-size:10px;color:var(--text3);margin-top:4px">Needs a model that can read images. Change it if a model gets retired.</div>
     </div>
     <div id="apiKeyTestResult" style="font-size:11px;min-height:16px;margin-bottom:8px"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="action-btn" onclick="testApiKey()">🧪 Test</button><button class="action-btn primary" onclick="saveApiKey()">💾 Save</button></div>
-    ${cfg.key?'<button class="action-btn red" style="margin-top:8px" onclick="removeApiKey()">🗑 Remove saved key</button>':''}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="action-btn" onclick="testApiKey()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M8 3h4M8.3 3v4.8L4.5 15a1.5 1.5 0 0 0 1.3 2.2h8.4A1.5 1.5 0 0 0 15.5 15l-3.8-7.2V3"/></g></svg> Test</button><button class="action-btn primary" onclick="saveApiKey()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 3.5h9L16.5 7v9.5a.5.5 0 0 1-.5.5H4a.5.5 0 0 1-.5-.5v-12A.5.5 0 0 1 4 3.5z"/><path d="M6.5 3.5V8h6V3.5M6.5 17v-5h7v5"/></g></svg> Save</button></div>
+    ${cfg.key?'<button class="action-btn red" style="margin-top:8px" onclick="removeApiKey()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 6h12M8 6V4.3A1.3 1.3 0 0 1 9.3 3h1.4A1.3 1.3 0 0 1 12 4.3V6M5.5 6l.6 9.5A1.5 1.5 0 0 0 7.6 17h4.8a1.5 1.5 0 0 0 1.5-1.5L14.5 6"/></g></svg> Remove saved key</button>':''}
     <button class="action-btn" style="margin-top:8px" onclick="closeModal()">Cancel</button>
     <div style="font-size:10px;color:var(--text3);margin-top:10px;line-height:1.5">Stored only in this browser and sent only to ${esc(P.name)}. Anyone using this same browser could read it, so set a spend limit on the key.</div>`);
 }
@@ -1831,7 +1822,7 @@ function removeApiKey(){
 }
 async function testApiKey(){
   const id=getProviderId(),P=AI_PROVIDERS[id];
-  const setOut=(c,t)=>{const o=document.getElementById('apiKeyTestResult');if(o){o.style.color=c;o.textContent=t;}};
+  const setOut=(c,t)=>{const o=document.getElementById('apiKeyTestResult');if(o){o.style.color=c;o.innerHTML=t;}};
   const key=cleanKey(document.getElementById('apiKeyInput')?.value)||getAiConfig().key;
   const model=(document.getElementById('apiModelInput')?.value||'').trim()||P.model;
   if(!key){setOut('var(--red)','Paste a key first.');return;}
@@ -1839,8 +1830,8 @@ async function testApiKey(){
   try{
     const r=await callAI({max_tokens:20,messages:[{role:'user',content:[{type:'text',text:'Reply with the single word: OK'}]}]},{provider:id,key,model});
     const t=(r.content||[]).map(c=>c.text||'').join('').trim().slice(0,40);
-    setOut('var(--green)','✅ Works'+(t?' — model said: '+t:''));
-  }catch(e){setOut('var(--red)','❌ '+e.message);}
+    setOut('var(--green)','<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 10.5l3.8 3.8L16 6"/></g></svg> Works'+(t?' — model said: '+esc(t):''));
+  }catch(e){setOut('var(--red)','<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 2.8 16 17.2M16 2.8 4 17.2"/></g></svg> '+esc(e.message));}
 }
 
 // ── provider adapters: the app speaks Claude-format internally; these translate ──
@@ -1946,16 +1937,16 @@ async function callAI(body,override){
 
 const CHAT_SYSTEM_PROMPT='You are answering questions about an uploaded document in a mobile chat UI. Keep every reply SHORT and scannable: a few bullet points (use "•"), each one line, no long paragraphs. Give the direct answer first, skip preamble like "Based on the document". If the answer is a number, name, or value, lead with it in bold. Only add brief detail if the question truly needs it. Max ~5 bullets unless the user explicitly asks for a full list or detailed explanation.';
 const aiDefs={
-  ocr:{icon:'🔤',title:'OCR Text Extraction',desc:'Extract all text — 40+ languages, handwriting, mixed scripts.',prompt:()=>'You are an expert OCR system. Extract ALL visible text from this scanned document image, preserving structure and line breaks. Return only the extracted text.'},
-  summarize:{icon:'📝',title:'Summarize Document',desc:'Concise summary with key points and entities.',prompt:()=>'Summarize this document in short bullet points only — no long paragraphs. Give: • 1-line summary • Key points (max 5 bullets) • Important entities (names/dates/numbers) • Document type. Keep every bullet to one line.'},
-  classify:{icon:'🏷️',title:'Auto-Classify',desc:'AI identifies document type and confidence.',prompt:()=>'Classify this document. Respond with: 1) Category (Invoice/Receipt/Contract/Medical/ID/Legal/Financial/Academic/Personal/Other), 2) Confidence (High/Medium/Low), 3) Tags up to 5, 4) Reason in 1-2 sentences.'},
-  translate:{icon:'🌍',title:'Translate',desc:'Extract and translate to 50+ languages.',prompt:(lang)=>`Identify the source language, extract all text, translate to ${lang||'English'}. Format:\n[SOURCE: X]\n[ORIGINAL]\n...\n[TRANSLATION]\n...`},
-  extract:{icon:'🧾',title:'Data Extraction',desc:'Pull structured data from invoices/receipts as JSON.',prompt:()=>'Extract structured data from this invoice or receipt. Return JSON: {"document_type":"","vendor_name":"","date":"","total_amount":"","currency":"","tax":"","line_items":[{"description":"","qty":"","unit_price":"","total":""}],"invoice_number":""}'},
-  table:{icon:'📊',title:'Table Extraction',desc:'Detect tables and export them straight to an Excel spreadsheet.',prompt:()=>'Find every table in this document (including multi-page PDFs). Respond with ONLY valid JSON, no markdown fences, no commentary, in this exact shape: {"tables":[{"title":"short label","headers":["Column A","Column B"],"rows":[["val","val"],["val","val"]]}]}. If a table has no header row, invent short column labels like "Col 1". If there are no tables at all, return {"tables":[]}.'},
-  bizcard:{icon:'🏢',title:'Business Card Reader',desc:'Extract contact info as JSON.',prompt:()=>'Extract all contact info from this business card. Return JSON: {"name":"","title":"","company":"","email":"","phone":[],"address":"","website":"","social":{}}'},
-  handwriting:{icon:'✍️',title:'Handwriting Recognition',desc:'Transcribe cursive and printed handwriting.',prompt:()=>'Transcribe ALL handwritten text in this document, preserving line breaks. Note uncertain words with [?]. Return transcription only.'},
-  texthand:{icon:'🖋️',title:'Text → Handwriting',desc:'Extract the text from a PDF/doc and turn it into natural-looking handwriting.',prompt:()=>'You are an expert OCR system. Extract ALL visible text from this document, preserving paragraph and line breaks. Return only the extracted text, no commentary.'},
-  chat:{icon:'💬',title:'Chat with Document',desc:'Upload a document, then ask questions about it one at a time.'},
+  ocr:{icon:'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 4h12M10 4v12M7 16h6"/></g></svg>',title:'OCR Text Extraction',desc:'Extract all text — 40+ languages, handwriting, mixed scripts.',prompt:()=>'You are an expert OCR system. Extract ALL visible text from this scanned document image, preserving structure and line breaks. Return only the extracted text.'},
+  summarize:{icon:'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M7 5h10M7 10h10M7 15h10"/><circle cx="3.5" cy="5" r=".8"/><circle cx="3.5" cy="10" r=".8"/><circle cx="3.5" cy="15" r=".8"/></g></svg>',title:'Summarize Document',desc:'Concise summary with key points and entities.',prompt:()=>'Summarize this document in short bullet points only — no long paragraphs. Give: • 1-line summary • Key points (max 5 bullets) • Important entities (names/dates/numbers) • Document type. Keep every bullet to one line.'},
+  classify:{icon:'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M9.5 3H16v6.5L9.3 16.2a1.5 1.5 0 0 1-2.1 0L3.8 12.8a1.5 1.5 0 0 1 0-2.1z"/><circle cx="13" cy="6.5" r="1.1"/></g></svg>',title:'Auto-Classify',desc:'AI identifies document type and confidence.',prompt:()=>'Classify this document. Respond with: 1) Category (Invoice/Receipt/Contract/Medical/ID/Legal/Financial/Academic/Personal/Other), 2) Confidence (High/Medium/Low), 3) Tags up to 5, 4) Reason in 1-2 sentences.'},
+  translate:{icon:'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><circle cx="10" cy="10" r="7"/><path d="M3 10h14M10 3c2 2.3 2 11.7 0 14M10 3C8 5.3 8 14.7 10 17"/></g></svg>',title:'Translate',desc:'Extract and translate to 50+ languages.',prompt:(lang)=>`Identify the source language, extract all text, translate to ${lang||'English'}. Format:\n[SOURCE: X]\n[ORIGINAL]\n...\n[TRANSLATION]\n...`},
+  extract:{icon:'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M5 2.5h10v15l-2-1.3-2 1.3-2-1.3-2 1.3-2-1.3z"/><path d="M7.3 6.5h5.4M7.3 9.3h5.4M7.3 12h3.4"/></g></svg>',title:'Data Extraction',desc:'Pull structured data from invoices/receipts as JSON.',prompt:()=>'Extract structured data from this invoice or receipt. Return JSON: {"document_type":"","vendor_name":"","date":"","total_amount":"","currency":"","tax":"","line_items":[{"description":"","qty":"","unit_price":"","total":""}],"invoice_number":""}'},
+  table:{icon:'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 16V10M10 16V4M16 16v-7"/></g></svg>',title:'Table Extraction',desc:'Detect tables and export them straight to an Excel spreadsheet.',prompt:()=>'Find every table in this document (including multi-page PDFs). Respond with ONLY valid JSON, no markdown fences, no commentary, in this exact shape: {"tables":[{"title":"short label","headers":["Column A","Column B"],"rows":[["val","val"],["val","val"]]}]}. If a table has no header row, invent short column labels like "Col 1". If there are no tables at all, return {"tables":[]}.'},
+  bizcard:{icon:'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><rect x="3" y="7" width="14" height="9" rx="1.4"/><path d="M7.3 7V5.3a1.3 1.3 0 0 1 1.3-1.3h2.8a1.3 1.3 0 0 1 1.3 1.3V7M3 11.5h14"/></g></svg>',title:'Business Card Reader',desc:'Extract contact info as JSON.',prompt:()=>'Extract all contact info from this business card. Return JSON: {"name":"","title":"","company":"","email":"","phone":[],"address":"","website":"","social":{}}'},
+  handwriting:{icon:'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 14c2-1 2.5-4.5 4-4.5s0 4 1.8 4 1.7-6 3.4-6 .8 4.3 2.3 4.3 1-1.3 2-1.3"/></g></svg>',title:'Handwriting Recognition',desc:'Transcribe cursive and printed handwriting.',prompt:()=>'Transcribe ALL handwritten text in this document, preserving line breaks. Note uncertain words with [?]. Return transcription only.'},
+  texthand:{icon:'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 14c2-1 2.5-4.5 4-4.5s0 4 1.8 4 1.7-6 3.4-6 .8 4.3 2.3 4.3 1-1.3 2-1.3"/></g></svg>',title:'Text → Handwriting',desc:'Extract the text from a PDF/doc and turn it into natural-looking handwriting.',prompt:()=>'You are an expert OCR system. Extract ALL visible text from this document, preserving paragraph and line breaks. Return only the extracted text, no commentary.'},
+  chat:{icon:'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 4.5h14v9H8.5L5 16.5v-3H3z"/></g></svg>',title:'Chat with Document',desc:'Upload a document, then ask questions about it one at a time.'},
 };
 function setAiTool(tool){
   S.aiTool=tool;
@@ -1984,12 +1975,12 @@ function renderAiTool(tool){
     ${extra}
     <div class="ai-upload" onclick="document.getElementById('aiFile').click()" ondragover="event.preventDefault()" ondrop="aiDrop(event)">
       <input type="file" id="aiFile" accept="image/*,application/pdf,.pdf" style="display:none" onchange="aiFileLoad(event)"/>
-      <div style="font-size:28px">${hasImg?'✅':'📄'}</div>
+      <div style="font-size:28px">${hasImg?'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 10.5l3.8 3.8L16 6"/></g></svg>':'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M11 2.5V6a.5.5 0 0 0 .5.5H15"/></g></svg>'}</div>
       <div style="font-size:12px;margin-top:6px;color:var(--text2)">${hasImg?'Document ready — or drop new one':'Drop an image or PDF, or tap to upload'}</div>
       ${S.aiDataUrl&&!isPdf?`<img src="${S.aiDataUrl}" style="width:60px;height:60px;object-fit:cover;border-radius:6px;margin-top:8px;border:1px solid var(--border)"/>`:''}
-      ${S.aiDataUrl&&isPdf?`<div style="margin-top:8px;font-size:11px;color:var(--text2)">📕 ${esc(S.aiFileName||'document.pdf')}</div>`:''}
+      ${S.aiDataUrl&&isPdf?`<div style="margin-top:8px;font-size:11px;color:var(--text2)"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M11 2.5V6a.5.5 0 0 0 .5.5H15"/></g></svg> ${esc(S.aiFileName||'document.pdf')}</div>`:''}
     </div>
-    <button class="action-btn primary" style="margin-bottom:14px" onclick="runAI('${tool}')">🤖 Run ${t.title}</button>
+    <button class="action-btn primary" style="margin-bottom:14px" onclick="runAI('${tool}')">Run ${t.title}</button>
     <div class="ai-result" id="aiResult"><div class="result-label">RESULT</div><div class="result-text" style="color:var(--text3)">Results appear here…</div></div>`;
 }
 function aiDrop(e){e.preventDefault();const f=e.dataTransfer.files[0];if(f)loadAiFile(f);}
@@ -2018,12 +2009,12 @@ async function runAI(tool,dataUrl){
     else if(tool==='texthand'){renderHandwriteResult(text);}
     else if(resEl){
       S.lastResultText=text;S.lastResultTool=tool;
-      resEl.innerHTML=`<div class="result-label">✅ COMPLETE</div><div class="result-text">${esc(text).replace(/\n/g,'<br/>')}</div>
-        <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap"><button class="action-btn" style="flex:1;padding:7px;min-width:100px;margin:0" onclick="copyRes()">📋 Copy</button><button class="action-btn green" style="flex:1;padding:7px;min-width:100px;margin:0" onclick="saveRes('${tool}')">💾 Save</button></div>
+      resEl.innerHTML=`<div class="result-label"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 10.5l3.8 3.8L16 6"/></g></svg> COMPLETE</div><div class="result-text">${esc(text).replace(/\n/g,'<br/>')}</div>
+        <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap"><button class="action-btn" style="flex:1;padding:7px;min-width:100px;margin:0" onclick="copyRes()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><rect x="7" y="7" width="9.5" height="9.5" rx="1.4"/><path d="M13 7V4.9A1.4 1.4 0 0 0 11.6 3.5H4.9A1.4 1.4 0 0 0 3.5 4.9v6.7A1.4 1.4 0 0 0 4.9 13H7"/></g></svg> Copy</button><button class="action-btn green" style="flex:1;padding:7px;min-width:100px;margin:0" onclick="saveRes('${tool}')"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 3.5h9L16.5 7v9.5a.5.5 0 0 1-.5.5H4a.5.5 0 0 1-.5-.5v-12A.5.5 0 0 1 4 3.5z"/><path d="M6.5 3.5V8h6V3.5M6.5 17v-5h7v5"/></g></svg> Save</button></div>
         <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
-          <button class="action-btn red" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="exportGenericResultAsPDF()">📄 PDF</button>
-          <button class="action-btn blue" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="exportGenericResultAsWord()">📝 Word</button>
-          <button class="action-btn green" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="exportGenericResultToExcel()">📊 Excel</button>
+          <button class="action-btn red" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="exportGenericResultAsPDF()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M11 2.5V6a.5.5 0 0 0 .5.5H15"/></g></svg> PDF</button>
+          <button class="action-btn blue" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="exportGenericResultAsWord()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M12.5 3.5 16 7l-9 9H3v-4z"/></g></svg> Word</button>
+          <button class="action-btn green" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="exportGenericResultToExcel()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 16V10M10 16V4M16 16v-7"/></g></svg> Excel</button>
         </div>`;
     }
     if(tool==='ocr'||tool==='handwriting'){S.lastOcr=text;S.ocrStats++;localStorage.setItem('scanai_ocr',S.ocrStats);}
@@ -2047,13 +2038,13 @@ function renderTableResult(raw){
   const resEl=document.getElementById('aiResult');
   let parsed;
   try{parsed=parseTablesJson(raw);}catch(e){
-    if(resEl)resEl.innerHTML=`<div class="result-label">✅ COMPLETE</div><div class="result-text">${esc(raw).replace(/\n/g,'<br/>')}</div><div style="font-size:11px;color:var(--text3);margin-top:8px">Couldn't parse a structured table from this response — showing raw text instead.</div>`;
+    if(resEl)resEl.innerHTML=`<div class="result-label"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 10.5l3.8 3.8L16 6"/></g></svg> COMPLETE</div><div class="result-text">${esc(raw).replace(/\n/g,'<br/>')}</div><div style="font-size:11px;color:var(--text3);margin-top:8px">Couldn't parse a structured table from this response — showing raw text instead.</div>`;
     return;
   }
   const tables=parsed.tables||[];
   S.lastTables=tables;
   if(!tables.length){
-    if(resEl)resEl.innerHTML=`<div class="result-label">✅ COMPLETE</div><div class="result-text" style="color:var(--text3)">No tables were detected in this document.</div>`;
+    if(resEl)resEl.innerHTML=`<div class="result-label"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 10.5l3.8 3.8L16 6"/></g></svg> COMPLETE</div><div class="result-text" style="color:var(--text3)">No tables were detected in this document.</div>`;
     return;
   }
   const html=tables.map((tb,i)=>`
@@ -2066,10 +2057,10 @@ function renderTableResult(raw){
         </table>
       </div>
     </div>`).join('');
-  if(resEl)resEl.innerHTML=`<div class="result-label">✅ ${tables.length} TABLE${tables.length>1?'S':''} FOUND</div>${html}<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
-    <button class="action-btn red" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="exportTablesToPDF()">📄 PDF</button>
-    <button class="action-btn blue" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="exportTablesToWord()">📝 Word</button>
-    <button class="action-btn green" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="exportTablesToExcel()">📊 Excel</button>
+  if(resEl)resEl.innerHTML=`<div class="result-label"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 10.5l3.8 3.8L16 6"/></g></svg> ${tables.length} TABLE${tables.length>1?'S':''} FOUND</div>${html}<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+    <button class="action-btn red" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="exportTablesToPDF()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M11 2.5V6a.5.5 0 0 0 .5.5H15"/></g></svg> PDF</button>
+    <button class="action-btn blue" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="exportTablesToWord()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M12.5 3.5 16 7l-9 9H3v-4z"/></g></svg> Word</button>
+    <button class="action-btn green" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="exportTablesToExcel()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 16V10M10 16V4M16 16v-7"/></g></svg> Excel</button>
   </div>`;
 }
 function exportTablesToPDF(){
@@ -2094,7 +2085,7 @@ function exportTablesToPDF(){
   });
   const name=(document.getElementById('docName')?.value||'extracted-tables')+'.pdf';
   doc.save(name);
-  addHist('Exported Tables PDF',name,'📄');
+  addHist('Exported Tables PDF',name,'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M11 2.5V6a.5.5 0 0 0 .5.5H15"/></g></svg>');
   notify('PDF downloaded!','s');
 }
 function exportTablesToWord(){
@@ -2118,7 +2109,7 @@ function exportTablesToExcel(){
   });
   const name=(document.getElementById('docName')?.value||'extracted-tables')+'.xlsx';
   XLSX.writeFile(wb,name);
-  addHist('Exported Tables',name,'📊');
+  addHist('Exported Tables',name,'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 16V10M10 16V4M16 16v-7"/></g></svg>');
   notify('Excel file downloaded!','s');
 }
 function copyRes(){const el=document.querySelector('#aiResult .result-text');if(el){navigator.clipboard?.writeText(el.innerText);notify('Copied!','s');}}
@@ -2156,7 +2147,7 @@ function downloadWordDoc(name,bodyHtml){
   a.href=URL.createObjectURL(blob);
   a.download=name+'.doc';
   a.click();
-  addHist('Exported Word',name+'.doc','📝');
+  addHist('Exported Word',name+'.doc','<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M12.5 3.5 16 7l-9 9H3v-4z"/></g></svg>');
   notify('Word file downloaded!','s');
 }
 function textLinesToPdf(name,lines){
@@ -2172,7 +2163,7 @@ function textLinesToPdf(name,lines){
     });
   });
   doc.save(name+'.pdf');
-  addHist('Exported PDF',name+'.pdf','📄');
+  addHist('Exported PDF',name+'.pdf','<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M11 2.5V6a.5.5 0 0 0 .5.5H15"/></g></svg>');
   notify('PDF downloaded!','s');
 }
 function exportGenericResultAsPDF(){
@@ -2218,7 +2209,7 @@ function exportGenericResultToExcel(){
     XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),'Result');
   }
   XLSX.writeFile(wb,name);
-  addHist('Exported to Excel',name,'📊');
+  addHist('Exported to Excel',name,'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 16V10M10 16V4M16 16v-7"/></g></svg>');
   notify('Excel file downloaded!','s');
 }
 
@@ -2232,20 +2223,20 @@ function renderHandwriteResult(text){
 }
 function handwriteResultHTML(){
   const view=S.handwriteView||'hand';
-  return `<div class="result-label">✅ COMPLETE</div>
+  return `<div class="result-label"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 10.5l3.8 3.8L16 6"/></g></svg> COMPLETE</div>
     <div style="display:flex;gap:6px;margin-bottom:10px">
-      <button class="action-btn ${view==='hand'?'primary':''}" style="flex:1;padding:8px;margin:0;font-size:12px" onclick="toggleHandwriteView('hand')">🖋️ Handwritten</button>
-      <button class="action-btn ${view==='typed'?'primary':''}" style="flex:1;padding:8px;margin:0;font-size:12px" onclick="toggleHandwriteView('typed')">🔤 Typed</button>
+      <button class="action-btn ${view==='hand'?'primary':''}" style="flex:1;padding:8px;margin:0;font-size:12px" onclick="toggleHandwriteView('hand')"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 14c2-1 2.5-4.5 4-4.5s0 4 1.8 4 1.7-6 3.4-6 .8 4.3 2.3 4.3 1-1.3 2-1.3"/></g></svg> Handwritten</button>
+      <button class="action-btn ${view==='typed'?'primary':''}" style="flex:1;padding:8px;margin:0;font-size:12px" onclick="toggleHandwriteView('typed')"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 4h12M10 4v12M7 16h6"/></g></svg> Typed</button>
     </div>
     <div id="handwriteBody"></div>
     <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
-      <button class="action-btn" style="flex:1;padding:7px;min-width:100px;margin:0" onclick="copyHandwriteText()">📋 Copy Text</button>
-      <button class="action-btn green" style="flex:1;padding:7px;min-width:100px;margin:0" onclick="downloadHandwriteImage()">🖼️ Save Image</button>
+      <button class="action-btn" style="flex:1;padding:7px;min-width:100px;margin:0" onclick="copyHandwriteText()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><rect x="7" y="7" width="9.5" height="9.5" rx="1.4"/><path d="M13 7V4.9A1.4 1.4 0 0 0 11.6 3.5H4.9A1.4 1.4 0 0 0 3.5 4.9v6.7A1.4 1.4 0 0 0 4.9 13H7"/></g></svg> Copy Text</button>
+      <button class="action-btn green" style="flex:1;padding:7px;min-width:100px;margin:0" onclick="downloadHandwriteImage()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><rect x="2.5" y="3.5" width="15" height="13" rx="1.5"/><circle cx="7" cy="8" r="1.4"/><path d="M4 15l4.2-4.2a1.5 1.5 0 0 1 2.1 0L16 16.5"/></g></svg> Save Image</button>
     </div>
     <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
-      <button class="action-btn red" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="downloadHandwritePdf()">📄 PDF</button>
-      <button class="action-btn blue" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="exportHandwriteToWord()">📝 Word</button>
-      <button class="action-btn green" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="exportHandwriteToExcel()">📊 Excel</button>
+      <button class="action-btn red" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="downloadHandwritePdf()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M11 2.5V6a.5.5 0 0 0 .5.5H15"/></g></svg> PDF</button>
+      <button class="action-btn blue" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="exportHandwriteToWord()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M12.5 3.5 16 7l-9 9H3v-4z"/></g></svg> Word</button>
+      <button class="action-btn green" style="flex:1;padding:7px;min-width:90px;margin:0" onclick="exportHandwriteToExcel()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 16V10M10 16V4M16 16v-7"/></g></svg> Excel</button>
     </div>`;
 }
 function toggleHandwriteView(v){
@@ -2304,7 +2295,7 @@ function downloadHandwriteImage(){
   if(!S.handwriteCanvas){notify('Switch to Handwritten view first.','e');return;}
   const a=document.createElement('a');a.href=S.handwriteCanvas.toDataURL('image/png');
   a.download=(document.getElementById('docName')?.value||'handwritten')+'.png';a.click();
-  addHist('Handwritten Export','PNG','🖋️');notify('Image downloaded!','s');
+  addHist('Handwritten Export','PNG','<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 14c2-1 2.5-4.5 4-4.5s0 4 1.8 4 1.7-6 3.4-6 .8 4.3 2.3 4.3 1-1.3 2-1.3"/></g></svg>');notify('Image downloaded!','s');
 }
 function downloadHandwritePdf(){
   if(!S.handwriteCanvas){notify('Switch to Handwritten view first.','e');return;}
@@ -2313,7 +2304,7 @@ function downloadHandwritePdf(){
   const doc=new jsPDF({unit:'mm',format:[210,Math.max(pageH,297)]});
   doc.addImage(c.toDataURL('image/png'),'PNG',0,0,210,pageH);
   const name=(document.getElementById('docName')?.value||'handwritten')+'.pdf';
-  doc.save(name);addHist('Handwritten Export',name,'📄');notify('PDF downloaded!','s');
+  doc.save(name);addHist('Handwritten Export',name,'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M11 2.5V6a.5.5 0 0 0 .5.5H15"/></g></svg>');notify('PDF downloaded!','s');
 }
 function exportHandwriteToExcel(){
   if(!S.lastHandwriteText){notify('Nothing to export.','e');return;}
@@ -2324,7 +2315,7 @@ function exportHandwriteToExcel(){
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),'Result');
   const name=(document.getElementById('docName')?.value||'handwritten')+'.xlsx';
   XLSX.writeFile(wb,name);
-  addHist('Exported to Excel',name,'📊');
+  addHist('Exported to Excel',name,'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 16V10M10 16V4M16 16v-7"/></g></svg>');
   notify('Excel file downloaded!','s');
 }
 function exportHandwriteToWord(){
@@ -2351,29 +2342,29 @@ function renderChatTool(){
       <div class="ai-hdr-desc">${t.desc}</div>
       <div class="ai-upload" onclick="document.getElementById('chatFile').click()" ondragover="event.preventDefault()" ondrop="chatDrop(event)">
         <input type="file" id="chatFile" accept="image/*,application/pdf,.pdf" style="display:none" onchange="chatFileLoad(event)"/>
-        <div style="font-size:28px">📄</div>
+        <div style="font-size:28px"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M11 2.5V6a.5.5 0 0 0 .5.5H15"/></g></svg></div>
         <div style="font-size:12px;margin-top:6px;color:var(--text2)">Drop an image or PDF, or tap to upload — then start chatting</div>
       </div>
-      ${S.img?`<button class="action-btn" style="margin-top:10px" onclick="chatUseScanned()">📷 Use currently scanned document</button>`:''}
+      ${S.img?`<button class="action-btn" style="margin-top:10px" onclick="chatUseScanned()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><circle cx="10" cy="11" r="3.2"/><path d="M3 7.5a1.5 1.5 0 0 1 1.5-1.5h2l1-2h5l1 2h2A1.5 1.5 0 0 1 17 7.5v7A1.5 1.5 0 0 1 15.5 16h-11A1.5 1.5 0 0 1 3 14.5z"/></g></svg> Use currently scanned document</button>`:''}
     `;
     return;
   }
   const isPdf=isPdfDataUrl(sess.dataUrl);
   main.innerHTML=`
     <div class="chat-doc-bar" style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);margin-bottom:8px">
-      ${isPdf?`<div style="font-size:20px">📕</div>`:`<img src="${sess.dataUrl}" style="width:32px;height:32px;object-fit:cover;border-radius:6px"/>`}
+      ${isPdf?`<div style="font-size:20px"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M11 2.5V6a.5.5 0 0 0 .5.5H15"/></g></svg></div>`:`<img src="${sess.dataUrl}" style="width:32px;height:32px;object-fit:cover;border-radius:6px"/>`}
       <div style="flex:1;min-width:0;font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(sess.fileName||'Document')}</div>
-      <button class="action-btn" style="width:auto;padding:6px 10px;margin:0;font-size:11px" onclick="chatNewDoc()">🔄 New doc</button>
+      <button class="action-btn" style="width:auto;padding:6px 10px;margin:0;font-size:11px" onclick="chatNewDoc()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M16 10a6 6 0 1 1-2-4.5M16 3v4h-4"/></g></svg> New doc</button>
     </div>
     <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
-      <button class="action-btn red" style="flex:1;padding:6px;min-width:80px;margin:0;font-size:11px" onclick="exportChatToPDF()">📄 PDF</button>
-      <button class="action-btn blue" style="flex:1;padding:6px;min-width:80px;margin:0;font-size:11px" onclick="exportChatToWord()">📝 Word</button>
-      <button class="action-btn green" style="flex:1;padding:6px;min-width:80px;margin:0;font-size:11px" onclick="exportChatToExcel()">📊 Excel</button>
+      <button class="action-btn red" style="flex:1;padding:6px;min-width:80px;margin:0;font-size:11px" onclick="exportChatToPDF()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M11 2.5V6a.5.5 0 0 0 .5.5H15"/></g></svg> PDF</button>
+      <button class="action-btn blue" style="flex:1;padding:6px;min-width:80px;margin:0;font-size:11px" onclick="exportChatToWord()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M12.5 3.5 16 7l-9 9H3v-4z"/></g></svg> Word</button>
+      <button class="action-btn green" style="flex:1;padding:6px;min-width:80px;margin:0;font-size:11px" onclick="exportChatToExcel()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 16V10M10 16V4M16 16v-7"/></g></svg> Excel</button>
     </div>
     <div id="chatThread" style="display:flex;flex-direction:column;gap:8px;max-height:min(50vh,420px);overflow-y:auto;padding:6px 2px;margin-bottom:10px"></div>
     <div style="display:flex;gap:8px">
       <input class="form-input" id="chatInput" placeholder="Ask about this document…" style="margin-bottom:0" onkeydown="if(event.key==='Enter')sendChatMsg()"/>
-      <button class="action-btn primary" style="width:auto;padding:0 16px;margin:0" id="chatSendBtn" onclick="sendChatMsg()">➤</button>
+      <button class="action-btn primary" style="width:auto;padding:0 16px;margin:0" id="chatSendBtn" onclick="sendChatMsg()"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 10l14-7-4.5 14-3-5.5L3 10z"/></g></svg></button>
     </div>
   `;
   renderChatThread();
@@ -2430,7 +2421,7 @@ function exportChatToExcel(){
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),'Chat');
   const name=(sess.fileName||'chat').replace(/\.[^.]+$/,'')+'-chat.xlsx';
   XLSX.writeFile(wb,name);
-  addHist('Exported Chat',name,'📊');
+  addHist('Exported Chat',name,'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 16V10M10 16V4M16 16v-7"/></g></svg>');
   notify('Excel file downloaded!','s');
 }
 function chatQAPairs(){
@@ -2458,7 +2449,7 @@ function exportChatToPDF(){
   });
   const name=((S.chatSession?.fileName||'chat').replace(/\.[^.]+$/,''))+'-chat.pdf';
   doc.save(name);
-  addHist('Exported Chat PDF',name,'📄');
+  addHist('Exported Chat PDF',name,'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M11 2.5V6a.5.5 0 0 0 .5.5H15"/></g></svg>');
   notify('PDF downloaded!','s');
 }
 function exportChatToWord(){
@@ -2496,9 +2487,9 @@ async function sendChatMsg(){
     sess.messages.push({role:'assistant',text});
     saveChatSession(sess);
     S.aiStats++;localStorage.setItem('scanai_ai',S.aiStats);
-    addHist('Chat with Document',q,'💬');
+    addHist('Chat with Document',q,'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 4.5h14v9H8.5L5 16.5v-3H3z"/></g></svg>');
   }catch(e){
-    sess.messages.push({role:'assistant',text:'⚠️ '+friendlyChatError(e)});
+    sess.messages.push({role:'assistant',text:friendlyChatError(e)});
     saveChatSession(sess);
     notify('AI error — check connection.','e');
   }finally{
@@ -2584,7 +2575,7 @@ async function addMergeFiles(e){
   }
 }
 function renderMerge(){const list=document.getElementById('mergeList');if(!S.mergeFiles.length){list.innerHTML='<div style="color:var(--text3);font-size:11px;padding:6px;text-align:center">No files</div>';return;}list.innerHTML=S.mergeFiles.map((f,i)=>`<div class="fl-item"><span style="font-family:var(--fm);font-size:10px;color:var(--text3)">${i+1}</span><span class="fl-name">${esc(f.name)}</span><span class="fl-rm" onclick="S.mergeFiles.splice(${i},1);renderMerge()">✕</span></div>`).join('');}
-function mergePDF(){if(!S.mergeFiles.length){notify('Add files first.','e');return;}const{jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});let loaded=0;S.mergeFiles.forEach((f,i)=>{const img=new Image();img.onload=()=>{if(i>0)doc.addPage();doc.addImage(f.dataUrl,'PNG',0,0,210,297);loaded++;if(loaded===S.mergeFiles.length){doc.save('merged.pdf');addHist('Merged PDF',S.mergeFiles.length+' files','🔀');notify('PDF merged!','s');}};img.src=f.dataUrl;});}
+function mergePDF(){if(!S.mergeFiles.length){notify('Add files first.','e');return;}const{jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});let loaded=0;S.mergeFiles.forEach((f,i)=>{const img=new Image();img.onload=()=>{if(i>0)doc.addPage();doc.addImage(f.dataUrl,'PNG',0,0,210,297);loaded++;if(loaded===S.mergeFiles.length){doc.save('merged.pdf');addHist('Merged PDF',S.mergeFiles.length+' files','<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 5h2.3c1.6 0 2.4 1 3.4 2.4M3 15h2.3c1.6 0 2.4-1 3.4-2.4M14.3 5H17M14.3 15H17"/><path d="M12 3l2 2-2 2M12 13l2 2-2 2"/></g></svg>');notify('PDF merged!','s');}};img.src=f.dataUrl;});}
 function splitDoc(){if(!S.img){notify('No doc loaded.','e');return;}const{jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});doc.addImage(getPDU(),'PNG',0,0,210,297);doc.save('extracted.pdf');notify('Extracted!','s');}
 function setCompQ(q,el){document.querySelectorAll('#cq-low,#cq-med,#cq-high').forEach(b=>b.classList.remove('active'));el.classList.add('active');S.compQ=q;}
 function compressPDF(){if(!S.img){notify('No doc loaded.','e');return;}const q=S.compQ==='low'?.4:S.compQ==='med'?.7:.92;const c=buildFullResCanvas();const{jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});doc.addImage(c.toDataURL('image/jpeg',q),'JPEG',0,0,210,297);doc.save('compressed.pdf');notify('Compressed!','s');}
@@ -2601,7 +2592,7 @@ function applyWM(){
   else if(pos==='top'){ctx.fillText(text,c.width/2,c.height*.04+50);}
   else if(pos==='bottom'){ctx.fillText(text,c.width/2,c.height-c.height*.03-30);}
   else{const step=Math.round(c.height/9),xstep=Math.round(c.width/5);for(let y=step;y<c.height;y+=step)for(let x=0;x<c.width;x+=xstep){ctx.save();ctx.translate(x,y);ctx.rotate(-Math.PI/6);ctx.font=`bold ${Math.round(c.width/15)}px sans-serif`;ctx.fillText(text,0,0);ctx.restore();}}
-  ctx.restore();const img=new Image();img.onload=()=>{S.img=img;renderPreview();};img.src=c.toDataURL();addHist('Watermark','Added: '+text,'💧');notify('Watermark applied!','s');
+  ctx.restore();const img=new Image();img.onload=()=>{S.img=img;renderPreview();};img.src=c.toDataURL();addHist('Watermark','Added: '+text,'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M10 2.5S4.5 8.4 4.5 12a5.5 5.5 0 0 0 11 0C15.5 8.4 10 2.5 10 2.5z"/></g></svg>');notify('Watermark applied!','s');
 }
 
 // ══ SIGNATURE ══
@@ -2629,7 +2620,7 @@ function applySig(){
   const sigW=c.width*0.3,sigH=sigW*(sig.height/sig.width);
   const margin=c.width*0.03;
   ctx.globalAlpha=.85;ctx.drawImage(sig,c.width-sigW-margin,c.height-sigH-margin,sigW,sigH);ctx.globalAlpha=1;
-  const img=new Image();img.onload=()=>{S.img=img;renderPreview();};img.src=c.toDataURL();addHist('Signature','Applied','✍️');notify('Signature applied!','s');
+  const img=new Image();img.onload=()=>{S.img=img;renderPreview();};img.src=c.toDataURL();addHist('Signature','Applied','<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M3 14c2-1 2.5-4.5 4-4.5s0 4 1.8 4 1.7-6 3.4-6 .8 4.3 2.3 4.3 1-1.3 2-1.3"/></g></svg>');notify('Signature applied!','s');
 }
 function downloadSig(){const c=document.getElementById('sigCanvas');if(!c)return;const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='signature.png';a.click();notify('Signature saved!','s');}
 
@@ -2639,7 +2630,7 @@ function lockFileChosen(e){
   const f=e.target.files[0];if(!f)return;
   S.lockFile=f;
   const lbl=document.getElementById('lockFileLabel');
-  if(lbl)lbl.textContent='📄 '+f.name+' — ready to lock';
+  if(lbl)lbl.innerHTML='<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M11 2.5V6a.5.5 0 0 0 .5.5H15"/></g></svg> '+esc(f.name)+' — ready to lock';
 }
 async function fileToPdfBytes(file){
   if(isPdfFile(file)) return new Uint8Array(await file.arrayBuffer());
@@ -2691,7 +2682,7 @@ async function protectDoc(){
     a.download=name+'-protected.pdf';
     a.click();
     if(bar)bar.style.width='100%';
-    addHist('Protected',name+'-protected.pdf','🔐');
+    addHist('Protected',name+'-protected.pdf','<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><rect x="7.5" y="11" width="5" height="4" rx=".8"/><path d="M8.7 11V9.6a1.3 1.3 0 0 1 2.6 0V11"/></g></svg>');
     notify('Password-protected PDF downloaded!','s');
     setTimeout(()=>{if(bar)bar.style.width='0%';},1500);
   }catch(err){
@@ -2703,7 +2694,7 @@ function unlockFileChosen(e){
   const f=e.target.files[0];if(!f)return;
   S.unlockFile=f;
   const lbl=document.getElementById('unlockFileLabel');
-  if(lbl)lbl.textContent='📄 '+f.name;
+  if(lbl)lbl.innerHTML='<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M11 2.5V6a.5.5 0 0 0 .5.5H15"/></g></svg> '+esc(f.name);
   const status=document.getElementById('unlockStatus');
   if(status){status.style.color='var(--text3)';status.textContent='';}
 }
@@ -2713,25 +2704,25 @@ async function unlockPdf(){
   const pw=document.getElementById('unlockPW')?.value;
   if(!pw){notify('Enter its current password.','e');return;}
   const status=document.getElementById('unlockStatus');
-  const set=(color,text)=>{if(status){status.style.color=color;status.textContent=text;}};
+  const set=(color,text)=>{if(status){status.style.color=color;status.innerHTML=text;}};
   set('var(--text3)','Unlocking…');
   try{
     const bytes=new Uint8Array(await f.arrayBuffer());
     const result=decryptPdf(bytes,pw);
     if(result.status==='not-encrypted'){set('var(--yellow)',"This PDF isn't password-protected — there's nothing to remove.");return;}
-    if(result.status==='unsupported'){set('var(--red)','⚠️ '+result.reason);return;}
-    if(result.status==='wrong-password'){set('var(--red)','❌ Wrong password — try again.');return;}
+    if(result.status==='unsupported'){set('var(--red)','<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M10 3 2.5 16h15z"/><path d="M10 8.3v3.2M10 14h.01"/></g></svg> '+result.reason);return;}
+    if(result.status==='wrong-password'){set('var(--red)','<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 2.8 16 17.2M16 2.8 4 17.2"/></g></svg> Wrong password — try again.');return;}
     const blob=new Blob([result.bytes],{type:'application/pdf'});
     const a=document.createElement('a');
     a.href=URL.createObjectURL(blob);
     a.download=f.name.replace(/\.pdf$/i,'')+'-unlocked.pdf';
     a.click();
-    set('var(--green)','✅ Unlocked — the password has been permanently removed in the downloaded file.');
-    addHist('Unlocked',f.name,'🔓');
+    set('var(--green)','<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M4 10.5l3.8 3.8L16 6"/></g></svg> Unlocked — the password has been permanently removed in the downloaded file.');
+    addHist('Unlocked',f.name,'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><rect x="4.5" y="9" width="11" height="8" rx="1.5"/><path d="M6.5 9V6.2a3.5 3.5 0 0 1 6.6-1.6"/></g></svg>');
     notify('PDF unlocked and downloaded!','s');
     document.getElementById('unlockPW').value='';
   }catch(err){
-    set('var(--red)','⚠️ '+(err.message||'Could not process this PDF.'));
+    set('var(--red)','<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M10 3 2.5 16h15z"/><path d="M10 8.3v3.2M10 14h.01"/></g></svg> '+esc(err.message||'Could not process this PDF.'));
   }
 }
 let qrScanning=false;
@@ -2739,7 +2730,7 @@ function detectQR(){
   if(!S.img){notify('Load a doc first.','e');return;}
   if(typeof jsQR==='undefined'){notify('QR scanner failed to load.','e');return;}
   const div=document.getElementById('qrResult');
-  div.style.display='block';div.innerHTML='🔍 Scanning…';
+  div.style.display='block';div.innerHTML='<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><circle cx="8.5" cy="8.5" r="5.5"/><path d="M16.5 16.5l-4-4"/></g></svg> Scanning…';
   qrScanning=true;
   setTimeout(()=>{
     if(!qrScanning)return;
@@ -2749,31 +2740,33 @@ function detectQR(){
       const imgData=ctx.getImageData(0,0,c.width,c.height);
       const result=jsQR(imgData.data,imgData.width,imgData.height);
       if(result&&result.data){
-        div.innerHTML=`📱 <strong>QR detected!</strong><br/><code>${esc(result.data)}</code>`;
-        addHist('QR Detected',result.data,'📱');
+        div.innerHTML=`<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="11" y="3" width="6" height="6" rx="1"/><rect x="3" y="11" width="6" height="6" rx="1"/><rect x="11" y="11" width="6" height="6" rx="1"/></g></svg> <strong>QR detected!</strong><br/><code>${esc(result.data)}</code>`;
+        addHist('QR Detected',result.data,'<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="11" y="3" width="6" height="6" rx="1"/><rect x="3" y="11" width="6" height="6" rx="1"/><rect x="11" y="11" width="6" height="6" rx="1"/></g></svg>');
         notify('QR code found!','s');
       }else{
-        div.innerHTML='🔍 No QR code found in this document.';
+        div.innerHTML='<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><circle cx="8.5" cy="8.5" r="5.5"/><path d="M16.5 16.5l-4-4"/></g></svg> No QR code found in this document.';
         notify('No QR code detected.','i');
       }
     }catch(err){
-      div.innerHTML='⚠️ Scan failed: '+esc(err.message);
+      div.innerHTML='<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M10 3 2.5 16h15z"/><path d="M10 8.3v3.2M10 14h.01"/></g></svg> Scan failed: '+esc(err.message);
       notify('Scan error.','e');
     }
   },400);
 }
 
 // ══ HISTORY ══
-function addHist(action,detail,icon='📄'){S.hist.unshift({id:Date.now(),action,detail,icon,time:new Date().toLocaleString()});if(S.hist.length>50)S.hist=S.hist.slice(0,50);try{localStorage.setItem('scanai_hist',JSON.stringify(S.hist));}catch(e){}}
-function renderHist(){const list=document.getElementById('histList');if(!S.hist.length){list.innerHTML='<div class="empty-state"><div class="es-icon">🕐</div><div class="es-text">No history</div></div>';return;}list.innerHTML=S.hist.map(h=>`<div class="hist-item"><div class="hist-ico">${h.icon}</div><div class="hist-info"><div class="hist-name">${esc(h.action)}</div><div class="hist-meta">${esc(h.detail)} · ${h.time}</div></div></div>`).join('');}
+function addHist(action,detail,icon='<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M11 2.5V6a.5.5 0 0 0 .5.5H15"/></g></svg>'){S.hist.unshift({id:Date.now(),action,detail,icon,time:new Date().toLocaleString()});if(S.hist.length>50)S.hist=S.hist.slice(0,50);try{localStorage.setItem('scanai_hist',JSON.stringify(S.hist));}catch(e){}}
+function renderHist(){const list=document.getElementById('histList');if(!S.hist.length){list.innerHTML='<div class="empty-state"><div class="es-icon"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><circle cx="10" cy="10" r="7"/><path d="M10 6v4.3l3 1.8"/></g></svg></div><div class="es-text">No history</div></div>';return;}list.innerHTML=S.hist.map(h=>`<div class="hist-item"><div class="hist-ico">${h.icon}</div><div class="hist-info"><div class="hist-name">${esc(h.action)}</div><div class="hist-meta">${esc(h.detail)} · ${h.time}</div></div></div>`).join('');}
 function clearHist(){S.hist=[];localStorage.removeItem('scanai_hist');renderHist();notify('History cleared.','i');}
 
 // ══ SETTINGS ══
 function exportAll(){const data=JSON.stringify({docs:S.docs,hist:S.hist,exported:new Date().toISOString()},null,2);const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'application/json'}));a.download='scanai_export.json';a.click();notify('Exported!','s');}
-function confirmClear(){showModal(`<div class="modal-title">⚠️ Clear All Data?</div><div class="modal-sub">Permanently deletes everything. Cannot be undone.</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px"><button class="action-btn" onclick="closeModal()">Cancel</button><button class="action-btn red" onclick="doClear()">Delete All</button></div>`);}
+function confirmClear(){showModal(`<div class="modal-title"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M10 3 2.5 16h15z"/><path d="M10 8.3v3.2M10 14h.01"/></g></svg> Clear All Data?</div><div class="modal-sub">Permanently deletes everything. Cannot be undone.</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px"><button class="action-btn" onclick="closeModal()">Cancel</button><button class="action-btn red" onclick="doClear()">Delete All</button></div>`);}
 function doClear(){localStorage.clear();S.docs=[];S.hist=[];S.aiStats=0;S.ocrStats=0;closeModal();refreshDash();notify('Cleared.','i');}
 
 // ══ UTILS ══
+const ICON_FILE_SVG='<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><g><path d="M6 2.5h5l3.5 3.5V17a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z"/><path d="M11 2.5V6a.5.5 0 0 0 .5.5H15"/></g></svg>';
+function thumbFallback(img){img.parentElement.innerHTML=ICON_FILE_SVG;}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 // Keyboard shortcuts
