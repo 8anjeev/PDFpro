@@ -2,12 +2,22 @@
   "name": "ScanAI Pro",
   "short_name": "ScanAI Pro",
   "description": "AI-powered document scanner, editor, and PDF toolkit",
-  "start_url": "./index.html",
+  "start_url": "./ScanAI_Pro.html",
   "display": "standalone",
-  "background_color": "#0a0c0f",
-  "theme_color": "#f97316",
+  "background_color": "#0b0c0e",
+  "theme_color": "#9f2232",
   "icons": [
-    { "src": "ScanAI.PNG", "sizes": "1254x1254", "type": "image/png", "purpose": "any" },
-    { "src": "ScanAI.PNG", "sizes": "1254x1254", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "ScanAI.PNG",
+      "sizes": "1254x1254",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "ScanAI.PNG",
+      "sizes": "1254x1254",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
